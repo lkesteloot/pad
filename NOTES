@@ -1,0 +1,108 @@
+
+- To do
+    - Look into what vim uses for curses, because ncurses kinda sucks.
+        - Black background.
+        - Delay after ESC.
+    - Write buffer class.
+    - Get filename from command line.
+    - Load file into buffer.
+    - Write mapper from buffer to tile.
+    - Write tile class (rectangular area on screen).
+- Name
+    - "pad" (notepad, textpad, editpad)
+        - This is the winner.
+    - "edit" (ultraedit)
+    - dlite (sounds like lite version of something)
+    - From Brad: Modal, Alice, Milo, Alden, Vitamin, Caffeine
+    - punch, pnch
+- Architecture
+    - JavaScript in Node.js.
+    - Powerful plugin system.
+        - Specify plugins in config file.
+        - Automatically downloaded.
+        - Can stick themselves in various places (including documentation).
+    - Mostly done by exposing an API and implementing plugins that call the API.
+        - E.g., API for moving cursor to any location, then write plugin to
+          move to the right, then write another plugin to bind it to "l" key.
+    - Look at Emacs architecture. It's the most similar one probably.
+        - 1.1m lines of Lisp.
+        - Buy "Beautiful Architecture" or subscribe to O'Reilly thing, or borrow from Markos.
+        - http://www.xemacs.org/Documentation/21.5/html/internals.html
+        - Buffers have marks (single point) and extents (pair of marks and properties)
+            that move around with the text.
+        - http://www.chrismennie.ca/EMACS-Conceptual-Architecture.pdf
+    - Buffer storage
+        - Array of lines.
+            - Start with this.
+        - Gap buffer
+            - What Emacs uses.
+            - Don't actually move the gap when browsing -- only when making modifications.
+        - Rope
+            - Too complex.
+    - Unknown: Bidirectional map from location in file to location on screen.
+- Questions
+    - Support windows? (These are cut-up frames, like vim or Emacs.)
+        - Almost certainly necessary. Limited apps without that.
+        - Come up with better name.
+            - Frames? That's what Emacs uses to mean the actual window.
+            - Pane
+    - License? Okay with very permissive.
+- Plugins
+    - See how done in Emacs
+    - See how done in jEdit: http://www.jedit.org/
+- Simplify
+    - Only support UTF-8.
+    - Only support VT-220 (or whatever).
+    - Only support terminal mode, not GUI.
+- Wacky ideas
+    - Serve web page to show more info on what's being edited in real time.
+    - Make available as web app. Not sure how node's module system ports over.
+- Nice things
+    - When typing pathname of file to load, correct errors.
+    - When typing pathname of file to create, create directories (with permission).
+    - If loaded file has no LF on last line, save it that way.
+    - When pasting, detect that characters are coming in too quickly and disable auto-indent.
+    - Automatic visual line wrap with syntax-aware indent.
+    - Auto-indent on paste (mouse paste or regular paste).
+- Reference
+    - crowley98data.pdf in Downloads (compares buffer implementations).
+- Competition
+    - TextMate 2
+        - Mac GUI.
+        - Pretty simple, but nicely done. Beautiful colors.
+        - Lots of support for languages, SCMs, etc.
+        - Can run the program and get output easily (or errors).
+        - Skimmed code (~/others/textmate). Hard to follow. Not much there.
+    - Emacs
+        - http://www.chrismennie.ca/EMACS-Conceptual-Architecture.pdf
+            - Not a whole lot of interest. Internal buffer, display buffer.
+        - http://www.gnu.org/software/emacs/emacs-paper.html
+            - By RMS. Didn't read.
+        - http://www.finseth.com/craft/index.html
+    - jEdit
+        - http://www.jedit.org/api/index.html
+        - Uses gap buffer internal. (Array of char.)
+    - vim
+- Community
+    - Website for plugins.
+    - Could we just use "npm install" like grunt does?
+- Random
+    - Keep a parallel array of attributes for highlighting and other things. Otherwise
+        we have to run algorithms to figure out the color constantly, and this will
+        restrict what we can do.
+        - Could implement this by using a wide char and using high bits for attributes.
+    - Can we follow MVC for once? What would that mean?
+        - In Emacs the Controller is mostly Lisp, taking keystrokes and modifying
+            the model. The View displays the Model, but I guess this isn't Lispable?
+    - Proper support for mixed languages, like JS in HTML.
+        - That means that things like key bindings, indent, and color must be
+            to a region, not a buffer.  So instead of (say) setting a key
+            binding when starting to edit a buffer, we must match each part of
+            a buffer to a language, and dynamically dispatch to the key binding
+            when typing in that region of the buffer.
+    - Each plugin exports a set of help pages. Each page has a name, one-line description,
+        and page. Can search help, or just descriptions (apropos), or maybe
+        have permuted index.
+    - Help written in markdown.
+    - Space to left of code is called "gutter". Line numbers, errors, other info.
+

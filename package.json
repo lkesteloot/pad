@@ -1,0 +1,18 @@
+{
+  "name": "pad",
+  "version": "0.0.0",
+  "description": "Text editor.",
+  "main": "pad.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "text",
+    "editor"
+  ],
+  "author": "Lawrence Kesteloot",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "ncurses": "~0.4.1"
+  }
+}
