@@ -8,10 +8,22 @@ var write = function (text) {
 };
 exports.write = write;
 
+var writeCsi = function (numbers, letter) {
+    if (!(numbers instanceof Array)) {
+        numbers = [numbers];
+    }
+
+    write(CSI + numbers.join(";") + letter);
+};
+
 exports.moveTo = function (x, y) {
-    write(CSI + (y + 1) + ";" + (x + 1) + "H");
+    writeCsi([y + 1, x + 1], "H");
 };
 
 exports.clearChars = function (count) {
-    write(CSI + count + "X");
+    writeCsi(count, "X");
 };
+
+exports.setColor = function (colors) {
+    writeCsi(colors, "m");
+}

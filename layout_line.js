@@ -21,16 +21,14 @@ LayoutLine.prototype.log = function () {
 };
 
 LayoutLine.prototype.drawLine = function (width) {
-    var output = "";
+    var indent = new Array(this.indent + 1).join(".");
 
-    for (var i = 0; i < this.indent; i++) {
-        output = output + " ";
-    }
+    term.setColor([30, 1]);
+    term.write(indent);
+    term.setColor([37, 0]);
 
-    output += this.text;
-
-    term.write(output);
-    term.clearChars(width - output.length);
+    term.write(this.text);
+    term.clearChars(width - this.text.length - this.indent);
 };
 
 exports.LayoutLine = LayoutLine

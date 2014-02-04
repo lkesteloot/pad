@@ -152,6 +152,7 @@
     - Help written in markdown.
     - Space to left of code is called "gutter". Line numbers, errors, other info.
     - Line up/down should always be in visual lines, not buffer lines.
+    - Ability to do math, like a spreadsheet.
 
 
 
