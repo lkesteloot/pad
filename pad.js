@@ -2,6 +2,7 @@
 
 var Buffer = require("./buffer.js").Buffer;
 var Pane = require("./pane.js").Pane;
+var input = require("./input.js");
 
 var buffer = new Buffer();
 
@@ -22,5 +23,4 @@ if (process.argv.length <= 2) {
     });
 }
 
-// process.stdin.setRawMode(true);
-// process.stdin.resume();
+input.start();
