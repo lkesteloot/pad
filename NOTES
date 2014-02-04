@@ -26,7 +26,8 @@
     - Objects:
         - Window
             - Responsible for managing panes.
-            - The whole terminal window. Later could be multiple terminal windows.
+            - The whole terminal window.
+            - Later could be multiple terminal windows.
         - Buffer
             - Responsible for returning information about the file and modifying the file.
             - Stores array of lines for file.
@@ -37,7 +38,14 @@
         - Pane
             - Responsible for tracking what's visible in a pane.
             - Rectangle on screen.
-            - Points to view.
+            - Responsible for showing the buffer and interpreting commands to modify it.
+            - Points to layout.
+            - Line and column offset.
+            - Cursor location.
+            - Keymaps, plugins, etc.
+                - Presumably these are actually tied to the buffer.
+                - But not necessarily, could be interesting to have two views of same buffer.
+            - Listens to changes in buffer and updates the pane contents.
         - Layout
             - Actual layout of lines on screen.
             - Array of lines. Each line has:
@@ -51,14 +59,7 @@
             - Converts a buffer to a layout.
             - Can do incremental updates.
             - Multiple implementations.
-        - View
-            - Responsible for showing the buffer and interpreting commands to modify it.
-            - Points to layout.
-            - Cursor location.
-            - Keymaps, plugins, etc.
-                - Presumably these are actually tied to the buffer.
-                - But not necessarily, could be interesting to have two views of same buffer.
-            - Listens to changes in buffer and updates the pane contents.
+            - Mostly stateless.
 - Questions
 - Plugins
     - See how done in Emacs
