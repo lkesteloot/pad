@@ -19,7 +19,8 @@ Layout.prototype.drawLine = function (lineNumber, width) {
     if (lineNumber >= 0 && lineNumber < this.lines.length) {
         this.lines[lineNumber].drawLine(width);
     } else {
-        term.clearChars(width);
+        term.write("~");
+        term.clearChars(width - 1);
     }
 };
 

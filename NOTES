@@ -1,6 +1,8 @@
 
 - To do
     - Read this: http://nodejs.org/api/process.html
+    - Read source of "jetty" module.
+    - Maybe rename Buffer since it's a built-in class of Node.
     - Flesh out term situation.
         - Can we avoid using terminfo?
         - Do we require a syscall, or can we do everything by outputting control codes?
@@ -93,6 +95,8 @@
     - Make available as web app. Not sure how node's module system ports over.
         - http://browserify.org/
             - Wouldn't allow run-time plugins. It's all bundled into one file.
+    - Periodically save state of all tiles and buffers. If process is killed, offer
+        a way to restore it all, like Chrome does with tabs.
 - Nice things
     - When typing pathname of file to load, correct errors.
     - When typing pathname of file to create, create directories (with permission).

@@ -21,6 +21,11 @@ Buffer.prototype.readFile = function (filename, successCallback, errorCallback) 
 };
 
 Buffer.prototype._parseFile = function (contents, callback) {
+    // Strip trailing \n.
+    if (contents.length > 0 && contents.substring(contents.length - 1) === "\n") {
+        contents = contents.substring(0, contents.length - 1);
+    }
+
     this.lines = contents.split("\n");
     callback();
 };

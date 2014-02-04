@@ -13,8 +13,5 @@
   "author": "Lawrence Kesteloot",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "ncurses": "~0.4.1",
-    "underscore": "~1.5.2",
-    "cbreak": "0.0.1"
   }
 }
