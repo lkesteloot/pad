@@ -6,12 +6,13 @@ var SimpleFormatter = require("./simple_formatter.js").SimpleFormatter;
 var WrappingFormatter = require("./wrapping_formatter.js").WrappingFormatter;
 var term = require("./term");
 
-var Pane = function () {
-    this.width = 40;
-    this.height = 40;
+var Pane = function (x, y, width, height) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
     this.layout = new Layout();
     this.buffer = new Buffer();
-    this.formatter = true ? new WrappingFormatter(this.width) : new SimpleFormatter();
     this.layoutDirty = true;
 };
 
@@ -22,17 +23,18 @@ Pane.prototype.setBuffer = function (buffer) {
 
 Pane.prototype.reformat = function () {
     if (this.layoutDirty) {
-        this.formatter.format(this.buffer, this.layout);
+        var formatter = true ? new WrappingFormatter(this.width) : new SimpleFormatter();
+        formatter.format(this.buffer, this.layout);
         this.layoutDirty = false;
     }
 };
 
-Pane.prototype.redraw = function (x0, y0) {
+Pane.prototype.redraw = function () {
     this.reformat();
 
     for (var y = 0; y < this.height; y++) {
         // Move to first position of line.
-        term.moveTo(x0, y0 + y);
+        term.moveTo(this.x, this.y + y);
 
         // Draw our line.
         this.layout.drawLine(y, this.width);
@@ -42,6 +44,29 @@ Pane.prototype.redraw = function (x0, y0) {
 Pane.prototype.log = function () {
     this.reformat();
     this.layout.log();
+};
+
+Pane.prototype.loadFile = function (filename) {
+    var buffer = new Buffer();
+    var self = this;
+
+    buffer.readFile(filename, function () {
+        self.setBuffer(buffer);
+        self.redraw();
+    }, function (err) {
+        if (err.code === "ENOENT") {
+            console.log("File not found: " + filename);
+        } else {
+            console.log("Error loading file: " + err);
+        }
+    });
+};
+
+Pane.prototype.resize = function (width, height) {
+    this.width = width;
+    this.height = height;
+    this.layoutDirty = true;
+    this.redraw();
 };
 
 exports.Pane = Pane;
