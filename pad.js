@@ -12,7 +12,7 @@ if (process.argv.length <= 2) {
     buffer.readFile(filename, function () {
         var pane = new Pane();
         pane.setBuffer(buffer);
-        pane.log();
+        pane.redraw(20, 5);
     }, function (err) {
         if (err.code === "ENOENT") {
             console.log("File not found: " + filename);

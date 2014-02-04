@@ -3,8 +3,8 @@
 var _ = require("underscore");
 var LayoutLine = require("./layout_line").LayoutLine;
 
-var WrappingFormatter = function () {
-    this.wrapWidth = 40;
+var WrappingFormatter = function (wrapWidth) {
+    this.wrapWidth = wrapWidth;
 };
 
 WrappingFormatter.prototype.format = function (buffer, layout) {

@@ -1,6 +1,6 @@
 // Copyright 2014 Lawrence Kesteloot
 
-var fs = require("./layout_line");
+var term = require("./term");
 
 var Layout = function () {
     // Array of LayoutLine objects.
@@ -12,6 +12,14 @@ Layout.prototype.log = function () {
         var layoutLine = this.lines[i];
 
         layoutLine.log();
+    }
+};
+
+Layout.prototype.drawLine = function (lineNumber, width) {
+    if (lineNumber >= 0 && lineNumber < this.lines.length) {
+        this.lines[lineNumber].drawLine(width);
+    } else {
+        term.clearChars(width);
     }
 };
 

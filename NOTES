@@ -1,11 +1,22 @@
 
 - To do
-    - Write tile class (rectangular area on screen).
-    - Write view (mapper from buffer to tile).
-    - Display contents of tile.
-    - Look into what vim uses for curses, because ncurses kinda sucks.
-        - Black background.
-        - Delay after ESC.
+    - Read this: http://nodejs.org/api/process.html
+    - Flesh out term situation.
+        - Can we avoid using terminfo?
+        - Do we require a syscall, or can we do everything by outputting control codes?
+        - Probably want cbreak(), noecho(), nonl().
+            - See process.stdin.setRawMode(true).
+                .resume()
+                .pause()
+                .setEncoding()
+            - stdout:
+                .isTTY
+                .columns
+                .rows
+                "resize" event.
+        - Look into what vim uses for curses, because ncurses kinda sucks.
+            - Black background.
+            - Delay after ESC.
 - Architecture
     - JavaScript in Node.js.
     - When loading file:
@@ -54,6 +65,7 @@
                 - Line/column of buffer.
                 - Need to also not allow cursor in middle of tab.
                     - Can use annotation for that.
+                - For annotation, vim uses 16 bits if syntax highlighting, 8 otherwise.
             - Probably cache info from formatter or buffer, either global or per-line.
         - Formatter
             - Converts a buffer to a layout.
@@ -61,11 +73,17 @@
             - Multiple implementations.
             - Mostly stateless.
 - Questions
+    - How to deal with UTF-8 characters in layout?
+        - Vim has 8-bit array of whole screen.
+        - Also keeps parallel 32-bit array, which is 0 if the 8-bit value should be used.
+        - Parallel array of 16-bit attributes.
+        - Array index by line that specifies index in above three arrays.
 - Plugins
     - See how done in Emacs
     - See how done in jEdit: http://www.jedit.org/
 - Simplify
     - Only support UTF-8.
+        - Or only support ASCII?
     - Only support VT-220 (or whatever).
     - Only support terminal mode, not GUI.
     - Only support small files (source code, documents).
