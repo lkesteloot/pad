@@ -1,52 +1,67 @@
 
 - To do
+    - Write tile class (rectangular area on screen).
+    - Write view (mapper from buffer to tile).
+    - Display contents of tile.
     - Look into what vim uses for curses, because ncurses kinda sucks.
         - Black background.
         - Delay after ESC.
-    - Write buffer class.
-    - Get filename from command line.
-    - Load file into buffer.
-    - Write mapper from buffer to tile.
-    - Write tile class (rectangular area on screen).
-- Name
-    - "pad" (notepad, textpad, editpad)
-        - This is the winner.
-    - "edit" (ultraedit)
-    - dlite (sounds like lite version of something)
-    - From Brad: Modal, Alice, Milo, Alden, Vitamin, Caffeine
-    - punch, pnch
 - Architecture
     - JavaScript in Node.js.
+    - When loading file:
+        - Load plugin based on file type (based on extension or magic number).
+        - Plugin determines:
+            - Buffer type (line-based, byte array).
+            - View type (plain text, code, etc.).
     - Powerful plugin system.
         - Specify plugins in config file.
         - Automatically downloaded.
         - Can stick themselves in various places (including documentation).
+        - Plugins hook in to extension points and define their own extension points.
     - Mostly done by exposing an API and implementing plugins that call the API.
         - E.g., API for moving cursor to any location, then write plugin to
           move to the right, then write another plugin to bind it to "l" key.
-    - Look at Emacs architecture. It's the most similar one probably.
-        - 1.1m lines of Lisp.
-        - Buy "Beautiful Architecture" or subscribe to O'Reilly thing, or borrow from Markos.
-        - http://www.xemacs.org/Documentation/21.5/html/internals.html
-        - Buffers have marks (single point) and extents (pair of marks and properties)
-            that move around with the text.
-        - http://www.chrismennie.ca/EMACS-Conceptual-Architecture.pdf
-    - Buffer storage
-        - Array of lines.
-            - Start with this.
-        - Gap buffer
-            - What Emacs uses.
-            - Don't actually move the gap when browsing -- only when making modifications.
-        - Rope
-            - Too complex.
-    - Unknown: Bidirectional map from location in file to location on screen.
+    - Use Command pattern to execute commands.
+        - Supports undo/redo, logging, queuing, and simulation.
+    - Objects:
+        - Window
+            - Responsible for managing panes.
+            - The whole terminal window. Later could be multiple terminal windows.
+        - Buffer
+            - Responsible for returning information about the file and modifying the file.
+            - Stores array of lines for file.
+            - Also stores whether last line has newline.
+            - Whether modified.
+            - Undo/redo history.
+            - Listeners can be told when any part of it changes.
+        - Pane
+            - Responsible for tracking what's visible in a pane.
+            - Rectangle on screen.
+            - Points to view.
+        - Layout
+            - Actual layout of lines on screen.
+            - Array of lines. Each line has:
+                - Rich/annotated text
+                - Virtual indent
+                - Line/column of buffer.
+                - Need to also not allow cursor in middle of tab.
+                    - Can use annotation for that.
+            - Probably cache info from formatter or buffer, either global or per-line.
+        - Formatter
+            - Converts a buffer to a layout.
+            - Can do incremental updates.
+            - Multiple implementations.
+        - View
+            - Responsible for showing the buffer and interpreting commands to modify it.
+            - Points to layout.
+            - Cursor location.
+            - Keymaps, plugins, etc.
+                - Presumably these are actually tied to the buffer.
+                - But not necessarily, could be interesting to have two views of same buffer.
+            - Listens to changes in buffer and updates the pane contents.
 - Questions
-    - Support windows? (These are cut-up frames, like vim or Emacs.)
-        - Almost certainly necessary. Limited apps without that.
-        - Come up with better name.
-            - Frames? That's what Emacs uses to mean the actual window.
-            - Pane
     - License? Okay with very permissive.
+        - Berkeley 2
 - Plugins
     - See how done in Emacs
     - See how done in jEdit: http://www.jedit.org/
@@ -54,9 +69,13 @@
     - Only support UTF-8.
     - Only support VT-220 (or whatever).
     - Only support terminal mode, not GUI.
+    - Only support small files (source code, documents).
+    - Lines and columns are always 0-based.
 - Wacky ideas
     - Serve web page to show more info on what's being edited in real time.
     - Make available as web app. Not sure how node's module system ports over.
+        - http://browserify.org/
+            - Wouldn't allow run-time plugins. It's all bundled into one file.
 - Nice things
     - When typing pathname of file to load, correct errors.
     - When typing pathname of file to create, create directories (with permission).
@@ -79,6 +98,12 @@
         - http://www.gnu.org/software/emacs/emacs-paper.html
             - By RMS. Didn't read.
         - http://www.finseth.com/craft/index.html
+        - 1.1m lines of Lisp.
+        - Buy "Beautiful Architecture" or subscribe to O'Reilly thing, or borrow from Markos.
+        - http://www.xemacs.org/Documentation/21.5/html/internals.html
+        - Buffers have marks (single point) and extents (pair of marks and properties)
+            that move around with the text.
+        - http://www.chrismennie.ca/EMACS-Conceptual-Architecture.pdf
     - jEdit
         - http://www.jedit.org/api/index.html
         - Uses gap buffer internal. (Array of char.)
@@ -105,4 +130,18 @@
         have permuted index.
     - Help written in markdown.
     - Space to left of code is called "gutter". Line numbers, errors, other info.
+    - Line up/down should always be in visual lines, not buffer lines.
 
+
+
+
+Archived
+--------
+
+- Name
+    - "pad" (notepad, textpad, editpad)
+        - This is the winner.
+    - "edit" (ultraedit)
+    - dlite (sounds like lite version of something)
+    - From Brad: Modal, Alice, Milo, Alden, Vitamin, Caffeine
+    - punch, pnch
