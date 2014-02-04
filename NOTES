@@ -60,8 +60,6 @@
                 - But not necessarily, could be interesting to have two views of same buffer.
             - Listens to changes in buffer and updates the pane contents.
 - Questions
-    - License? Okay with very permissive.
-        - Berkeley 2
 - Plugins
     - See how done in Emacs
     - See how done in jEdit: http://www.jedit.org/
