@@ -21,7 +21,7 @@ Pane.prototype.setBuffer = function (buffer) {
     this.layoutDirty = true;
 };
 
-Pane.prototype.reformat = function () {
+Pane.prototype.reformatIfNecessary = function () {
     if (this.layoutDirty) {
         var formatter = true ? new WrappingFormatter(this.width) : new SimpleFormatter();
         formatter.format(this.buffer, this.layout);
@@ -30,7 +30,7 @@ Pane.prototype.reformat = function () {
 };
 
 Pane.prototype.redraw = function () {
-    this.reformat();
+    this.reformatIfNecessary();
 
     for (var y = 0; y < this.height; y++) {
         // Move to first position of line.
@@ -42,7 +42,7 @@ Pane.prototype.redraw = function () {
 };
 
 Pane.prototype.log = function () {
-    this.reformat();
+    this.reformatIfNecessary();
     this.layout.log();
 };
 

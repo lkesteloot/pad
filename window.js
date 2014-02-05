@@ -1,5 +1,6 @@
 // Copyright 2014 Lawrence Kesteloot
 
+var events = require("events");
 var Pane = require("./pane.js").Pane;
 
 exports.Window = function () {
@@ -26,6 +27,11 @@ exports.Window.prototype.updateScreenSize = function () {
         });
     }
 };
+
+exports.Window.events = new events.EventEmitter();
+exports.Window.events.on("shutdown", function () {
+    console.log("Shutting DOWN!");
+});
 
 var onResize = function () {
     this.updateScreenSize();

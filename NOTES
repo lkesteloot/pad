@@ -1,24 +1,13 @@
 
 - To do
+    - Add cursor location to Pane.
+        - Add fields.
+        - Move cursor there.
+        - Hide cursor when redrawing.
     - Read this: http://nodejs.org/api/process.html
     - Read source of "jetty" module.
     - Maybe rename Buffer since it's a built-in class of Node.
-    - Flesh out term situation.
-        - Can we avoid using terminfo?
-        - Do we require a syscall, or can we do everything by outputting control codes?
-        - Probably want cbreak(), noecho(), nonl().
-            - See process.stdin.setRawMode(true).
-                .resume()
-                .pause()
-                .setEncoding()
-            - stdout:
-                .isTTY
-                .columns
-                .rows
-                "resize" event.
-        - Look into what vim uses for curses, because ncurses kinda sucks.
-            - Black background.
-            - Delay after ESC.
+    - Look at stdin.setEncoding().
 - Architecture
     - JavaScript in Node.js.
     - When loading file:
