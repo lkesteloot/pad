@@ -1,13 +1,14 @@
 
 - To do
-    - Add cursor location to Pane.
-        - Add fields.
-        - Move cursor there.
-        - Hide cursor when redrawing.
+    - Hide cursor when redrawing.
     - Read this: http://nodejs.org/api/process.html
     - Read source of "jetty" module.
     - Maybe rename Buffer since it's a built-in class of Node.
     - Look at stdin.setEncoding().
+    - Why doesn't it redraw when resizing the shell window?
+        - We get the resize events but never get a chance to draw. They get queued up.
+        - Even the resize events get queued up. Is this just on the trace connection?
+    - When exiting, first move cursor to bottom of window.
 - Architecture
     - JavaScript in Node.js.
     - When loading file:

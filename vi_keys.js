@@ -7,14 +7,14 @@ var ViKeys = function () {
 ViKeys.prototype.onKey = function (key, pane) {
     switch (key) {
         case 4: // ^D
-            var lineCount = Math.ceil(pane.height/2);
+            var lineCount = Math.ceil(pane.contentHeight/2);
             pane.cursorY += lineCount;
             pane.topY += lineCount;
             pane.redrawDirty = true;
             break;
 
         case 21: // ^U
-            var lineCount = Math.ceil(pane.height/2);
+            var lineCount = Math.ceil(pane.contentHeight/2);
             pane.cursorY -= lineCount;
             pane.topY -= lineCount;
             pane.redrawDirty = true;

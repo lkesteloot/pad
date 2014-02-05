@@ -6,12 +6,15 @@ var SimpleFormatter = require("./simple_formatter");
 var WrappingFormatter = require("./wrapping_formatter");
 var ViKeys = require("./vi_keys");
 var term = require("./term");
+var trace = require("./trace");
 
 var Pane = function (x, y, width, height) {
+    this.filename = "";
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
+    this.contentHeight = height - 3;
     this.cursorX = 0; // In layout space.
     this.cursorY = 0;
     this.topY = 0; // Top of pane, in layout space.
@@ -39,14 +42,26 @@ Pane.prototype.reformatIfNecessary = function () {
 Pane.prototype.redrawIfNecessary = function () {
     if (this.redrawDirty || this.layoutDirty) {
         this.reformatIfNecessary();
+        trace.log("Redrawing");
 
-        for (var y = 0; y < this.height; y++) {
+        for (var y = 0; y < this.contentHeight; y++) {
             // Move to first position of line.
             term.moveTo(this.x, this.y + y);
 
             // Draw our line.
             this.layout.drawLine(this.topY + y, this.width);
         }
+
+        // Draw status line.
+        term.moveTo(this.x, this.contentHeight);
+        term.setColor(7);
+        term.write(this.filename + (new Array(this.width - this.filename.length + 1).join(" ")));
+        term.moveTo(this.x, this.contentHeight + 1);
+        term.setColor(0);
+        term.clearChars(this.width);
+        term.moveTo(this.x, this.contentHeight + 2);
+        term.setColor(0);
+        term.clearChars(this.width);
 
         this.positionCursor();
 
@@ -58,8 +73,8 @@ Pane.prototype.scrollToCursor = function () {
     if (this.topY > this.cursorY) {
         this.topY = this.cursorY;
         this.redrawDirty = true;
-    } else if (this.topY < this.cursorY - (this.height - 1)) {
-        this.topY = this.cursorY - (this.height - 1);
+    } else if (this.topY < this.cursorY - (this.contentHeight - 1)) {
+        this.topY = this.cursorY - (this.contentHeight - 1);
         this.redrawDirty = true;
     }
 };
@@ -78,6 +93,7 @@ Pane.prototype.loadFile = function (filename) {
     var self = this;
 
     buffer.readFile(filename, function () {
+        self.filename = filename;
         self.setBuffer(buffer);
         self.redrawIfNecessary();
     }, function (err) {
@@ -92,6 +108,7 @@ Pane.prototype.loadFile = function (filename) {
 Pane.prototype.resize = function (width, height) {
     this.width = width;
     this.height = height;
+    this.contentHeight = height - 3;
     this.layoutDirty = true;
     this.redrawIfNecessary();
 };
