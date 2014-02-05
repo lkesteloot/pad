@@ -1,6 +1,6 @@
 // Copyright 2014 Lawrence Kesteloot
 
-var LayoutLine = require("./layout_line").LayoutLine;
+var LayoutLine = require("./layout_line");
 
 var SimpleFormatter = function () {
 };
@@ -15,4 +15,4 @@ SimpleFormatter.prototype.format = function (buffer, layout) {
     layout.lines = lines;
 };
 
-exports.SimpleFormatter = SimpleFormatter;
+module.exports = SimpleFormatter;

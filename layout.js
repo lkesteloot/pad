@@ -24,4 +24,4 @@ Layout.prototype.drawLine = function (lineNumber, width) {
     }
 };
 
-exports.Layout = Layout;
+module.exports = Layout;

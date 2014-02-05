@@ -15,7 +15,7 @@ exports.stop = function () {
     process.stdin.setRawMode(false);
 };
 
-require("./window").Window.events.on("shutdown", exports.stop);
+require("./window").events.on("shutdown", exports.stop);
 
 // data is a Node Buffer object.
 var onData = function (data) {
@@ -24,7 +24,7 @@ var onData = function (data) {
     for (var i = 0; i < data.length; i++) {
         if (data[i] == 113) {
             // "q"
-            require("./window").Window.events.emit("shutdown");
+            require("./window").events.emit("shutdown");
         }
         // process.stdout.write(" " + data[i]);
     }

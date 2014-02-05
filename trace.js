@@ -35,7 +35,7 @@ var stopServer = function () {
     }
 };
 
-require("./window").Window.events.on("shutdown", stopServer);
+require("./window").events.on("shutdown", stopServer);
 
 exports.log = function (line) {
     if (gTracing) {

@@ -30,5 +30,5 @@ Buffer.prototype._parseFile = function (contents, callback) {
     callback();
 };
 
-exports.Buffer = Buffer;
+module.exports = Buffer;
 

@@ -1,9 +1,9 @@
 // Copyright 2014 Lawrence Kesteloot
 
-var Buffer = require("./buffer.js").Buffer;
-var Layout = require("./layout").Layout;
-var SimpleFormatter = require("./simple_formatter.js").SimpleFormatter;
-var WrappingFormatter = require("./wrapping_formatter.js").WrappingFormatter;
+var Buffer = require("./buffer.js");
+var Layout = require("./layout");
+var SimpleFormatter = require("./simple_formatter.js");
+var WrappingFormatter = require("./wrapping_formatter.js");
 var term = require("./term");
 
 var Pane = function (x, y, width, height) {
@@ -69,4 +69,4 @@ Pane.prototype.resize = function (width, height) {
     this.redraw();
 };
 
-exports.Pane = Pane;
+module.exports = Pane;

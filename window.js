@@ -1,9 +1,9 @@
 // Copyright 2014 Lawrence Kesteloot
 
 var events = require("events");
-var Pane = require("./pane.js").Pane;
+var Pane = require("./pane.js");
 
-exports.Window = function () {
+var Window = function () {
     this.width = -1;
     this.height = -1;
     this.panes = [];
@@ -14,7 +14,7 @@ exports.Window = function () {
     this.panes.push(new Pane(0, 0, this.width, this.height));
 };
 
-exports.Window.prototype.updateScreenSize = function () {
+Window.prototype.updateScreenSize = function () {
     var width = process.stdout.columns;
     var height = process.stdout.rows;
 
@@ -28,11 +28,13 @@ exports.Window.prototype.updateScreenSize = function () {
     }
 };
 
-exports.Window.events = new events.EventEmitter();
-exports.Window.events.on("shutdown", function () {
+Window.events = new events.EventEmitter();
+Window.events.on("shutdown", function () {
     console.log("Shutting DOWN!");
 });
 
 var onResize = function () {
     this.updateScreenSize();
 };
+
+module.exports = Window;

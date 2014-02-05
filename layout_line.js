@@ -31,4 +31,4 @@ LayoutLine.prototype.drawLine = function (width) {
     term.clearChars(width - this.text.length - this.indent);
 };
 
-exports.LayoutLine = LayoutLine
+module.exports = LayoutLine;
