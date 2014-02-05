@@ -6,6 +6,20 @@ var ViKeys = function () {
 
 ViKeys.prototype.onKey = function (key, pane) {
     switch (key) {
+        case 4: // ^D
+            var lineCount = Math.ceil(pane.height/2);
+            pane.cursorY += lineCount;
+            pane.topY += lineCount;
+            pane.redrawDirty = true;
+            break;
+
+        case 21: // ^U
+            var lineCount = Math.ceil(pane.height/2);
+            pane.cursorY -= lineCount;
+            pane.topY -= lineCount;
+            pane.redrawDirty = true;
+            break;
+
         case 48: // "0"
             if (this.count === undefined) {
                 pane.cursorX = 0;

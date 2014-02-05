@@ -100,11 +100,18 @@ Pane.prototype.onKey = function (key) {
     this.keys.onKey(key, this);
 
     // Clamp cursor to layout.
+    var layoutLineCount = this.layout.lines.length;
+    if (this.topY < 0) {
+        this.topY = 0;
+    }
+    if (this.topY > layoutLineCount - 1) {
+        this.topY = layoutLineCount - 1;
+    }
     if (this.cursorY < 0) {
         this.cursorY = 0;
     }
-    if (this.cursorY > this.layout.lines.length - 1) {
-        this.cursorY = this.layout.lines.length - 1;
+    if (this.cursorY > layoutLineCount - 1) {
+        this.cursorY = layoutLineCount - 1;
     }
     if (this.cursorX < 0) {
         this.cursorX = 0;
