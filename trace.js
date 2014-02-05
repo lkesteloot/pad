@@ -20,6 +20,8 @@ var startServer = function () {
             gLines = [];
         });
         gServer.listen(8124);
+
+        require("./window").events.on("shutdown", stopServer);
     }
 };
 
@@ -33,9 +35,9 @@ var stopServer = function () {
         gServer.close();
         gServer = null;
     }
-};
 
-require("./window").events.on("shutdown", stopServer);
+    require("./window").events.removeListener("shutdown", stopServer);
+};
 
 exports.log = function (line) {
     if (gTracing) {

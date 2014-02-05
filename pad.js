@@ -1,7 +1,7 @@
 // Copyright 2014 Lawrence Kesteloot
 
-var Window = require("./window.js");
-var input = require("./input.js");
+var Window = require("./window");
+var input = require("./input");
 
 if (process.argv.length <= 2) {
     console.log("usage: pad filename");

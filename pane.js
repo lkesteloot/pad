@@ -1,9 +1,9 @@
 // Copyright 2014 Lawrence Kesteloot
 
-var Buffer = require("./buffer.js");
+var Buffer = require("./buffer");
 var Layout = require("./layout");
-var SimpleFormatter = require("./simple_formatter.js");
-var WrappingFormatter = require("./wrapping_formatter.js");
+var SimpleFormatter = require("./simple_formatter");
+var WrappingFormatter = require("./wrapping_formatter");
 var term = require("./term");
 
 var Pane = function (x, y, width, height) {
@@ -11,14 +11,19 @@ var Pane = function (x, y, width, height) {
     this.y = y;
     this.width = width;
     this.height = height;
+    this.cursorX = 0; // In layout space.
+    this.cursorY = 0;
+    this.topY = 0; // Top of pane, in layout space.
     this.layout = new Layout();
     this.buffer = new Buffer();
     this.layoutDirty = true;
+    this.redrawDirty = true;
 };
 
 Pane.prototype.setBuffer = function (buffer) {
     this.buffer = buffer;
     this.layoutDirty = true;
+    this.redrawDirty = true;
 };
 
 Pane.prototype.reformatIfNecessary = function () {
@@ -29,16 +34,36 @@ Pane.prototype.reformatIfNecessary = function () {
     }
 };
 
-Pane.prototype.redraw = function () {
-    this.reformatIfNecessary();
+Pane.prototype.redrawIfNecessary = function () {
+    if (this.redrawDirty || this.layoutDirty) {
+        this.reformatIfNecessary();
 
-    for (var y = 0; y < this.height; y++) {
-        // Move to first position of line.
-        term.moveTo(this.x, this.y + y);
+        for (var y = 0; y < this.height; y++) {
+            // Move to first position of line.
+            term.moveTo(this.x, this.y + y);
 
-        // Draw our line.
-        this.layout.drawLine(y, this.width);
+            // Draw our line.
+            this.layout.drawLine(this.topY + y, this.width);
+        }
+
+        this.positionCursor();
+
+        this.redrawDirty = false;
     }
+};
+
+Pane.prototype.scrollToCursor = function () {
+    if (this.topY > this.cursorY) {
+        this.topY = this.cursorY;
+        this.redrawDirty = true;
+    } else if (this.topY < this.cursorY - (this.height - 1)) {
+        this.topY = this.cursorY - (this.height - 1);
+        this.redrawDirty = true;
+    }
+};
+
+Pane.prototype.positionCursor = function () {
+    term.moveTo(this.x + this.cursorX, this.y + this.cursorY - this.topY);
 };
 
 Pane.prototype.log = function () {
@@ -52,7 +77,7 @@ Pane.prototype.loadFile = function (filename) {
 
     buffer.readFile(filename, function () {
         self.setBuffer(buffer);
-        self.redraw();
+        self.redrawIfNecessary();
     }, function (err) {
         if (err.code === "ENOENT") {
             console.log("File not found: " + filename);
@@ -66,7 +91,42 @@ Pane.prototype.resize = function (width, height) {
     this.width = width;
     this.height = height;
     this.layoutDirty = true;
-    this.redraw();
+    this.redrawIfNecessary();
+};
+
+Pane.prototype.onKey = function (key) {
+    switch (key) {
+        case 106: // "j"
+            if (this.cursorY < this.layout.lines.length - 1) {
+                this.cursorY++;
+                this.scrollToCursor();
+                this.redrawIfNecessary();
+                this.positionCursor();
+            }
+            break;
+
+        case 107: // "k"
+            if (this.cursorY > 0) {
+                this.cursorY--;
+                this.scrollToCursor();
+                this.redrawIfNecessary();
+                this.positionCursor();
+            }
+            break;
+
+        case 71: // "G"
+            if (this.cursorY !== this.layout.lines.length - 1) {
+                this.cursorY = this.layout.lines.length - 1;
+                this.scrollToCursor();
+                this.redrawIfNecessary();
+                this.positionCursor();
+            }
+            break;
+
+        default:
+            // Ignore.
+            break;
+    }
 };
 
 module.exports = Pane;
