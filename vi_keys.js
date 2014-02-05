@@ -6,7 +6,7 @@ var ViKeys = function () {
 
 ViKeys.prototype.onKey = function (key, pane) {
     switch (key) {
-        case 48:
+        case 48: // "0"
             if (this.count === undefined) {
                 pane.cursorX = 0;
             } else {
@@ -14,7 +14,7 @@ ViKeys.prototype.onKey = function (key, pane) {
             }
             break;
 
-        case 49:
+        case 49: // "1" - "9"
         case 50:
         case 51:
         case 52:
@@ -29,6 +29,11 @@ ViKeys.prototype.onKey = function (key, pane) {
             this.count = this.count*10 + (key - 48);
             break;
 
+        case 104: // "h"
+            pane.cursorX -= (this.count || 1);
+            this.count = undefined;
+            break;
+
         case 106: // "j"
             pane.cursorY += (this.count || 1);
             this.count = undefined;
@@ -36,6 +41,11 @@ ViKeys.prototype.onKey = function (key, pane) {
 
         case 107: // "k"
             pane.cursorY -= (this.count || 1);
+            this.count = undefined;
+            break;
+
+        case 108: // "l"
+            pane.cursorX += (this.count || 1);
             this.count = undefined;
             break;
 

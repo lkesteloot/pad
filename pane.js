@@ -106,6 +106,13 @@ Pane.prototype.onKey = function (key) {
     if (this.cursorY > this.layout.lines.length - 1) {
         this.cursorY = this.layout.lines.length - 1;
     }
+    if (this.cursorX < 0) {
+        this.cursorX = 0;
+    }
+    var lineLength = this.layout.lines[this.cursorY].text.length;
+    if (this.cursorX > lineLength - 1) {
+        this.cursorX = lineLength - 1;
+    }
 
     this.scrollToCursor();
     this.redrawIfNecessary();
