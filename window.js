@@ -28,13 +28,13 @@ Window.prototype.updateScreenSize = function () {
     }
 };
 
-Window.events = new events.EventEmitter();
-Window.events.on("shutdown", function () {
-    console.log("Shutting DOWN!");
-});
-
 var onResize = function () {
     this.updateScreenSize();
 };
+
+Window.events = new events.EventEmitter();
+Window.events.on("shutdown", function () {
+    // Nothing.
+});
 
 module.exports = Window;
