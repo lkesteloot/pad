@@ -4,6 +4,7 @@ var Buffer = require("./buffer");
 var Layout = require("./layout");
 var SimpleFormatter = require("./simple_formatter");
 var WrappingFormatter = require("./wrapping_formatter");
+var ViKeys = require("./vi_keys");
 var term = require("./term");
 
 var Pane = function (x, y, width, height) {
@@ -16,6 +17,7 @@ var Pane = function (x, y, width, height) {
     this.topY = 0; // Top of pane, in layout space.
     this.layout = new Layout();
     this.buffer = new Buffer();
+    this.keys = new ViKeys();
     this.layoutDirty = true;
     this.redrawDirty = true;
 };
@@ -95,38 +97,19 @@ Pane.prototype.resize = function (width, height) {
 };
 
 Pane.prototype.onKey = function (key) {
-    switch (key) {
-        case 106: // "j"
-            if (this.cursorY < this.layout.lines.length - 1) {
-                this.cursorY++;
-                this.scrollToCursor();
-                this.redrawIfNecessary();
-                this.positionCursor();
-            }
-            break;
+    this.keys.onKey(key, this);
 
-        case 107: // "k"
-            if (this.cursorY > 0) {
-                this.cursorY--;
-                this.scrollToCursor();
-                this.redrawIfNecessary();
-                this.positionCursor();
-            }
-            break;
-
-        case 71: // "G"
-            if (this.cursorY !== this.layout.lines.length - 1) {
-                this.cursorY = this.layout.lines.length - 1;
-                this.scrollToCursor();
-                this.redrawIfNecessary();
-                this.positionCursor();
-            }
-            break;
-
-        default:
-            // Ignore.
-            break;
+    // Clamp cursor to layout.
+    if (this.cursorY < 0) {
+        this.cursorY = 0;
     }
+    if (this.cursorY > this.layout.lines.length - 1) {
+        this.cursorY = this.layout.lines.length - 1;
+    }
+
+    this.scrollToCursor();
+    this.redrawIfNecessary();
+    this.positionCursor();
 };
 
 module.exports = Pane;
