@@ -53,10 +53,6 @@ exports.ansiSequence = function (char, args) {
     write(char);
 };
 
-exports.styledText = function (str, styleFn) {
-    styleFn ? styleFn.call(this, str) : write(str);
-};
-
 codes = [
     {name: "moveUp",      code:"A"},
     {name: "moveDown",    code:"B"},
@@ -78,7 +74,7 @@ codes = [
 codes.map(function (code) {
     exports[code.name] = function (n) {
         if (!util.isArray(n)) { n = [n]; }
-        this.ansiSequence(code.code, code.map ? n.map(code.map) : n);
+        exports.ansiSequence(code.code, code.map ? n.map(code.map) : n);
     };
 });
 
@@ -90,7 +86,7 @@ var sgrCodes = [
     {name: "underline",               code: 4 },
     {name: "blink",                   code: 5 },
     {name: "blinkRapid",              code: 6 },
-    {name: "imageNegative",           code: 7 },
+    {name: "reverse",                 code: 7 },
     {name: "conceal",                 code: 8 },
     {name: "strikeout",               code: 9 },
     {name: "font",                    code: function (n) { return [10 + (Number(n)||0)];   }},
@@ -99,7 +95,7 @@ var sgrCodes = [
     {name: "italicOff",               code: 23},
     {name: "underlineOff",            code: 24},
     {name: "blinkOff",                code: 25},
-    {name: "imagePositive",           code: 27},
+    {name: "reverseOff",              code: 27},
     {name: "reveal",                  code: 28},
     {name: "strikeoutOff",            code: 29},
     {name: "legacyColor",             code: function (n)   { return [30 + (Number(n)||0)]; }},
@@ -117,7 +113,7 @@ var sgrCodes = [
 
 sgrCodes.map(function (code) {
     exports[code.name] = function (n) {
-        this.sgr(
+        exports.sgr(
             typeof code.code === 'function'
             ? code.code(n)
             : [code.code]
@@ -125,22 +121,23 @@ sgrCodes.map(function (code) {
     }
 });
 
+// Channels is either an [r,g,b] triple (with each component
+// from 0 to 5 inclusive) or a 256-color index.
 exports.rgb = function (channels, isBackground) {
-    this[isBackground ? 'backgroundColor' : 'color'](
+    exports[isBackground ? 'backgroundColor' : 'color'](
         util.isArray(channels)        // color value
-        ? this._rgb2dec(channels)     // [r,g,b] => dec
+        ? exports.rgb2dec(channels)     // [r,g,b] => dec
         : channels                    // dec
     );
 };
 
-// Private methods.
-exports._rgb2dec = function (channels) {
+exports.rgb2dec = function (channels) {
     return channels.reverse().reduce(function (dec, value, bit) {
         return dec + value * Math.pow(6, bit);
     }, 16);
 };
 
-exports._dec2rgb = function (dec) {
+exports.dec2rgb = function (dec) {
     return ("000" + dec.toString(6)).substr(-3, 3).split('').map(function (value) {
         return parseInt(value);
     });

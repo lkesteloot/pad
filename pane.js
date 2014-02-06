@@ -57,9 +57,9 @@ Pane.prototype.redrawIfNecessary = function () {
 
         // Draw status line.
         term.moveTo(this.x, this.contentHeight);
-        term.sgr(7);
+        term.reverse();
         term.write(this.generateStatusLine());
-        term.sgr(27);
+        term.reverseOff();
 
         term.moveTo(this.x, this.contentHeight + 1);
         term.clearChars(this.width);

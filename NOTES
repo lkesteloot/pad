@@ -1,10 +1,12 @@
 
 - To do
-    - Maybe rename Buffer since it's a built-in class of Node.
+    - Rename Buffer since it's a built-in class of Node.
+    - Add text modification.
+        - Insertion mode.
+        - Replace mode.
+        - Change mode.
     - Look at stdin.setEncoding().
-    - Why doesn't it redraw when resizing the shell window?
-        - We get the resize events but never get a chance to draw. They get queued up.
-        - Even the resize events get queued up. Is this just on the trace connection?
+        - We'd receive strings instead of Buffer.
     - When exiting, first move cursor to bottom of window.
 - Architecture
     - JavaScript in Node.js.

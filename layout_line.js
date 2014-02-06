@@ -26,7 +26,7 @@ LayoutLine.prototype.drawLine = function (width) {
 
     term.sgr(90);
     term.write(indent);
-    term.sgr(39);
+    term.defaultColor();
 
     term.write(this.text);
     term.clearChars(width - this.text.length - this.indent);

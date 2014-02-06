@@ -2,7 +2,7 @@
   "name": "pad",
   "version": "0.0.0",
   "description": "Text editor.",
-  "main": "pad.js",
+  "main": "pad",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
