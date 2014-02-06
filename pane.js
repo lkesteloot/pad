@@ -37,12 +37,13 @@ Pane.prototype.reformatIfNecessary = function () {
         var formatter = true ? new WrappingFormatter(this.width) : new SimpleFormatter();
         formatter.format(this.buffer, this.layout);
         this.layoutDirty = false;
+        this.redrawDirty = true;
     }
 };
 
 Pane.prototype.redrawIfNecessary = function () {
-    if (this.redrawDirty || this.layoutDirty) {
-        this.reformatIfNecessary();
+    this.reformatIfNecessary();
+    if (this.redrawDirty) {
         trace.log("Redrawing");
 
         term.hideCursor();
@@ -120,6 +121,9 @@ Pane.prototype.resize = function (width, height) {
 Pane.prototype.onKey = function (key) {
     this.keys.onKey(key, this);
 
+    // Reformat so that have proper line bounds.
+    this.reformatIfNecessary();
+
     // Clamp cursor to layout.
     var layoutLineCount = this.layout.lines.length;
     if (this.topY < 0) {
@@ -138,8 +142,10 @@ Pane.prototype.onKey = function (key) {
         this.cursorX = 0;
     }
     var lineLength = this.layout.lines[this.cursorY].text.length;
-    if (this.cursorX > lineLength - 1) {
-        this.cursorX = lineLength - 1;
+    if (this.cursorX > lineLength) {
+        // This is different than vi. Vi clamps to the last character, and we let it go
+        // past that. It's consistent with what happens on an empty line.
+        this.cursorX = lineLength;
     }
 
     this.scrollToCursor();
@@ -153,6 +159,41 @@ Pane.prototype.generateStatusLine = function () {
     line += strings.unexpandHome(this.filename);
 
     return line + strings.repeat(" ", this.width - line.length);
+};
+
+Pane.prototype.backspaceCharacter = function () {
+    var layoutLine = this.layout.lines[this.cursorY];
+    var layoutX = this.cursorX - layoutLine.indent;
+    if (layoutX < 0) {
+        // Shouldn't happen -- we're on an indent.
+        return;
+    }
+
+    var text = this.buffer.lines[layoutLine.bufferLineNumber];
+    var x = layoutX + layoutLine.bufferColumn;
+    if (x > 0) {
+        text = text.substring(0, x - 1) + text.substring(x);
+        this.buffer.lines[layoutLine.bufferLineNumber] = text;
+        this.cursorX--;
+        this.layoutDirty = true;
+    }
+};
+
+Pane.prototype.insertCharacter = function (ch) {
+    var layoutLine = this.layout.lines[this.cursorY];
+    var layoutX = this.cursorX - layoutLine.indent;
+    if (layoutX < 0) {
+        // Shouldn't happen -- we're on an indent.
+        return;
+    }
+
+    var text = this.buffer.lines[layoutLine.bufferLineNumber];
+    var x = layoutX + layoutLine.bufferColumn;
+    text = text.substring(0, x) + ch + text.substring(x);
+    this.buffer.lines[layoutLine.bufferLineNumber] = text;
+
+    this.cursorX++;
+    this.layoutDirty = true;
 };
 
 module.exports = Pane;

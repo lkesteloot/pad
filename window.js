@@ -38,12 +38,7 @@ var onResize = function () {
 };
 
 var onKey = function (key) {
-    if (key == 113) {
-        // "q"
-        Window.events.emit("shutdown");
-    } else {
-        this.panes[0].onKey(key);
-    }
+    this.panes[0].onKey(key);
 };
 
 Window.events = new events.EventEmitter();
