@@ -7,6 +7,7 @@ var WrappingFormatter = require("./wrapping_formatter");
 var ViKeys = require("./vi_keys");
 var term = require("./term");
 var trace = require("./trace");
+var strings = require("./strings");
 
 var Pane = function (x, y, width, height) {
     this.filename = "";
@@ -57,7 +58,7 @@ Pane.prototype.redrawIfNecessary = function () {
         // Draw status line.
         term.moveTo(this.x, this.contentHeight);
         term.setColor(7);
-        term.write(this.filename + (new Array(this.width - this.filename.length + 1).join(" ")));
+        term.write(this.generateStatusLine());
         term.moveTo(this.x, this.contentHeight + 1);
         term.setColor(0);
         term.clearChars(this.width);
@@ -144,6 +145,14 @@ Pane.prototype.onKey = function (key) {
     this.scrollToCursor();
     this.redrawIfNecessary();
     this.positionCursor();
+};
+
+Pane.prototype.generateStatusLine = function () {
+    var line = "";
+
+    line += strings.unexpandHome(this.filename);
+
+    return line + strings.repeat(" ", this.width - line.length);
 };
 
 module.exports = Pane;

@@ -1,6 +1,7 @@
 // Copyright 2014 Lawrence Kesteloot
 
 var term = require("./term");
+var strings = require("./strings");
 
 var LayoutLine = function (text, indent, bufferLineNumber, bufferColumn) {
     this.text = text || "";
@@ -21,7 +22,7 @@ LayoutLine.prototype.log = function () {
 };
 
 LayoutLine.prototype.drawLine = function (width) {
-    var indent = new Array(this.indent + 1).join(".");
+    var indent = strings.repeat(".", this.indent);
 
     term.setColor([30, 1]);
     term.write(indent);
