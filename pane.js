@@ -169,14 +169,14 @@ Pane.prototype.sanitizeAndRefresh = function () {
 };
 
 Pane.prototype.generateStatusLine = function () {
-    var line = "";
 
-    line += strings.unexpandHome(this.filename);
+
+    var left = strings.unexpandHome(this.filename);
     if (this.buffer.modified) {
-        line += " [+]";
+        left += " [+]";
     }
-
-    return line + strings.repeat(" ", this.width - line.length);
+    var right = this.keys.getStatus();
+    return left + strings.repeat(" ", this.width - left.length - right.length) + right;
 };
 
 Pane.prototype.backspaceCharacter = function () {
