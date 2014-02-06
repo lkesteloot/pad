@@ -97,16 +97,26 @@ Pane.prototype.loadFile = function (filename) {
     var buffer = new Buffer();
     var self = this;
 
-    buffer.readFile(filename, function () {
-        self.filename = filename;
-        self.setBuffer(buffer);
-        self.redrawIfNecessary();
-    }, function (err) {
-        if (err.code === "ENOENT") {
-            console.log("File not found: " + filename);
+    buffer.readFile(filename, function (err) {
+        if (err) {
+            if (err.code === "ENOENT") {
+                console.log("File not found: " + filename);
+            } else {
+                console.log("Error loading file: " + err);
+            }
         } else {
-            console.log("Error loading file: " + err);
+            self.filename = filename;
+            self.setBuffer(buffer);
+            self.redrawIfNecessary();
         }
+    });
+};
+
+Pane.prototype.saveFile = function () {
+    this.buffer.saveFile(this.filename, function (err) {
+        // XXX check err.
+        // Update the status line:
+        this.redrawDirty = true;
     });
 };
 
@@ -157,6 +167,9 @@ Pane.prototype.generateStatusLine = function () {
     var line = "";
 
     line += strings.unexpandHome(this.filename);
+    if (this.buffer.modified) {
+        line += " [+]";
+    }
 
     return line + strings.repeat(" ", this.width - line.length);
 };
@@ -176,6 +189,7 @@ Pane.prototype.backspaceCharacter = function () {
         this.buffer.lines[layoutLine.bufferLineNumber] = text;
         this.cursorX--;
         this.layoutDirty = true;
+        this.buffer.modified = true;
     }
 };
 
@@ -194,6 +208,7 @@ Pane.prototype.insertCharacter = function (ch) {
 
     this.cursorX++;
     this.layoutDirty = true;
+    this.buffer.modified = true;
 };
 
 module.exports = Pane;

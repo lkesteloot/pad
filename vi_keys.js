@@ -30,7 +30,7 @@ ViKeys.prototype.handleNormalKey = function (key, pane) {
             pane.redrawDirty = true;
             break;
 
-        case 11: // ^L
+        case 12: // ^L
             pane.redrawDirty = true;
             break;
 
@@ -99,6 +99,10 @@ ViKeys.prototype.handleNormalKey = function (key, pane) {
 
         case 113: // "q"
             require("./window").events.emit("shutdown");
+            break;
+
+        case 119: // "w"
+            pane.saveFile();
             break;
 
         default:
