@@ -213,14 +213,24 @@ Pane.prototype.insertCharacter = function (ch) {
         return;
     }
 
-    var text = this.buffer.lines[layoutLine.bufferLineNumber];
+    var bufferLineNumber = layoutLine.bufferLineNumber;
+    var text = this.buffer.lines[bufferLineNumber];
     var x = layoutX + layoutLine.bufferColumn;
-    text = text.substring(0, x) + ch + text.substring(x);
-    this.buffer.lines[layoutLine.bufferLineNumber] = text;
+    var beforeCursor = text.substring(0, x)
+    var afterCursor = text.substring(x)
+    if (ch === "\n" || ch === "\r") {
+        this.buffer.insertLine(bufferLineNumber + 1);
+        this.buffer.setLine(bufferLineNumber, beforeCursor);
+        this.buffer.setLine(bufferLineNumber + 1, afterCursor);
+        this.cursorY++;
+        this.cursorX = 0;
+    } else {
+        text = beforeCursor + ch + afterCursor;
+        this.buffer.setLine(layoutLine.bufferLineNumber, text);
+        this.cursorX++;
+    }
 
-    this.cursorX++;
     this.layoutDirty = true;
-    this.buffer.modified = true;
 };
 
 module.exports = Pane;

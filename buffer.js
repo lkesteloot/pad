@@ -46,6 +46,11 @@ Buffer.prototype.setLine = function (lineNumber, text) {
     }
 };
 
+Buffer.prototype.insertLine = function (lineNumber) {
+    this.lines.splice(lineNumber, 0, "");
+    this.modified = true;
+};
+
 // Merge the specified line with the next one.
 Buffer.prototype.mergeLines = function (lineNumber) {
     if (lineNumber < this.lines.length - 1) {
