@@ -13,6 +13,10 @@ ViKeys.prototype.onKey = function (key, pane) {
             pane.redrawDirty = true;
             break;
 
+        case 11: // ^L
+            pane.redrawDirty = true;
+            break;
+
         case 21: // ^U
             var lineCount = Math.ceil(pane.contentHeight/2);
             pane.cursorY -= lineCount;

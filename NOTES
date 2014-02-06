@@ -1,6 +1,5 @@
 
 - To do
-    - Hide cursor when redrawing.
     - Read this: http://nodejs.org/api/process.html
     - Read source of "jetty" module.
     - Maybe rename Buffer since it's a built-in class of Node.

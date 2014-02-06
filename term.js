@@ -27,3 +27,7 @@ exports.clearChars = function (count) {
 exports.setColor = function (colors) {
     writeCsi(colors, "m");
 }
+
+exports.setCursorVisibility = function (visibility) {
+    write(CSI + "?25" + (visibility ? "h" : "l"));
+}

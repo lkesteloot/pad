@@ -44,6 +44,8 @@ Pane.prototype.redrawIfNecessary = function () {
         this.reformatIfNecessary();
         trace.log("Redrawing");
 
+        term.setCursorVisibility(false);
+
         for (var y = 0; y < this.contentHeight; y++) {
             // Move to first position of line.
             term.moveTo(this.x, this.y + y);
@@ -64,6 +66,7 @@ Pane.prototype.redrawIfNecessary = function () {
         term.clearChars(this.width);
 
         this.positionCursor();
+        term.setCursorVisibility(true);
 
         this.redrawDirty = false;
     }
