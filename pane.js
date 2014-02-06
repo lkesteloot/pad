@@ -192,9 +192,10 @@ Pane.prototype.backspaceCharacter = function () {
     if (x === 0) {
         // Backspacing at front of line, merge lines.
         if (layoutLine.bufferLineNumber > 0) {
-            this.buffer.mergeLines(layoutLine.bufferLineNumber);
+            var previousLineLength = this.buffer.lines[layoutLine.bufferLineNumber - 1].length;
+            this.buffer.mergeLines(layoutLine.bufferLineNumber - 1);
             this.cursorY--;
-            this.cursorX = 99999;
+            this.cursorX = previousLineLength;
             this.layoutDirty = true;
         }
     } else {
