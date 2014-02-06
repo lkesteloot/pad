@@ -112,11 +112,14 @@ Pane.prototype.loadFile = function (filename) {
     });
 };
 
-Pane.prototype.saveFile = function () {
+Pane.prototype.saveFile = function (callback) {
+    var self = this;
+
     this.buffer.saveFile(this.filename, function (err) {
         // XXX check err.
         // Update the status line:
-        this.redrawDirty = true;
+        self.redrawDirty = true;
+        callback();
     });
 };
 
@@ -129,8 +132,10 @@ Pane.prototype.resize = function (width, height) {
 };
 
 Pane.prototype.onKey = function (key) {
-    this.keys.onKey(key, this);
+    this.keys.onKey(key, this, this.sanitizeAndRefresh.bind(this));
+};
 
+Pane.prototype.sanitizeAndRefresh = function () {
     // Reformat so that have proper line bounds.
     this.reformatIfNecessary();
 

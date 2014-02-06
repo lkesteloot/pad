@@ -1,6 +1,7 @@
 // Copyright 2014 Lawrence Kesteloot
 
 var fs = require("fs");
+var trace = require("./trace");
 
 var Buffer = function () {
     this.lines = [];

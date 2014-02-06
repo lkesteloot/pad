@@ -1,6 +1,5 @@
 
 - To do
-    - Add buffer saving.
     - Rename Buffer since it's a built-in class of Node.
     - Look at stdin.setEncoding().
         - We'd receive strings instead of Buffer.

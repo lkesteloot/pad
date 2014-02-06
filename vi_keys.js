@@ -9,19 +9,22 @@ var ViKeys = function () {
     this.mode = MODE_NORMAL;
 };
 
-ViKeys.prototype.onKey = function (key, pane) {
+ViKeys.prototype.onKey = function (key, pane, callback) {
     switch (this.mode) {
         case MODE_NORMAL:
-            this.handleNormalKey(key, pane);
+            this.handleNormalKey(key, pane, callback);
             break;
 
         case MODE_INSERT:
-            this.handleInsertKey(key, pane);
+            this.handleInsertKey(key, pane, callback);
             break;
+
+        default:
+            throw new Error("Unknown mode " + this.mode);
     }
 };
 
-ViKeys.prototype.handleNormalKey = function (key, pane) {
+ViKeys.prototype.handleNormalKey = function (key, pane, callback) {
     switch (key) {
         case 4: // ^D
             var lineCount = Math.ceil(pane.contentHeight/2);
@@ -102,16 +105,18 @@ ViKeys.prototype.handleNormalKey = function (key, pane) {
             break;
 
         case 119: // "w"
-            pane.saveFile();
-            break;
+            pane.saveFile(callback);
+            return;
 
         default:
             // Ignore.
             break;
     }
+
+    process.nextTick(callback);
 };
 
-ViKeys.prototype.handleInsertKey = function (key, pane) {
+ViKeys.prototype.handleInsertKey = function (key, pane, callback) {
     if (key === 27) {
         // Exit insert mode.
         this.mode = MODE_NORMAL;
@@ -122,6 +127,8 @@ ViKeys.prototype.handleInsertKey = function (key, pane) {
     } else {
         pane.insertCharacter(String.fromCharCode(key));
     }
+
+    process.nextTick(callback);
 };
 
 module.exports = ViKeys;
