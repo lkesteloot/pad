@@ -189,12 +189,19 @@ Pane.prototype.backspaceCharacter = function () {
 
     var text = this.buffer.lines[layoutLine.bufferLineNumber];
     var x = layoutX + layoutLine.bufferColumn;
-    if (x > 0) {
+    if (x === 0) {
+        // Backspacing at front of line, merge lines.
+        if (layoutLine.bufferLineNumber > 0) {
+            this.buffer.mergeLines(layoutLine.bufferLineNumber);
+            this.cursorY--;
+            this.cursorX = 99999;
+            this.layoutDirty = true;
+        }
+    } else {
         text = text.substring(0, x - 1) + text.substring(x);
-        this.buffer.lines[layoutLine.bufferLineNumber] = text;
+        this.buffer.setLine(layoutLine.bufferLineNumber, text);
         this.cursorX--;
         this.layoutDirty = true;
-        this.buffer.modified = true;
     }
 };
 

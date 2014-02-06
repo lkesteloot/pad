@@ -39,6 +39,22 @@ Buffer.prototype.saveFile = function (filename, callback) {
     });
 };
 
+Buffer.prototype.setLine = function (lineNumber, text) {
+    if (this.lines[lineNumber] !== text) {
+        this.lines[lineNumber] = text;
+        this.modified = true;
+    }
+};
+
+// Merge the specified line with the next one.
+Buffer.prototype.mergeLines = function (lineNumber) {
+    if (lineNumber < this.lines.length - 1) {
+        this.lines[lineNumber] += this.lines[lineNumber + 1];
+        this.lines.splice(lineNumber + 1, 1);
+        this.modified = true;
+    }
+};
+
 Buffer.prototype._parseFile = function (contents) {
     // Strip trailing \n.
     if (contents.length > 0 && contents.substring(contents.length - 1) === "\n") {
