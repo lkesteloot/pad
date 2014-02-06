@@ -1,7 +1,5 @@
 
 - To do
-    - Read this: http://nodejs.org/api/process.html
-    - Read source of "jetty" module.
     - Maybe rename Buffer since it's a built-in class of Node.
     - Look at stdin.setEncoding().
     - Why doesn't it redraw when resizing the shell window?
@@ -69,6 +67,10 @@
         - Also keeps parallel 32-bit array, which is 0 if the 8-bit value should be used.
         - Parallel array of 16-bit attributes.
         - Array index by line that specifies index in above three arrays.
+    - Should we use streaming (event-based) or non-streaming (read-based) reading
+        from stdin? If event-based, we don't have any control over when the keys
+        are handled. If read-based, we could have a main loop that reads one
+        character at a time in a controlled way.
 - Plugins
     - See how done in Emacs
     - See how done in jEdit: http://www.jedit.org/

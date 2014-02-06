@@ -45,7 +45,7 @@ Pane.prototype.redrawIfNecessary = function () {
         this.reformatIfNecessary();
         trace.log("Redrawing");
 
-        term.setCursorVisibility(false);
+        term.hideCursor();
 
         for (var y = 0; y < this.contentHeight; y++) {
             // Move to first position of line.
@@ -57,17 +57,17 @@ Pane.prototype.redrawIfNecessary = function () {
 
         // Draw status line.
         term.moveTo(this.x, this.contentHeight);
-        term.setColor(7);
+        term.sgr(7);
         term.write(this.generateStatusLine());
+        term.sgr(27);
+
         term.moveTo(this.x, this.contentHeight + 1);
-        term.setColor(0);
         term.clearChars(this.width);
         term.moveTo(this.x, this.contentHeight + 2);
-        term.setColor(0);
         term.clearChars(this.width);
 
         this.positionCursor();
-        term.setCursorVisibility(true);
+        term.showCursor();
 
         this.redrawDirty = false;
     }

@@ -24,9 +24,9 @@ LayoutLine.prototype.log = function () {
 LayoutLine.prototype.drawLine = function (width) {
     var indent = strings.repeat(".", this.indent);
 
-    term.setColor([30, 1]);
+    term.sgr(90);
     term.write(indent);
-    term.setColor([37, 0]);
+    term.sgr(39);
 
     term.write(this.text);
     term.clearChars(width - this.text.length - this.indent);
