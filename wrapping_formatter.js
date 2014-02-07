@@ -8,21 +8,33 @@ var WrappingFormatter = function (wrapWidth) {
 
 WrappingFormatter.prototype.format = function (doc, layout) {
     var lines = [];
-    var self = this;
+    var buffer = doc.buffer;
 
-    doc.lines.forEach(function (docLine, lineNumber) {
-        var column = 0;
-        var subsequentIndent = docLine.match(/^ */)[0].length + 8;
+    var addLine = function (start, end, hasEol) {
+        var text = buffer.toString("utf8", start, end);
+        lines.push(new LayoutLine(text, 0, hasEol, start));
+    };
 
-        do {
-            var subtext = docLine.substring(0, self.wrapWidth);
-            var indent = column == 0 ? 0 : subsequentIndent;
-            lines.push(new LayoutLine(subtext, indent, lineNumber, column));
+    var startOfLine = null;
+    for (var i = 0; i < buffer.length; i++) {
+        if (startOfLine === null) {
+            startOfLine = i;
+        }
 
-            column += self.wrapWidth;
-            docLine = docLine.substring(self.wrapWidth);
-        } while (docLine != "");
-    });
+        if (i - startOfLine >= this.wrapWidth) {
+            addLine(startOfLine, i, false);
+            // Don't lose current character.
+            i--;
+            startOfLine = null;
+        } else if (buffer[i] === 10) {
+            addLine(startOfLine, i, true);
+            startOfLine = null;
+        }
+    }
+
+    if (startOfLine !== null) {
+        addLine(startOfLine, buffer.length, false);
+    }
 
     layout.lines = lines;
 };

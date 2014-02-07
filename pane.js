@@ -24,6 +24,7 @@ var Pane = function (x, y, width, height) {
     this.keys = new ViKeys();
     this.layoutDirty = true;
     this.redrawDirty = true;
+    this.desiredDocIndex = null;
 };
 
 Pane.prototype.setDoc = function (doc) {
@@ -139,6 +140,17 @@ Pane.prototype.sanitizeAndRefresh = function () {
     // Reformat so that have proper line bounds.
     this.reformatIfNecessary();
 
+    if (this.desiredDocIndex !== null) {
+        var layoutPosition = this.layout.docIndexToLayoutPosition(this.desiredDocIndex);
+        if (layoutPosition === null) {
+            trace.log("Can't find layout position for doc index " + this.desiredDocIndex);
+        } else {
+            this.cursorX = layoutPosition.layoutLine.indent + layoutPosition.offset;
+            this.cursorY = layoutPosition.lineNumber;
+        }
+        this.desiredDocIndex = null;
+    }
+
     // Clamp cursor to layout.
     var layoutLineCount = this.layout.lines.length;
     if (this.topY < 0) {
@@ -187,21 +199,10 @@ Pane.prototype.backspaceCharacter = function () {
         return;
     }
 
-    var text = this.doc.lines[layoutLine.docLineNumber];
-    var x = layoutX + layoutLine.docColumn;
-    if (x === 0) {
-        // Backspacing at front of line, merge lines.
-        if (layoutLine.docLineNumber > 0) {
-            var previousLineLength = this.doc.lines[layoutLine.docLineNumber - 1].length;
-            this.doc.mergeLines(layoutLine.docLineNumber - 1);
-            this.cursorY--;
-            this.cursorX = previousLineLength;
-            this.layoutDirty = true;
-        }
-    } else {
-        text = text.substring(0, x - 1) + text.substring(x);
-        this.doc.setLine(layoutLine.docLineNumber, text);
-        this.cursorX--;
+    var docIndex = layoutLine.docIndex + layoutX;
+    if (docIndex > 0) {
+        this.doc.deleteCharacter(docIndex - 1);
+        this.desiredDocIndex = docIndex - 1;
         this.layoutDirty = true;
     }
 };
@@ -214,23 +215,9 @@ Pane.prototype.insertCharacter = function (ch) {
         return;
     }
 
-    var docLineNumber = layoutLine.docLineNumber;
-    var text = this.doc.lines[docLineNumber];
-    var x = layoutX + layoutLine.docColumn;
-    var beforeCursor = text.substring(0, x)
-    var afterCursor = text.substring(x)
-    if (ch === "\n" || ch === "\r") {
-        this.doc.insertLine(docLineNumber + 1);
-        this.doc.setLine(docLineNumber, beforeCursor);
-        this.doc.setLine(docLineNumber + 1, afterCursor);
-        this.cursorY++;
-        this.cursorX = 0;
-    } else {
-        text = beforeCursor + ch + afterCursor;
-        this.doc.setLine(layoutLine.docLineNumber, text);
-        this.cursorX++;
-    }
-
+    var docIndex = layoutLine.docIndex + layoutX;
+    this.doc.insertCharacter(docIndex, ch);
+    this.desiredDocIndex = docIndex + 1;
     this.layoutDirty = true;
 };
 

@@ -92,6 +92,8 @@
             - Wouldn't allow run-time plugins. It's all bundled into one file.
     - Periodically save state of all tiles and buffers. If process is killed, offer
         a way to restore it all, like Chrome does with tabs.
+    - As you're editing HTML/CSS, the changes are pushed to the browser without requiring
+        reload. See brackets.io.
 - Nice things
     - When typing pathname of file to load, correct errors.
     - When typing pathname of file to create, create directories (with permission).
@@ -126,6 +128,7 @@
     - vim
     - sam
         - http://plan9.bell-labs.com/sys/doc/sam/sam.html
+    - Bracket.
 - Community
     - Website for plugins.
     - Could we just use "npm install" like grunt does?

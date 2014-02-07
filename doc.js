@@ -4,20 +4,19 @@ var fs = require("fs");
 var trace = require("./trace");
 
 var Doc = function () {
-    this.lines = [];
+    this.buffer = new Buffer(0);
     this.modified = false;
 };
 
 Doc.prototype.readFile = function (filename, callback) {
     var self = this;
 
-    fs.readFile(filename, {
-        encoding: "utf8"
-    }, function (err, contents) {
+    fs.readFile(filename, function (err, contents) {
         if (err) {
             callback(err);
         } else {
-            self._parseFile(contents);
+            self.buffer = contents;
+            self.modified = false;
             callback();
         }
     });
@@ -26,8 +25,7 @@ Doc.prototype.readFile = function (filename, callback) {
 Doc.prototype.saveFile = function (filename, callback) {
     var self = this;
 
-    var data = this.lines.join("\n") + "\n";
-    fs.writeFile(filename, data, {
+    fs.writeFile(filename, this.buffer, {
         encoding: "utf8"
     }, function (err) {
         if (err) {
@@ -37,6 +35,21 @@ Doc.prototype.saveFile = function (filename, callback) {
             callback();
         }
     });
+};
+
+Doc.prototype.insertCharacter = function (index, ch) {
+    this.buffer = Buffer.concat([
+        this.buffer.slice(0, index),
+        new Buffer(ch),
+        this.buffer.slice(index)], this.buffer.length + 1);
+    this.modified = true;
+};
+
+Doc.prototype.deleteCharacter = function (index) {
+    this.buffer = Buffer.concat([
+        this.buffer.slice(0, index),
+        this.buffer.slice(index + 1)], this.buffer.length - 1);
+    this.modified = true;
 };
 
 Doc.prototype.setLine = function (lineNumber, text) {
@@ -60,15 +73,4 @@ Doc.prototype.mergeLines = function (lineNumber) {
     }
 };
 
-Doc.prototype._parseFile = function (contents) {
-    // Strip trailing \n.
-    if (contents.length > 0 && contents.substring(contents.length - 1) === "\n") {
-        contents = contents.substring(0, contents.length - 1);
-    }
-
-    this.lines = contents.split("\n");
-    this.modified = false;
-};
-
 module.exports = Doc;
-

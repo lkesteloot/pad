@@ -127,6 +127,11 @@ ViKeys.prototype.handleInsertKey = function (key, pane, callback) {
     } else if (key == 8 || key == 127) {
         pane.backspaceCharacter();
     } else {
+        // Convert \r to \n.
+        if (key === 13) {
+            key = 10;
+        }
+
         pane.insertCharacter(String.fromCharCode(key));
     }
 
