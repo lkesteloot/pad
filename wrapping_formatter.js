@@ -6,22 +6,22 @@ var WrappingFormatter = function (wrapWidth) {
     this.wrapWidth = wrapWidth;
 };
 
-WrappingFormatter.prototype.format = function (buffer, layout) {
+WrappingFormatter.prototype.format = function (doc, layout) {
     var lines = [];
     var self = this;
 
-    buffer.lines.forEach(function (bufferLine, lineNumber) {
+    doc.lines.forEach(function (docLine, lineNumber) {
         var column = 0;
-        var subsequentIndent = bufferLine.match(/^ */)[0].length + 8;
+        var subsequentIndent = docLine.match(/^ */)[0].length + 8;
 
         do {
-            var subtext = bufferLine.substring(0, self.wrapWidth);
+            var subtext = docLine.substring(0, self.wrapWidth);
             var indent = column == 0 ? 0 : subsequentIndent;
             lines.push(new LayoutLine(subtext, indent, lineNumber, column));
 
             column += self.wrapWidth;
-            bufferLine = bufferLine.substring(self.wrapWidth);
-        } while (bufferLine != "");
+            docLine = docLine.substring(self.wrapWidth);
+        } while (docLine != "");
     });
 
     layout.lines = lines;

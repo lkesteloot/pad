@@ -3,11 +3,11 @@
 var term = require("./term");
 var strings = require("./strings");
 
-var LayoutLine = function (text, indent, bufferLineNumber, bufferColumn) {
+var LayoutLine = function (text, indent, docLineNumber, docColumn) {
     this.text = text || "";
     this.indent = indent || 0;
-    this.bufferLineNumber = bufferLineNumber || 0;
-    this.bufferColumn = bufferColumn || 0;
+    this.docLineNumber = docLineNumber || 0;
+    this.docColumn = docColumn || 0;
 };
 
 LayoutLine.prototype.log = function () {

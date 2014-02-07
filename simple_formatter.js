@@ -5,11 +5,11 @@ var LayoutLine = require("./layout_line");
 var SimpleFormatter = function () {
 };
 
-SimpleFormatter.prototype.format = function (buffer, layout) {
+SimpleFormatter.prototype.format = function (doc, layout) {
     var lines = [];
 
-    buffer.lines.forEach(function (bufferLine, lineNumber) {
-        lines.push(new LayoutLine(bufferLine, 0, lineNumber, 0));
+    doc.lines.forEach(function (docLine, lineNumber) {
+        lines.push(new LayoutLine(docLine, 0, lineNumber, 0));
     });
 
     layout.lines = lines;

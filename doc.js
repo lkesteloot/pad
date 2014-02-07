@@ -3,12 +3,12 @@
 var fs = require("fs");
 var trace = require("./trace");
 
-var Buffer = function () {
+var Doc = function () {
     this.lines = [];
     this.modified = false;
 };
 
-Buffer.prototype.readFile = function (filename, callback) {
+Doc.prototype.readFile = function (filename, callback) {
     var self = this;
 
     fs.readFile(filename, {
@@ -23,7 +23,7 @@ Buffer.prototype.readFile = function (filename, callback) {
     });
 };
 
-Buffer.prototype.saveFile = function (filename, callback) {
+Doc.prototype.saveFile = function (filename, callback) {
     var self = this;
 
     var data = this.lines.join("\n") + "\n";
@@ -39,20 +39,20 @@ Buffer.prototype.saveFile = function (filename, callback) {
     });
 };
 
-Buffer.prototype.setLine = function (lineNumber, text) {
+Doc.prototype.setLine = function (lineNumber, text) {
     if (this.lines[lineNumber] !== text) {
         this.lines[lineNumber] = text;
         this.modified = true;
     }
 };
 
-Buffer.prototype.insertLine = function (lineNumber) {
+Doc.prototype.insertLine = function (lineNumber) {
     this.lines.splice(lineNumber, 0, "");
     this.modified = true;
 };
 
 // Merge the specified line with the next one.
-Buffer.prototype.mergeLines = function (lineNumber) {
+Doc.prototype.mergeLines = function (lineNumber) {
     if (lineNumber < this.lines.length - 1) {
         this.lines[lineNumber] += this.lines[lineNumber + 1];
         this.lines.splice(lineNumber + 1, 1);
@@ -60,7 +60,7 @@ Buffer.prototype.mergeLines = function (lineNumber) {
     }
 };
 
-Buffer.prototype._parseFile = function (contents) {
+Doc.prototype._parseFile = function (contents) {
     // Strip trailing \n.
     if (contents.length > 0 && contents.substring(contents.length - 1) === "\n") {
         contents = contents.substring(0, contents.length - 1);
@@ -70,5 +70,5 @@ Buffer.prototype._parseFile = function (contents) {
     this.modified = false;
 };
 
-module.exports = Buffer;
+module.exports = Doc;
 

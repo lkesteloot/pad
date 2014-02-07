@@ -1,6 +1,6 @@
 // Copyright 2014 Lawrence Kesteloot
 
-var Buffer = require("./buffer");
+var Doc = require("./doc");
 var Layout = require("./layout");
 var SimpleFormatter = require("./simple_formatter");
 var WrappingFormatter = require("./wrapping_formatter");
@@ -20,14 +20,14 @@ var Pane = function (x, y, width, height) {
     this.cursorY = 0;
     this.topY = 0; // Top of pane, in layout space.
     this.layout = new Layout();
-    this.buffer = new Buffer();
+    this.doc = new Doc();
     this.keys = new ViKeys();
     this.layoutDirty = true;
     this.redrawDirty = true;
 };
 
-Pane.prototype.setBuffer = function (buffer) {
-    this.buffer = buffer;
+Pane.prototype.setDoc = function (doc) {
+    this.doc = doc;
     this.layoutDirty = true;
     this.redrawDirty = true;
 };
@@ -35,7 +35,7 @@ Pane.prototype.setBuffer = function (buffer) {
 Pane.prototype.reformatIfNecessary = function () {
     if (this.layoutDirty) {
         var formatter = true ? new WrappingFormatter(this.width) : new SimpleFormatter();
-        formatter.format(this.buffer, this.layout);
+        formatter.format(this.doc, this.layout);
         this.layoutDirty = false;
         this.redrawDirty = true;
     }
@@ -94,10 +94,10 @@ Pane.prototype.log = function () {
 };
 
 Pane.prototype.loadFile = function (filename) {
-    var buffer = new Buffer();
+    var doc = new Doc();
     var self = this;
 
-    buffer.readFile(filename, function (err) {
+    doc.readFile(filename, function (err) {
         if (err) {
             if (err.code === "ENOENT") {
                 console.log("File not found: " + filename);
@@ -106,7 +106,7 @@ Pane.prototype.loadFile = function (filename) {
             }
         } else {
             self.filename = filename;
-            self.setBuffer(buffer);
+            self.setDoc(doc);
             self.redrawIfNecessary();
         }
     });
@@ -115,7 +115,7 @@ Pane.prototype.loadFile = function (filename) {
 Pane.prototype.saveFile = function (callback) {
     var self = this;
 
-    this.buffer.saveFile(this.filename, function (err) {
+    this.doc.saveFile(this.filename, function (err) {
         // XXX check err.
         // Update the status line:
         self.redrawDirty = true;
@@ -172,7 +172,7 @@ Pane.prototype.generateStatusLine = function () {
 
 
     var left = strings.unexpandHome(this.filename);
-    if (this.buffer.modified) {
+    if (this.doc.modified) {
         left += " [+]";
     }
     var right = this.keys.getStatus();
@@ -187,20 +187,20 @@ Pane.prototype.backspaceCharacter = function () {
         return;
     }
 
-    var text = this.buffer.lines[layoutLine.bufferLineNumber];
-    var x = layoutX + layoutLine.bufferColumn;
+    var text = this.doc.lines[layoutLine.docLineNumber];
+    var x = layoutX + layoutLine.docColumn;
     if (x === 0) {
         // Backspacing at front of line, merge lines.
-        if (layoutLine.bufferLineNumber > 0) {
-            var previousLineLength = this.buffer.lines[layoutLine.bufferLineNumber - 1].length;
-            this.buffer.mergeLines(layoutLine.bufferLineNumber - 1);
+        if (layoutLine.docLineNumber > 0) {
+            var previousLineLength = this.doc.lines[layoutLine.docLineNumber - 1].length;
+            this.doc.mergeLines(layoutLine.docLineNumber - 1);
             this.cursorY--;
             this.cursorX = previousLineLength;
             this.layoutDirty = true;
         }
     } else {
         text = text.substring(0, x - 1) + text.substring(x);
-        this.buffer.setLine(layoutLine.bufferLineNumber, text);
+        this.doc.setLine(layoutLine.docLineNumber, text);
         this.cursorX--;
         this.layoutDirty = true;
     }
@@ -214,20 +214,20 @@ Pane.prototype.insertCharacter = function (ch) {
         return;
     }
 
-    var bufferLineNumber = layoutLine.bufferLineNumber;
-    var text = this.buffer.lines[bufferLineNumber];
-    var x = layoutX + layoutLine.bufferColumn;
+    var docLineNumber = layoutLine.docLineNumber;
+    var text = this.doc.lines[docLineNumber];
+    var x = layoutX + layoutLine.docColumn;
     var beforeCursor = text.substring(0, x)
     var afterCursor = text.substring(x)
     if (ch === "\n" || ch === "\r") {
-        this.buffer.insertLine(bufferLineNumber + 1);
-        this.buffer.setLine(bufferLineNumber, beforeCursor);
-        this.buffer.setLine(bufferLineNumber + 1, afterCursor);
+        this.doc.insertLine(docLineNumber + 1);
+        this.doc.setLine(docLineNumber, beforeCursor);
+        this.doc.setLine(docLineNumber + 1, afterCursor);
         this.cursorY++;
         this.cursorX = 0;
     } else {
         text = beforeCursor + ch + afterCursor;
-        this.buffer.setLine(layoutLine.bufferLineNumber, text);
+        this.doc.setLine(layoutLine.docLineNumber, text);
         this.cursorX++;
     }
 

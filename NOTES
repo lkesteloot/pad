@@ -1,7 +1,12 @@
 
 - To do
     - Warn when quitting without saving.
-    - Rename Buffer since it's a built-in class of Node.
+    - Add $ and A to make inserting lines easier.
+    - Get more formal about the four spaces:
+        - Buffer space.
+        - Layout space.
+        - Pane space.
+        - Screen space.
     - Look at stdin.setEncoding().
         - We'd receive strings instead of Buffer.
     - When exiting, first move cursor to bottom of window.
@@ -117,8 +122,10 @@
         - http://www.chrismennie.ca/EMACS-Conceptual-Architecture.pdf
     - jEdit
         - http://www.jedit.org/api/index.html
-        - Uses gap buffer internal. (Array of char.)
+        - Uses gap buffer internally. (Array of char.)
     - vim
+    - sam
+        - http://plan9.bell-labs.com/sys/doc/sam/sam.html
 - Community
     - Website for plugins.
     - Could we just use "npm install" like grunt does?
