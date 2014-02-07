@@ -83,6 +83,10 @@ ViKeys.prototype.handleNormalKey = function (key, pane, callback) {
             }
             break;
 
+        case 88: // "X"
+            pane.backspaceCharacter();
+            break;
+
         case 104: // "h"
             pane.cursorX -= (this.count || 1);
             this.count = undefined;
@@ -114,6 +118,10 @@ ViKeys.prototype.handleNormalKey = function (key, pane, callback) {
         case 119: // "w"
             pane.saveFile(callback);
             return;
+
+        case 120: // "x"
+            pane.deleteCharacter();
+            break;
 
         case 123: // "{"
             while (pane.cursorY > 0) {

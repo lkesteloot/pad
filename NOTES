@@ -1,5 +1,7 @@
 
 - To do
+    - Think about wrapped lines where the wrapping doesn't happen on a space.
+        - What does it mean to go to the end of the line ($)?
     - Look at zsh and others to see what functions they permit to be bound to keys.
     - Play with brackets to get ideas and look through code.
         - How do they implement the editor?

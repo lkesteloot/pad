@@ -18,6 +18,7 @@ var Pane = function (x, y, width, height) {
     this.contentHeight = height - 3;
     this.cursorX = 0; // In layout space.
     this.cursorY = 0;
+    this.docIndex = 0;
     this.topY = 0; // Top of pane, in layout space.
     this.layout = new Layout();
     this.doc = new Doc();
@@ -181,12 +182,24 @@ Pane.prototype.sanitizeAndRefresh = function () {
     if (this.cursorX < 0) {
         this.cursorX = 0;
     }
-    var lineLength = this.layout.lines[this.cursorY].text.length;
-    if (this.cursorX > lineLength) {
+    var layoutLine = this.layout.lines[this.cursorY];
+    if (this.cursorX < layoutLine.indent) {
+        this.cursorX = layoutLine.indent;
+    }
+    var lineLength = layoutLine.text.length;
+    if (this.cursorX > layoutLine.indent + lineLength) {
         // This is different than vi. Vi clamps to the last character, and we let it go
         // past that. It's consistent with what happens on an empty line.
-        this.cursorX = lineLength;
+        this.cursorX = layoutLine.indent + lineLength;
     }
+
+    // Find the location in the doc.
+    var layoutX = this.cursorX - layoutLine.indent;
+    if (layoutX < 0) {
+        // Shouldn't happen -- we're on an indent.
+        throw new Error("Cursor was on indent");
+    }
+    this.docIndex = layoutLine.docIndex + layoutX;
 
     this.scrollToCursor();
     this.redrawIfNecessary();
@@ -205,32 +218,22 @@ Pane.prototype.generateStatusLine = function () {
 };
 
 Pane.prototype.backspaceCharacter = function () {
-    var layoutLine = this.layout.lines[this.cursorY];
-    var layoutX = this.cursorX - layoutLine.indent;
-    if (layoutX < 0) {
-        // Shouldn't happen -- we're on an indent.
-        return;
-    }
-
-    var docIndex = layoutLine.docIndex + layoutX;
-    if (docIndex > 0) {
-        this.doc.deleteCharacter(docIndex - 1);
-        this.desiredDocIndex = docIndex - 1;
+    if (this.docIndex > 0) {
+        this.doc.deleteCharacter(this.docIndex - 1);
+        this.desiredDocIndex = this.docIndex - 1;
         this.layoutDirty = true;
     }
 };
 
-Pane.prototype.insertCharacter = function (ch) {
-    var layoutLine = this.layout.lines[this.cursorY];
-    var layoutX = this.cursorX - layoutLine.indent;
-    if (layoutX < 0) {
-        // Shouldn't happen -- we're on an indent.
-        return;
-    }
+Pane.prototype.deleteCharacter = function () {
+    this.doc.deleteCharacter(this.docIndex);
+    this.desiredDocIndex = this.docIndex;
+    this.layoutDirty = true;
+};
 
-    var docIndex = layoutLine.docIndex + layoutX;
-    this.doc.insertCharacter(docIndex, ch);
-    this.desiredDocIndex = docIndex + 1;
+Pane.prototype.insertCharacter = function (ch) {
+    this.doc.insertCharacter(this.docIndex, ch);
+    this.desiredDocIndex = this.docIndex + 1;
     this.layoutDirty = true;
 };
 
