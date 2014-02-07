@@ -47,6 +47,10 @@ ViKeys.prototype.handleNormalKey = function (key, pane, callback) {
             pane.redrawDirty = true;
             break;
 
+        case 36: // "$"
+            pane.cursorX = 99999;
+            break;
+
         case 48: // "0"
             if (this.count === undefined) {
                 pane.cursorX = 0;
@@ -110,6 +114,26 @@ ViKeys.prototype.handleNormalKey = function (key, pane, callback) {
         case 119: // "w"
             pane.saveFile(callback);
             return;
+
+        case 123: // "{"
+            while (pane.cursorY > 0) {
+                pane.cursorY--;
+                if (pane.layout.lines[pane.cursorY].text.match(/^ *$/)) {
+                    break;
+                }
+            }
+            pane.cursorX = 0;
+            break;
+
+        case 125: // "}"
+            while (pane.cursorY < pane.layout.lines.length - 1) {
+                pane.cursorY++;
+                if (pane.layout.lines[pane.cursorY].text.match(/^ *$/)) {
+                    break;
+                }
+            }
+            pane.cursorX = 0;
+            break;
 
         default:
             // Ignore.
