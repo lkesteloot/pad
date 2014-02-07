@@ -1,21 +1,24 @@
 // Copyright 2014 Lawrence Kesteloot
 
-var MODE_NORMAL = 0;
-var MODE_INSERT = 1;
-var MODE_REPLACE = 2;
+var events = require("events");
 
 var ViKeys = function () {
     this.count = undefined;
-    this.mode = MODE_NORMAL;
+    this.events = new events.EventEmitter();
+    this.setMode(ViKeys.MODE_NORMAL);
 };
+
+ViKeys.MODE_NORMAL = 0;
+ViKeys.MODE_INSERT = 1;
+ViKeys.MODE_REPLACE = 2;
 
 ViKeys.prototype.onKey = function (key, pane, callback) {
     switch (this.mode) {
-        case MODE_NORMAL:
+        case ViKeys.MODE_NORMAL:
             this.handleNormalKey(key, pane, callback);
             break;
 
-        case MODE_INSERT:
+        case ViKeys.MODE_INSERT:
             this.handleInsertKey(key, pane, callback);
             break;
 
@@ -82,7 +85,7 @@ ViKeys.prototype.handleNormalKey = function (key, pane, callback) {
             break;
 
         case 105: // "i"
-            this.mode = MODE_INSERT;
+            this.setMode(ViKeys.MODE_INSERT);
             pane.redrawDirty = true;
             break;
 
@@ -120,7 +123,7 @@ ViKeys.prototype.handleNormalKey = function (key, pane, callback) {
 ViKeys.prototype.handleInsertKey = function (key, pane, callback) {
     if (key === 27) {
         // Exit insert mode.
-        this.mode = MODE_NORMAL;
+        this.setMode(ViKeys.MODE_NORMAL);
         // XXX Look at this.count and repeat the insert that many times.
         this.count = undefined;
         pane.redrawDirty = true;
@@ -140,12 +143,17 @@ ViKeys.prototype.handleInsertKey = function (key, pane, callback) {
 
 ViKeys.prototype.getStatus = function () {
     switch (this.mode) {
-        case MODE_NORMAL:
+        case ViKeys.MODE_NORMAL:
             return "";
 
-        case MODE_INSERT:
+        case ViKeys.MODE_INSERT:
             return "INSERT";
     }
+};
+
+ViKeys.prototype.setMode = function (mode) {
+    this.mode = mode;
+    this.events.emit("mode");
 };
 
 module.exports = ViKeys;

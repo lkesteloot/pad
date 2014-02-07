@@ -2,13 +2,6 @@
 - To do
     - Warn when quitting without saving.
     - Add $ and A to make inserting lines easier.
-    - Get more formal about the four spaces:
-        - Buffer space.
-        - Layout space.
-        - Pane space.
-        - Screen space.
-    - Look at stdin.setEncoding().
-        - We'd receive strings instead of Buffer.
     - When exiting, first move cursor to bottom of window.
 - Architecture
     - JavaScript in Node.js.
@@ -94,6 +87,9 @@
         a way to restore it all, like Chrome does with tabs.
     - As you're editing HTML/CSS, the changes are pushed to the browser without requiring
         reload. See brackets.io.
+    - Use iTerm2-specific escape codes.
+        - Check $TERM_PROGRAM.
+        - https://code.google.com/p/iterm2/wiki/ProprietaryEscapeCodes
 - Nice things
     - When typing pathname of file to load, correct errors.
     - When typing pathname of file to create, create directories (with permission).

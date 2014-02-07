@@ -12,6 +12,20 @@ exports.moveTo = function (x, y) {
     exports.ansiSequence("H", [y + 1, x + 1]);
 };
 
+// The following are iTerm2-only.
+
+exports.blockCursor = function () {
+    write("\u001B]50;CursorShape=0\u0007");
+};
+
+exports.barCursor = function () {
+    write("\u001B]50;CursorShape=1\u0007");
+};
+
+exports.underlineCursor = function () {
+    write("\u001B]50;CursorShape=2\u0007");
+};
+
 // Remainder is mostly copied from the "jetty" package by Conrad Pankoff. Changes
 // include adding "X" command, renaming "colour" to "color", and making methods
 // direct functions that write to stdout. Its license is as follows:

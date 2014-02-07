@@ -22,6 +22,7 @@ var Pane = function (x, y, width, height) {
     this.layout = new Layout();
     this.doc = new Doc();
     this.keys = new ViKeys();
+    this.keys.events.on("mode", Pane.prototype.onKeysModeChange.bind(this));
     this.layoutDirty = true;
     this.redrawDirty = true;
     this.desiredDocIndex = null;
@@ -89,9 +90,21 @@ Pane.prototype.positionCursor = function () {
     term.moveTo(this.x + this.cursorX, this.y + this.cursorY - this.topY);
 };
 
-Pane.prototype.log = function () {
-    this.reformatIfNecessary();
-    this.layout.log();
+Pane.prototype.onKeysModeChange = function () {
+    switch (this.keys.mode) {
+        case ViKeys.MODE_NORMAL:
+        default:
+            term.blockCursor();
+            break;
+
+        case ViKeys.MODE_INSERT:
+            term.barCursor();
+            break;
+
+        case ViKeys.MODE_REPLACE:
+            term.underlineCursor();
+            break;
+    }
 };
 
 Pane.prototype.loadFile = function (filename) {
@@ -181,13 +194,13 @@ Pane.prototype.sanitizeAndRefresh = function () {
 };
 
 Pane.prototype.generateStatusLine = function () {
-
-
     var left = strings.unexpandHome(this.filename);
     if (this.doc.modified) {
         left += " [+]";
     }
+
     var right = this.keys.getStatus();
+
     return left + strings.repeat(" ", this.width - left.length - right.length) + right;
 };
 
