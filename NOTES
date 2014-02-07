@@ -1,5 +1,8 @@
 
 - To do
+    - Look at zsh and others to see what functions they permit to be bound to keys.
+    - Play with brackets to get ideas and look through code.
+        - How do they implement the editor?
     - Warn when quitting without saving.
     - Add $ and A to make inserting lines easier.
     - When exiting, first move cursor to bottom of window.

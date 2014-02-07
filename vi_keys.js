@@ -86,7 +86,6 @@ ViKeys.prototype.handleNormalKey = function (key, pane, callback) {
 
         case 105: // "i"
             this.setMode(ViKeys.MODE_INSERT);
-            pane.redrawDirty = true;
             break;
 
         case 106: // "j"
@@ -126,7 +125,6 @@ ViKeys.prototype.handleInsertKey = function (key, pane, callback) {
         this.setMode(ViKeys.MODE_NORMAL);
         // XXX Look at this.count and repeat the insert that many times.
         this.count = undefined;
-        pane.redrawDirty = true;
     } else if (key == 8 || key == 127) {
         pane.backspaceCharacter();
     } else {

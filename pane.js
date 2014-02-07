@@ -199,7 +199,7 @@ Pane.prototype.generateStatusLine = function () {
         left += " [+]";
     }
 
-    var right = this.keys.getStatus();
+    var right = "";
 
     return left + strings.repeat(" ", this.width - left.length - right.length) + right;
 };
