@@ -25,12 +25,13 @@ var Window = function () {
     input.events.on("key", this.onKey.bind(this));
 
     this.events.on("shutdown", function () {
-        // This doesn't work. The cursor doesn't move. Maybe it's not being flushed and
-        // we need to wait for the "drain" event. No that's not the problem, it's returning
-        // true.
-        var flushed = term.moveTo(0, this.height - 1);
-        input.stop();
-        trace.stopServer();
+        // Need to wait until the rest of our code runs, which would put the cursor right
+        // back where it belongs.
+        setTimeout(function () {
+            term.moveTo(0, this.height - 1);
+            input.stop();
+            trace.stopServer();
+        }.bind(this), 0);
     }.bind(this));
 };
 

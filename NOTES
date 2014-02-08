@@ -22,7 +22,6 @@
         - How do they implement the editor?
         - How do they do syntax highlighting?
     - Warn when quitting without saving.
-    - When exiting, move cursor to bottom of window.
 - Architecture
     - JavaScript in Node.js.
     - When loading file:
