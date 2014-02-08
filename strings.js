@@ -1,5 +1,7 @@
 // Copyright 2014 Lawrence Kesteloot
 
+"use strict";
+
 exports.startsWith = function (text, prefix) {
     return text.substring(0, prefix.length) === prefix;
 };

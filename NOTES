@@ -1,12 +1,21 @@
 
 - To do
+    - Implement command line.
+        - Initial commands:
+            - Quit (q).
+            - Write (w).
+            - Exit (x).
+        - Could make it ex-like, or could make it a JS line.
+            - Would need functions for things:
+                - q()
+                - w()
+                - x()
+            - Could add () and parameters if no parens on line.
     - Think about wrapped lines where the wrapping doesn't happen on a space.
         - What does it mean to go to the end of the line ($)?
-    - Look at zsh and others to see what functions they permit to be bound to keys.
     - Play with brackets to get ideas and look through code.
         - How do they implement the editor?
     - Warn when quitting without saving.
-    - Add $ and A to make inserting lines easier.
     - When exiting, first move cursor to bottom of window.
 - Architecture
     - JavaScript in Node.js.

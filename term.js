@@ -1,5 +1,7 @@
 // Copyright 2014 Lawrence Kesteloot
 
+"use strict";
+
 var ESC = String.fromCharCode(27);
 var CSI = ESC + "[";
 
@@ -67,7 +69,7 @@ exports.ansiSequence = function (char, args) {
     write(char);
 };
 
-codes = [
+var codes = [
     {name: "moveUp",      code:"A"},
     {name: "moveDown",    code:"B"},
     {name: "moveLeft",    code:"C"},

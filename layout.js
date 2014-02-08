@@ -1,5 +1,7 @@
 // Copyright 2014 Lawrence Kesteloot
 
+"use strict";
+
 var term = require("./term");
 
 var Layout = function () {

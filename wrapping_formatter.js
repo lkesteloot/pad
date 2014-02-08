@@ -1,5 +1,7 @@
 // Copyright 2014 Lawrence Kesteloot
 
+"use strict";
+
 var LayoutLine = require("./layout_line");
 
 var WrappingFormatter = function (wrapWidth) {

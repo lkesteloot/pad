@@ -1,5 +1,7 @@
 // Copyright 2014 Lawrence Kesteloot
 
+"use strict";
+
 var util = require("util");
 var events = require("events");
 var trace = require("./trace");

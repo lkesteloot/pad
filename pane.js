@@ -1,5 +1,7 @@
 // Copyright 2014 Lawrence Kesteloot
 
+"use strict";
+
 var Doc = require("./doc");
 var Layout = require("./layout");
 var SimpleFormatter = require("./simple_formatter");

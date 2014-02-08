@@ -1,5 +1,7 @@
 // Copyright 2014 Lawrence Kesteloot
 
+"use strict";
+
 var events = require("events");
 
 var ViKeys = function () {
@@ -169,16 +171,6 @@ ViKeys.prototype.handleInsertKey = function (key, pane, callback) {
     }
 
     process.nextTick(callback);
-};
-
-ViKeys.prototype.getStatus = function () {
-    switch (this.mode) {
-        case ViKeys.MODE_NORMAL:
-            return "";
-
-        case ViKeys.MODE_INSERT:
-            return "INSERT";
-    }
 };
 
 ViKeys.prototype.setMode = function (mode) {

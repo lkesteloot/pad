@@ -1,5 +1,7 @@
 // Copyright 2014 Lawrence Kesteloot
 
+"use strict";
+
 var fs = require("fs");
 var trace = require("./trace");
 

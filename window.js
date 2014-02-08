@@ -1,5 +1,7 @@
 // Copyright 2014 Lawrence Kesteloot
 
+"use strict";
+
 var events = require("events");
 var Pane = require("./pane");
 var input = require("./input");
