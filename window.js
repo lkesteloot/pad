@@ -6,18 +6,32 @@ var events = require("events");
 var Pane = require("./pane");
 var input = require("./input");
 var trace = require("./trace");
+var term = require("./term");
 
 var Window = function () {
+    // Singleton.
+    Window.instance = this;
+
     this.width = -1;
     this.height = -1;
     this.panes = [];
+    this.events = new events.EventEmitter();
 
-    process.stdout.on("resize", onResize.bind(this));
+    process.stdout.on("resize", this.onResize.bind(this));
     this.updateScreenSize();
 
     this.panes.push(new Pane(0, 0, this.width, this.height)); //Math.floor(this.height/4)));
 
-    input.events.on("key", onKey.bind(this));
+    input.events.on("key", this.onKey.bind(this));
+
+    this.events.on("shutdown", function () {
+        // This doesn't work. The cursor doesn't move. Maybe it's not being flushed and
+        // we need to wait for the "drain" event. No that's not the problem, it's returning
+        // true.
+        var flushed = term.moveTo(0, this.height - 1);
+        input.stop();
+        trace.stopServer();
+    }.bind(this));
 };
 
 Window.prototype.updateScreenSize = function () {
@@ -35,20 +49,12 @@ Window.prototype.updateScreenSize = function () {
     }
 };
 
-var onResize = function () {
+Window.prototype.onResize = function () {
     this.updateScreenSize();
 };
 
-var onKey = function (key) {
+Window.prototype.onKey = function (key) {
     this.panes[0].onKey(key);
 };
-
-Window.events = new events.EventEmitter();
-Window.events.on("shutdown", function () {
-    // Nothing.
-});
-Window.events.on("key", function (key) {
-    // Nothing.
-});
 
 module.exports = Window;

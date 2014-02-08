@@ -22,12 +22,10 @@ var startServer = function () {
             gLines = [];
         });
         gServer.listen(8124);
-
-        require("./window").events.on("shutdown", stopServer);
     }
 };
 
-var stopServer = function () {
+exports.stopServer = function () {
     if (gConnection !== null) {
         gConnection.end();
         gConnection = null;
@@ -37,8 +35,6 @@ var stopServer = function () {
         gServer.close();
         gServer = null;
     }
-
-    require("./window").events.removeListener("shutdown", stopServer);
 };
 
 exports.log = function (line) {

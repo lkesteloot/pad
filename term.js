@@ -6,12 +6,12 @@ var ESC = String.fromCharCode(27);
 var CSI = ESC + "[";
 
 var write = function (text) {
-    process.stdout.write(text);
+    return process.stdout.write(text);
 };
 exports.write = write;
 
 exports.moveTo = function (x, y) {
-    exports.ansiSequence("H", [y + 1, x + 1]);
+    return exports.ansiSequence("H", [y + 1, x + 1]);
 };
 
 // The following are iTerm2-only.
@@ -66,7 +66,7 @@ exports.ansiSequence = function (char, args) {
     if (args && args.length) {
         write(args.join(";"));
     }
-    write(char);
+    return write(char);
 };
 
 var codes = [

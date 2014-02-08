@@ -3,6 +3,7 @@
 "use strict";
 
 var events = require("events");
+var trace = require("./trace");
 
 var ViKeys = function () {
     this.count = undefined;
@@ -114,7 +115,7 @@ ViKeys.prototype.handleNormalKey = function (key, pane, callback) {
             break;
 
         case 113: // "q"
-            require("./window").events.emit("shutdown");
+            require("./window").instance.events.emit("shutdown");
             break;
 
         case 119: // "w"

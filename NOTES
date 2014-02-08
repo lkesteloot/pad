@@ -11,12 +11,18 @@
                 - w()
                 - x()
             - Could add () and parameters if no parens on line.
+            - No, too hacky, not possible to do special things like filename completion.
+        - Could make them menus:
+            - Colon or semicolon pops up menu.
+                - Menu has list of items, can hit letter to run it.
+                - Items can have sub-menus or prompts.
     - Think about wrapped lines where the wrapping doesn't happen on a space.
         - What does it mean to go to the end of the line ($)?
     - Play with brackets to get ideas and look through code.
         - How do they implement the editor?
+        - How do they do syntax highlighting?
     - Warn when quitting without saving.
-    - When exiting, first move cursor to bottom of window.
+    - When exiting, move cursor to bottom of window.
 - Architecture
     - JavaScript in Node.js.
     - When loading file:

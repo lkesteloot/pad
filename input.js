@@ -12,14 +12,12 @@ exports.start = function () {
     process.stdin.setRawMode(true);
     process.stdin.resume();
     process.stdin.on("data", onData);
-    require("./window").events.on("shutdown", exports.stop);
 };
 
 exports.stop = function () {
     process.stdin.removeListener("data", onData);
     process.stdin.pause();
     process.stdin.setRawMode(false);
-    require("./window").events.removeListener("shutdown", exports.stop);
 };
 
 // data is a Node Buffer object.
