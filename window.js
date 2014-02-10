@@ -2,8 +2,8 @@
 
 "use strict";
 
-var events = require("events");
 var Pane = require("./pane");
+var StatusPane = require("./status_pane");
 var input = require("./input");
 var trace = require("./trace");
 var term = require("./term");
@@ -13,7 +13,6 @@ var Window = function () {
     this.height = -1;
     this.panes = [];
     this.activePane = 0;
-    this.events = new events.EventEmitter();
 
     process.stdout.on("resize", this.onResize.bind(this));
     this.updateScreenSize();
@@ -22,6 +21,9 @@ var Window = function () {
     this.panes.push(new Pane(this, 0, 0, this.width, half));
     this.panes.push(new Pane(this, 0, half, this.width, this.height - 1 - half));
     this.panes[this.activePane].setFocus(true);
+
+    this.statusPane = new StatusPane(this, 0, this.height - 1, this.width);
+    this.statusPaneActive = false;
 
     input.events.on("key", this.onKey.bind(this));
 };
@@ -52,7 +54,11 @@ Window.prototype.onResize = function () {
 };
 
 Window.prototype.onKey = function (key) {
-    this.panes[this.activePane].onKey(key);
+    if (this.statusPaneActive) {
+        this.statusPane.onKey(key);
+    } else {
+        this.panes[this.activePane].onKey(key);
+    }
 };
 
 Window.prototype.nextPane = function () {
@@ -61,6 +67,12 @@ Window.prototype.nextPane = function () {
         this.activePane = (this.activePane + 1) % this.panes.length;
         this.panes[this.activePane].setFocus(true);
     }
+};
+
+Window.prototype.activateStatusPane = function () {
+    this.panes[this.activePane].setFocus(false);
+    this.statusPaneActive = true;
+    this.statusPane.setFocus(true);
 };
 
 module.exports = Window;

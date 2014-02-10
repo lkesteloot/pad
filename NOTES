@@ -1,10 +1,20 @@
 
 - To do
-    - When : or ; is pressed:
-        - Show : below status bar, move cursor there.
-        - Have simple input system. Maybe model as a one-line pane.
-        - When <enter> is pressed, evaluate as JS.
+    - Every class should have start() and stop() methods (or whatever) to register and
+        unregister listeners.
+    - Command line:
+        - Subclass pane:
+            - No status bar.
+            - Can't insert newline.
+            - On newline, execute text.
+            - New kind of formatter that has a ":" in front, can't reach it.
+            - Backspace at front of line cancels.
+            - If not focus, don't show anything.
+        - When : or ; is pressed:
+            - Change focus to command pane.
+            - Clear buffer, redraw.
         - Make functions "q()" and "w()" available.
+        - Formatter also can show errors from previous line.
     - Think about wrapped lines where the wrapping doesn't happen on a space.
         - What does it mean to go to the end of the line ($)?
     - Play with brackets to get ideas and look through code.

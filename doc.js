@@ -27,18 +27,17 @@ Doc.prototype.readFile = function (filename, callback) {
 };
 
 Doc.prototype.saveFile = function (callback) {
-    var self = this;
-
     fs.writeFile(this.filename, this.buffer, {
         encoding: "utf8"
     }, function (err) {
         if (err) {
             callback(err);
         } else {
-            self.modified = false;
+            this.modified = false;
+            this.events.emit("modified");
             callback();
         }
-    });
+    }.bind(this));
 };
 
 Doc.prototype.insertCharacter = function (index, ch) {
@@ -46,7 +45,7 @@ Doc.prototype.insertCharacter = function (index, ch) {
         this.buffer.slice(0, index),
         new Buffer(ch),
         this.buffer.slice(index)], this.buffer.length + 1);
-    this.events.emit("modified");
+    this.events.emit("change");
     this.modified = true;
 };
 
@@ -54,7 +53,7 @@ Doc.prototype.deleteCharacter = function (index) {
     this.buffer = Buffer.concat([
         this.buffer.slice(0, index),
         this.buffer.slice(index + 1)], this.buffer.length - 1);
-    this.events.emit("modified");
+    this.events.emit("change");
     this.modified = true;
 };
 

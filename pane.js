@@ -18,7 +18,7 @@ var Pane = function (window, x, y, width, height) {
     this.width = width;
     this.height = height;
     this.hasFocus = false;
-    this.contentHeight = height - 1;
+    this.contentHeight = this.hasStatusLine() ? height - 1 : height;
     this.cursorX = 0; // In layout space.
     this.cursorY = 0;
     this.docIndex = 0;
@@ -33,12 +33,17 @@ var Pane = function (window, x, y, width, height) {
     this.queueRedraw();
 };
 
+Pane.prototype.hasStatusLine = function () {
+    return true;
+};
+
 Pane.prototype.queueRedraw = function () {
     setTimeout(this.sanitizeAndRefresh.bind(this), 0);
 };
 
 Pane.prototype.setDoc = function (doc) {
     this.doc = doc;
+    this.doc.events.on("change", this.onDocModified.bind(this));
     this.doc.events.on("modified", this.onDocModified.bind(this));
     this.layoutDirty = true;
     this.queueRedraw();
@@ -81,10 +86,12 @@ Pane.prototype.redrawIfNecessary = function () {
         }
 
         // Draw status line.
-        term.moveTo(this.x, this.y + this.contentHeight);
-        term.reverse();
-        term.write(this.generateStatusLine());
-        term.reverseOff();
+        if (this.hasStatusLine()) {
+            term.moveTo(this.x, this.y + this.contentHeight);
+            term.reverse();
+            term.write(this.generateStatusLine());
+            term.reverseOff();
+        }
 
         if (this.hasFocus) {
             this.positionCursor();
