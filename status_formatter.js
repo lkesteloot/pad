@@ -2,7 +2,7 @@
 
 "use strict";
 
-var StatusLayoutLine = require("./status_layout_line");
+var StatusLine = require("./status_line");
 
 var StatusFormatter = function () {
 };
@@ -10,7 +10,7 @@ var StatusFormatter = function () {
 StatusFormatter.prototype.format = function (doc, layout) {
     var text = doc.buffer.toString("utf8");
     var lines = [
-        new StatusLayoutLine(text),
+        new StatusLine(text),
     ];
 
     layout.lines = lines;

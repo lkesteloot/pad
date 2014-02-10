@@ -2,7 +2,6 @@
 - To do
     - Every class should have start() and stop() methods (or whatever) to register and
         unregister listeners.
-    - Rename layout_line to line.
     - Command line:
         - Subclass pane:
             - No status bar.

@@ -2,7 +2,7 @@
 
 "use strict";
 
-var LayoutLine = require("./layout_line");
+var Line = require("./line");
 
 var SimpleFormatter = function () {
 };
@@ -13,7 +13,7 @@ SimpleFormatter.prototype.format = function (doc, layout) {
 
     var addLine = function (start, end, hasEol) {
         var text = buffer.toString("utf8", start, end);
-        lines.push(new LayoutLine(text, 0, hasEol, start));
+        lines.push(new Line(text, 0, hasEol, start));
     };
 
     var startOfLine = null;

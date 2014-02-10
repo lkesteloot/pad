@@ -5,7 +5,7 @@
 var term = require("./term");
 
 var Layout = function () {
-    // Array of LayoutLine objects.
+    // Array of Line objects.
     this.lines = [];
 };
 
@@ -19,10 +19,10 @@ Layout.prototype.drawLine = function (lineNumber, width) {
 };
 
 /**
- * Finds the LayoutLine for a given docIndex (offset into a doc buffer). Returns an object with
+ * Finds the Line for a given docIndex (offset into a doc buffer). Returns an object with
  * the following fields:
  *
- *     layoutLine: the LayoutLine object for the line containing the index.
+ *     layoutLine: the Line object for the line containing the index.
  *     lineNumber: the line number of the layout line.
  *     offset: the offset into the layout line, after indentation.
  *

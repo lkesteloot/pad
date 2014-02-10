@@ -2,7 +2,7 @@
 
 "use strict";
 
-var LayoutLine = require("./layout_line");
+var Line = require("./line");
 
 var WrappingFormatter = function (wrapWidth) {
     this.wrapWidth = wrapWidth;
@@ -14,7 +14,7 @@ WrappingFormatter.prototype.format = function (doc, layout) {
 
     var addLine = function (start, end, indent, hasEol) {
         var text = buffer.toString("utf8", start, end);
-        lines.push(new LayoutLine(text, indent, hasEol, start));
+        lines.push(new Line(text, indent, hasEol, start));
     };
 
     var startOfLine = null;
