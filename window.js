@@ -64,11 +64,3 @@ Window.prototype.nextPane = function () {
 };
 
 module.exports = Window;
-
-/*
-
-        term.moveTo(this.x, this.contentHeight + 1);
-        term.clearChars(this.width);
-        term.moveTo(this.x, this.contentHeight + 2);
-        term.clearChars(this.width);
-        */

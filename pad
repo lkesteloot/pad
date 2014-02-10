@@ -12,6 +12,8 @@ if (process.argv.length <= 2) {
     var window = new Window();
     var filename = process.argv[2];
     var pathname = path.resolve(filename);
-    window.panes[0].loadFile(pathname);
+    window.panes[0].loadFile(pathname, function () {
+        window.panes[1].setDoc(window.panes[0].doc);
+    });
     input.start();
 }

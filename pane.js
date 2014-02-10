@@ -13,7 +13,6 @@ var strings = require("./strings");
 
 var Pane = function (window, x, y, width, height) {
     this.window = window;
-    this.filename = "";
     this.x = x;
     this.y = y;
     this.width = width;
@@ -25,19 +24,29 @@ var Pane = function (window, x, y, width, height) {
     this.docIndex = 0;
     this.topY = 0; // Top of pane, in layout space.
     this.layout = new Layout();
-    this.doc = new Doc();
+    this.setDoc(new Doc());
     this.keys = new ViKeys();
     this.keys.events.on("mode", Pane.prototype.onKeysModeChange.bind(this));
     this.layoutDirty = true;
     this.redrawDirty = true;
     this.desiredDocIndex = null;
+    this.queueRedraw();
+};
+
+Pane.prototype.queueRedraw = function () {
     setTimeout(this.sanitizeAndRefresh.bind(this), 0);
 };
 
 Pane.prototype.setDoc = function (doc) {
     this.doc = doc;
+    this.doc.events.on("modified", this.onDocModified.bind(this));
     this.layoutDirty = true;
-    this.redrawDirty = true;
+    this.queueRedraw();
+};
+
+Pane.prototype.onDocModified = function () {
+    this.layoutDirty = true;
+    this.sanitizeAndRefresh();
 };
 
 Pane.prototype.setFocus = function (hasFocus) {
@@ -117,7 +126,7 @@ Pane.prototype.onKeysModeChange = function () {
     }
 };
 
-Pane.prototype.loadFile = function (filename) {
+Pane.prototype.loadFile = function (filename, callback) {
     var doc = new Doc();
     var self = this;
 
@@ -129,9 +138,11 @@ Pane.prototype.loadFile = function (filename) {
                 console.log("Error loading file: " + err);
             }
         } else {
-            self.filename = filename;
             self.setDoc(doc);
             self.redrawIfNecessary();
+            if (callback) {
+                callback();
+            }
         }
     });
 };
@@ -139,7 +150,7 @@ Pane.prototype.loadFile = function (filename) {
 Pane.prototype.saveFile = function (callback) {
     var self = this;
 
-    this.doc.saveFile(this.filename, function (err) {
+    this.doc.saveFile(function (err) {
         // XXX check err.
         // Update the status line:
         self.redrawDirty = true;
@@ -212,15 +223,17 @@ Pane.prototype.sanitizeAndRefresh = function () {
 
     this.scrollToCursor();
     this.redrawIfNecessary();
-    this.positionCursor();
+    if (this.hasFocus) {
+        this.positionCursor();
+    }
 };
 
 Pane.prototype.generateStatusLine = function () {
     var left;
-    if (this.filename === "") {
+    if (this.doc.filename === "") {
         left = "[No Name]";
     } else {
-        left = strings.unexpandHome(this.filename);
+        left = strings.unexpandHome(this.doc.filename);
     }
     if (this.doc.modified) {
         left += " [+]";
