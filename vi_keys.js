@@ -77,6 +77,10 @@ ViKeys.prototype.handleNormalKey = function (key, pane, callback) {
             this.count = this.count*10 + (key - 48);
             break;
 
+        case 58: ":"
+        case 59: ";"
+            break;
+
         case 71: // "G"
             if (this.count === undefined) {
                 pane.cursorY = pane.layout.lines.length - 1;
@@ -115,7 +119,11 @@ ViKeys.prototype.handleNormalKey = function (key, pane, callback) {
             break;
 
         case 113: // "q"
-            require("./window").instance.events.emit("shutdown");
+            // Need to wait until the rest of our code runs, which would put the cursor right
+            // back where it belongs.
+            setTimeout(function () {
+                pane.window.shutdown();
+            }, 0);
             break;
 
         case 119: // "w"

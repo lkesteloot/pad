@@ -11,7 +11,8 @@ var term = require("./term");
 var trace = require("./trace");
 var strings = require("./strings");
 
-var Pane = function (x, y, width, height) {
+var Pane = function (window, x, y, width, height) {
+    this.window = window;
     this.filename = "";
     this.x = x;
     this.y = y;

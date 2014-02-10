@@ -9,9 +9,6 @@ var trace = require("./trace");
 var term = require("./term");
 
 var Window = function () {
-    // Singleton.
-    Window.instance = this;
-
     this.width = -1;
     this.height = -1;
     this.panes = [];
@@ -20,19 +17,15 @@ var Window = function () {
     process.stdout.on("resize", this.onResize.bind(this));
     this.updateScreenSize();
 
-    this.panes.push(new Pane(0, 0, this.width, this.height)); //Math.floor(this.height/4)));
+    this.panes.push(new Pane(this, 0, 0, this.width, this.height)); //Math.floor(this.height/4)));
 
     input.events.on("key", this.onKey.bind(this));
+};
 
-    this.events.on("shutdown", function () {
-        // Need to wait until the rest of our code runs, which would put the cursor right
-        // back where it belongs.
-        setTimeout(function () {
-            term.moveTo(0, this.height - 1);
-            input.stop();
-            trace.stopServer();
-        }.bind(this), 0);
-    }.bind(this));
+Window.prototype.shutdown = function () {
+    term.moveTo(0, this.height - 1);
+    input.stop();
+    trace.stopServer();
 };
 
 Window.prototype.updateScreenSize = function () {

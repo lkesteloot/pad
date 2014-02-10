@@ -1,21 +1,10 @@
 
 - To do
-    - Implement command line.
-        - Initial commands:
-            - Quit (q).
-            - Write (w).
-            - Exit (x).
-        - Could make it ex-like, or could make it a JS line.
-            - Would need functions for things:
-                - q()
-                - w()
-                - x()
-            - Could add () and parameters if no parens on line.
-            - No, too hacky, not possible to do special things like filename completion.
-        - Could make them menus:
-            - Colon or semicolon pops up menu.
-                - Menu has list of items, can hit letter to run it.
-                - Items can have sub-menus or prompts.
+    - When : or ; is pressed:
+        - Show : below status bar, move cursor there.
+        - Have simple input system. Maybe model as a one-line pane.
+        - When <enter> is pressed, evaluate as JS.
+        - Make functions "q()" and "w()" available.
     - Think about wrapped lines where the wrapping doesn't happen on a space.
         - What does it mean to go to the end of the line ($)?
     - Play with brackets to get ideas and look through code.
@@ -109,6 +98,7 @@
     - Use iTerm2-specific escape codes.
         - Check $TERM_PROGRAM.
         - https://code.google.com/p/iterm2/wiki/ProprietaryEscapeCodes
+    - Easy way to see commit message of blame of line you're on, and maybe history before that.
 - Nice things
     - When typing pathname of file to load, correct errors.
     - When typing pathname of file to create, create directories (with permission).
@@ -152,6 +142,7 @@
         we have to run algorithms to figure out the color constantly, and this will
         restrict what we can do.
         - Could implement this by using a wide char and using high bits for attributes.
+        - Instead of parallel array, keep a list of indexes where the attributes change.
     - Can we follow MVC for once? What would that mean?
         - In Emacs the Controller is mostly Lisp, taking keystrokes and modifying
             the model. The View displays the Model, but I guess this isn't Lispable?
