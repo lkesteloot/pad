@@ -34,7 +34,8 @@ Layout.prototype.docIndexToLayoutPosition = function (docIndex) {
 
         var offset = docIndex - layoutLine.docIndex;
         if ((offset >= 0 && offset < layoutLine.text.length) ||
-            (layoutLine.hasEol && offset == layoutLine.text.length)) {
+            (offset == layoutLine.text.length && (layoutLine.hasEol ||
+                                                  lineNumber == this.lines.length - 1))) {
 
             return {
                 layoutLine: layoutLine,

@@ -51,7 +51,7 @@ Pane.prototype.setDoc = function (doc) {
 
 Pane.prototype.onDocModified = function () {
     this.layoutDirty = true;
-    this.sanitizeAndRefresh();
+    process.nextTick(this.sanitizeAndRefresh.bind(this));
 };
 
 Pane.prototype.setFocus = function (hasFocus) {
@@ -253,21 +253,21 @@ Pane.prototype.generateStatusLine = function () {
 
 Pane.prototype.backspaceCharacter = function () {
     if (this.docIndex > 0) {
-        this.doc.deleteCharacter(this.docIndex - 1);
         this.desiredDocIndex = this.docIndex - 1;
+        this.doc.deleteCharacter(this.docIndex - 1);
         this.layoutDirty = true;
     }
 };
 
 Pane.prototype.deleteCharacter = function () {
-    this.doc.deleteCharacter(this.docIndex);
     this.desiredDocIndex = this.docIndex;
+    this.doc.deleteCharacter(this.docIndex);
     this.layoutDirty = true;
 };
 
 Pane.prototype.insertCharacter = function (ch) {
-    this.doc.insertCharacter(this.docIndex, ch);
     this.desiredDocIndex = this.docIndex + 1;
+    this.doc.insertCharacter(this.docIndex, ch);
     this.layoutDirty = true;
 };
 
