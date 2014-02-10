@@ -6,12 +6,12 @@ var util = require("util");
 var Line = require("./line.js");
 var term = require("./term.js");
 
-var StatusLine = function (text) {
+var CommandLine = function (text) {
     Line.call(this, text, 0, false, 0);
 };
-util.inherits(StatusLine, Line);
+util.inherits(CommandLine, Line);
 
-StatusLine.prototype.drawLine = function (width) {
+CommandLine.prototype.drawLine = function (width) {
     term.sgr(90);
     term.write(":");
     term.defaultColor();
@@ -19,8 +19,8 @@ StatusLine.prototype.drawLine = function (width) {
     term.clearChars(width - this.text.length - 1);
 };
 
-StatusLine.prototype.getPrefixLength = function () {
+CommandLine.prototype.getPrefixLength = function () {
     return 1;
 };
 
-module.exports = StatusLine;
+module.exports = CommandLine;

@@ -5,10 +5,10 @@
 var util = require("util");
 var ViKeys = require("./vi_keys");
 
-var StatusKeys = function () {
+var CommandKeys = function () {
     ViKeys.call(this);
     this.setMode(ViKeys.MODE_INSERT);
 };
-util.inherits(StatusKeys, ViKeys);
+util.inherits(CommandKeys, ViKeys);
 
-module.exports = StatusKeys;
+module.exports = CommandKeys;

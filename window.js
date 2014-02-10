@@ -3,7 +3,7 @@
 "use strict";
 
 var Pane = require("./pane");
-var StatusPane = require("./status_pane");
+var CommandPane = require("./command_pane");
 var input = require("./input");
 var trace = require("./trace");
 var term = require("./term");
@@ -22,8 +22,8 @@ var Window = function () {
     this.panes.push(new Pane(this, 0, half, this.width, this.height - 1 - half));
     this.panes[this.activePane].setFocus(true);
 
-    this.statusPane = new StatusPane(this, 0, this.height - 1, this.width);
-    this.statusPaneActive = false;
+    this.commandPane = new CommandPane(this, 0, this.height - 1, this.width);
+    this.commandPaneActive = false;
 
     input.events.on("key", this.onKey.bind(this));
 };
@@ -54,8 +54,8 @@ Window.prototype.onResize = function () {
 };
 
 Window.prototype.onKey = function (key) {
-    if (this.statusPaneActive) {
-        this.statusPane.onKey(key);
+    if (this.commandPaneActive) {
+        this.commandPane.onKey(key);
     } else {
         this.panes[this.activePane].onKey(key);
     }
@@ -69,10 +69,10 @@ Window.prototype.nextPane = function () {
     }
 };
 
-Window.prototype.activateStatusPane = function () {
+Window.prototype.activateCommandPane = function () {
     this.panes[this.activePane].setFocus(false);
-    this.statusPaneActive = true;
-    this.statusPane.setFocus(true);
+    this.commandPaneActive = true;
+    this.commandPane.setFocus(true);
 };
 
 module.exports = Window;
