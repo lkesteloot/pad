@@ -79,9 +79,7 @@ ViKeys.prototype.handleNormalKey = function (key, pane, callback) {
 
         case 58: ":"
         case 59: ";"
-            setTimeout(function () {
-                pane.window.activateCommandPane();
-            }, 0);
+            pane.window.activateCommandPane();
             break;
 
         case 71: // "G"
@@ -122,9 +120,7 @@ ViKeys.prototype.handleNormalKey = function (key, pane, callback) {
             break;
 
         case 112: // "p":
-            setTimeout(function () {
-                pane.window.nextPane();
-            }, 0);
+            pane.window.nextPane();
             break;
 
         case 113: // "q"

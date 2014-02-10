@@ -21,7 +21,13 @@ CommandPane.prototype.hasStatusLine = function () {
 };
 
 CommandPane.prototype.getFormatter = function () {
-    return new CommandFormatter(this.width);
+    return new CommandFormatter(this.width, this.hasFocus);
+};
+
+CommandPane.prototype.setFocus = function (hasFocus) {
+    Pane.prototype.setFocus.call(this, hasFocus);
+    this.layoutDirty = true;
+    setTimeout(this.sanitizeAndRefresh.bind(this), 0);
 };
 
 module.exports = CommandPane;

@@ -6,21 +6,30 @@ var util = require("util");
 var Line = require("./line.js");
 var term = require("./term.js");
 
-var CommandLine = function (text) {
+var CommandLine = function (text, hasFocus) {
     Line.call(this, text, 0, false, 0);
+    this.hasFocus = hasFocus;
 };
 util.inherits(CommandLine, Line);
 
 CommandLine.prototype.drawLine = function (width) {
-    term.sgr(90);
-    term.write(":");
-    term.defaultColor();
-    term.write(this.text);
-    term.clearChars(width - this.text.length - 1);
+    var wroteCount = 0;
+
+    if (this.hasFocus) {
+        term.sgr(90);
+        term.write(":");
+        wroteCount++;
+
+        term.defaultColor();
+        term.write(this.text);
+        wroteCount += this.text.length;
+    }
+
+    term.clearChars(width - wroteCount);
 };
 
 CommandLine.prototype.getPrefixLength = function () {
-    return 1;
+    return this.hasFocus ? 1 : 0;
 };
 
 module.exports = CommandLine;
