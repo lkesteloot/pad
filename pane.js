@@ -18,7 +18,8 @@ var Pane = function (window, x, y, width, height) {
     this.y = y;
     this.width = width;
     this.height = height;
-    this.contentHeight = height - 3;
+    this.hasFocus = false;
+    this.contentHeight = height - 1;
     this.cursorX = 0; // In layout space.
     this.cursorY = 0;
     this.docIndex = 0;
@@ -30,12 +31,20 @@ var Pane = function (window, x, y, width, height) {
     this.layoutDirty = true;
     this.redrawDirty = true;
     this.desiredDocIndex = null;
+    setTimeout(this.sanitizeAndRefresh.bind(this), 0);
 };
 
 Pane.prototype.setDoc = function (doc) {
     this.doc = doc;
     this.layoutDirty = true;
     this.redrawDirty = true;
+};
+
+Pane.prototype.setFocus = function (hasFocus) {
+    this.hasFocus = hasFocus;
+    if (this.hasFocus) {
+        this.positionCursor();
+    }
 };
 
 Pane.prototype.reformatIfNecessary = function () {
@@ -63,17 +72,14 @@ Pane.prototype.redrawIfNecessary = function () {
         }
 
         // Draw status line.
-        term.moveTo(this.x, this.contentHeight);
+        term.moveTo(this.x, this.y + this.contentHeight);
         term.reverse();
         term.write(this.generateStatusLine());
         term.reverseOff();
 
-        term.moveTo(this.x, this.contentHeight + 1);
-        term.clearChars(this.width);
-        term.moveTo(this.x, this.contentHeight + 2);
-        term.clearChars(this.width);
-
-        this.positionCursor();
+        if (this.hasFocus) {
+            this.positionCursor();
+        }
         term.showCursor();
 
         this.redrawDirty = false;
@@ -210,7 +216,12 @@ Pane.prototype.sanitizeAndRefresh = function () {
 };
 
 Pane.prototype.generateStatusLine = function () {
-    var left = strings.unexpandHome(this.filename);
+    var left;
+    if (this.filename === "") {
+        left = "[No Name]";
+    } else {
+        left = strings.unexpandHome(this.filename);
+    }
     if (this.doc.modified) {
         left += " [+]";
     }

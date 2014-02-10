@@ -43,6 +43,11 @@ WrappingFormatter.prototype.format = function (doc, layout) {
         addLine(startOfLine, buffer.length, indent, false);
     }
 
+    // Must always have at least one line.
+    if (lines.length === 0) {
+        addLine(0, 0, 0, false);
+    }
+
     layout.lines = lines;
 };
 

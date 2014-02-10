@@ -118,6 +118,12 @@ ViKeys.prototype.handleNormalKey = function (key, pane, callback) {
             this.count = undefined;
             break;
 
+        case 112: // "p":
+            setTimeout(function () {
+                pane.window.nextPane();
+            }, 0);
+            break;
+
         case 113: // "q"
             // Need to wait until the rest of our code runs, which would put the cursor right
             // back where it belongs.
