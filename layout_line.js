@@ -24,4 +24,8 @@ LayoutLine.prototype.drawLine = function (width) {
     term.clearChars(width - this.text.length - this.indent);
 };
 
+LayoutLine.prototype.getPrefixLength = function () {
+    return this.indent;
+};
+
 module.exports = LayoutLine;

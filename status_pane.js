@@ -5,6 +5,7 @@
 var util = require("util");
 var Pane = require("./pane");
 var StatusKeys = require("./status_keys");
+var StatusFormatter = require("./status_formatter");
 
 // Subclass of Pane.
 var StatusPane = function (window, x, y, width) {
@@ -17,6 +18,10 @@ util.inherits(StatusPane, Pane);
 
 StatusPane.prototype.hasStatusLine = function () {
     return false;
+};
+
+StatusPane.prototype.getFormatter = function () {
+    return new StatusFormatter(this.width);
 };
 
 module.exports = StatusPane;

@@ -63,11 +63,15 @@ Pane.prototype.setFocus = function (hasFocus) {
 
 Pane.prototype.reformatIfNecessary = function () {
     if (this.layoutDirty) {
-        var formatter = true ? new WrappingFormatter(this.width) : new SimpleFormatter();
+        var formatter = this.getFormatter();
         formatter.format(this.doc, this.layout);
         this.layoutDirty = false;
         this.redrawDirty = true;
     }
+};
+
+Pane.prototype.getFormatter = function () {
+    return new WrappingFormatter(this.width);
 };
 
 Pane.prototype.redrawIfNecessary = function () {
@@ -186,7 +190,7 @@ Pane.prototype.sanitizeAndRefresh = function () {
         if (layoutPosition === null) {
             trace.log("Can't find layout position for doc index " + this.desiredDocIndex);
         } else {
-            this.cursorX = layoutPosition.layoutLine.indent + layoutPosition.offset;
+            this.cursorX = layoutPosition.layoutLine.getPrefixLength() + layoutPosition.offset;
             this.cursorY = layoutPosition.lineNumber;
         }
         this.desiredDocIndex = null;
@@ -210,18 +214,18 @@ Pane.prototype.sanitizeAndRefresh = function () {
         this.cursorX = 0;
     }
     var layoutLine = this.layout.lines[this.cursorY];
-    if (this.cursorX < layoutLine.indent) {
-        this.cursorX = layoutLine.indent;
+    if (this.cursorX < layoutLine.getPrefixLength()) {
+        this.cursorX = layoutLine.getPrefixLength();
     }
     var lineLength = layoutLine.text.length;
-    if (this.cursorX > layoutLine.indent + lineLength) {
+    if (this.cursorX > layoutLine.getPrefixLength() + lineLength) {
         // This is different than vi. Vi clamps to the last character, and we let it go
         // past that. It's consistent with what happens on an empty line.
-        this.cursorX = layoutLine.indent + lineLength;
+        this.cursorX = layoutLine.getPrefixLength() + lineLength;
     }
 
     // Find the location in the doc.
-    var layoutX = this.cursorX - layoutLine.indent;
+    var layoutX = this.cursorX - layoutLine.getPrefixLength();
     if (layoutX < 0) {
         // Shouldn't happen -- we're on an indent.
         throw new Error("Cursor was on indent");
