@@ -95,6 +95,11 @@ ViKeys.prototype.handleNormalKey = function (key, pane, callback) {
             pane.backspaceCharacter();
             break;
 
+        case 98: // "b"
+            pane.reverseWord(this.count || 1);
+            this.count = undefined;
+            break;
+
         case 104: // "h"
             pane.cursorX -= (this.count || 1);
             this.count = undefined;
@@ -124,6 +129,8 @@ ViKeys.prototype.handleNormalKey = function (key, pane, callback) {
             break;
 
         case 119: // "w"
+            pane.forwardWord(this.count || 1);
+            this.count = undefined;
             break;
 
         case 120: // "x"

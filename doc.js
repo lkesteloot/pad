@@ -13,6 +13,10 @@ var Doc = function () {
     this.events = new events.EventEmitter();
 };
 
+Doc.prototype.getLength = function () {
+    return this.buffer.length;
+};
+
 Doc.prototype.setString = function (s) {
     this.buffer = new Buffer(s);
     this.filename = "";
@@ -22,6 +26,10 @@ Doc.prototype.setString = function (s) {
 
 Doc.prototype.toString = function () {
     return this.buffer.toString();
+};
+
+Doc.prototype.charAt = function (docIndex) {
+    return this.buffer.toString("utf8", docIndex, docIndex + 1);
 };
 
 Doc.prototype.readFile = function (filename, callback) {

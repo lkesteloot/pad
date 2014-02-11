@@ -4,7 +4,8 @@
         unregister listeners.
     - Think about wrapped lines where the wrapping doesn't happen on a space.
         - What does it mean to go to the end of the line ($)?
-    - Play with brackets to get ideas and look through code.
+        - Same as the end of the file when there's no eol there.
+    - Play with Brackets to get ideas and look through code.
         - How do they implement the editor?
         - How do they do syntax highlighting?
     - Warn when quitting without saving.
@@ -105,6 +106,7 @@
     - Auto-indent on paste (mouse paste or regular paste).
 - Reference
     - crowley98data.pdf in Downloads (compares buffer implementations).
+    - Command line parsing: https://www.npmjs.org/package/commander
 - Competition
     - TextMate 2
         - Mac GUI.
