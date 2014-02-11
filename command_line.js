@@ -6,16 +6,23 @@ var util = require("util");
 var Line = require("./line.js");
 var term = require("./term.js");
 
-var CommandLine = function (text, hasFocus) {
+var CommandLine = function (text, hasFocus, isError) {
     Line.call(this, text, 0, false, 0);
     this.hasFocus = hasFocus;
+    this.isError = isError;
 };
 util.inherits(CommandLine, Line);
 
 CommandLine.prototype.drawLine = function (width) {
     var wroteCount = 0;
 
-    if (this.hasFocus) {
+    if (this.isError) {
+        term.defaultColor();
+        term.bold();
+        term.write(this.text);
+        term.normal();
+        wroteCount += this.text.length;
+    } else if (this.hasFocus) {
         term.sgr(90);
         term.write(":");
         wroteCount++;

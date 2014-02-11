@@ -106,7 +106,7 @@ var sgrCodes = [
     {name: "conceal",                 code: 8 },
     {name: "strikeout",               code: 9 },
     {name: "font",                    code: function (n) { return [10 + (Number(n)||0)];   }},
-    {name: "boldOff",                 code: 21},
+    // {name: "boldOff",                 code: 21}, // Not widely supported.
     {name: "normal",                  code: 22},
     {name: "italicOff",               code: 23},
     {name: "underlineOff",            code: 24},
