@@ -12,7 +12,7 @@ var CommandFormatter = require("./command_formatter");
 var CommandPane = function (window, x, y, width) {
     Pane.call(this, window, x, y, width, 1);
 
-    this.isError = false;
+    this.isMessage = false;
     this.contentHeight = 1;
     this.keys = new CommandKeys();
 };
@@ -23,13 +23,13 @@ CommandPane.prototype.hasStatusLine = function () {
 };
 
 CommandPane.prototype.getFormatter = function () {
-    return new CommandFormatter(this.width, this.hasFocus, this.isError);
+    return new CommandFormatter(this.width, this.hasFocus, this.isMessage);
 };
 
 CommandPane.prototype.setFocus = function (hasFocus) {
     Pane.prototype.setFocus.call(this, hasFocus);
     if (hasFocus) {
-        this.isError = false;
+        this.isMessage = false;
         this.doc.setString("");
     }
 };
@@ -58,10 +58,10 @@ CommandPane.prototype.submitCommand = function (callback) {
             vm.runInNewContext(cmd, context);
         } catch (e) {
             e = "" + e;
-            this.isError = true;
+            this.isMessage = true;
             this.doc.setString(e);
-            this.window.deactivateCommandPane();
         }
+        this.window.deactivateCommandPane();
     }
 
     process.nextTick(callback);
