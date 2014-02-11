@@ -20,7 +20,7 @@ var Window = function () {
     var half = Math.floor(this.height/2);
     this.panes.push(new Pane(this, 0, 0, this.width, half));
     this.panes.push(new Pane(this, 0, half, this.width, this.height - 1 - half));
-    this.panes[this.activePane].setFocus(true);
+    this.getActivePane().setFocus(true);
 
     this.commandPane = new CommandPane(this, 0, this.height - 1, this.width);
     this.commandPaneActive = false;
@@ -57,22 +57,36 @@ Window.prototype.onKey = function (key) {
     if (this.commandPaneActive) {
         this.commandPane.onKey(key);
     } else {
-        this.panes[this.activePane].onKey(key);
+        this.getActivePane().onKey(key);
     }
+};
+
+/**
+ * Returns the active Pane object. This still points to an editable pane,
+ * even if the command pane has focus.
+ */
+Window.prototype.getActivePane = function () {
+    return this.panes[this.activePane];
 };
 
 Window.prototype.nextPane = function () {
     if (this.panes.length > 0) {
-        this.panes[this.activePane].setFocus(false);
+        this.getActivePane().setFocus(false);
         this.activePane = (this.activePane + 1) % this.panes.length;
-        this.panes[this.activePane].setFocus(true);
+        this.getActivePane().setFocus(true);
     }
 };
 
 Window.prototype.activateCommandPane = function () {
-    this.panes[this.activePane].setFocus(false);
+    this.getActivePane().setFocus(false);
     this.commandPaneActive = true;
     this.commandPane.setFocus(true);
+};
+
+Window.prototype.deactivateCommandPane = function () {
+    this.commandPane.setFocus(false);
+    this.commandPaneActive = false;
+    this.getActivePane().setFocus(true);
 };
 
 module.exports = Window;

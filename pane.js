@@ -80,6 +80,9 @@ Pane.prototype.redrawIfNecessary = function () {
         trace.log("Redrawing");
 
         term.hideCursor();
+        if (!this.hasFocus) {
+            term.savePosition();
+        }
 
         for (var y = 0; y < this.contentHeight; y++) {
             // Move to first position of line.
@@ -99,6 +102,8 @@ Pane.prototype.redrawIfNecessary = function () {
 
         if (this.hasFocus) {
             this.positionCursor();
+        } else {
+            term.restorePosition();
         }
         term.showCursor();
 

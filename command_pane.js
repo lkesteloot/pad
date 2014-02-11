@@ -3,6 +3,7 @@
 "use strict";
 
 var util = require("util");
+var vm = require("vm");
 var Pane = require("./pane");
 var CommandKeys = require("./command_keys");
 var CommandFormatter = require("./command_formatter");
@@ -26,8 +27,38 @@ CommandPane.prototype.getFormatter = function () {
 
 CommandPane.prototype.setFocus = function (hasFocus) {
     Pane.prototype.setFocus.call(this, hasFocus);
-    this.layoutDirty = true;
-    setTimeout(this.sanitizeAndRefresh.bind(this), 0);
+    this.doc.setString("");
+};
+
+CommandPane.prototype.submitCommand = function (callback) {
+    var cmd = this.doc.toString();
+
+    if (cmd === "") {
+        // Quit command mode.
+        this.window.deactivateCommandPane();
+    } else {
+        var context = {
+            q: function () {
+                setTimeout(function () {
+                    this.window.shutdown();
+                }.bind(this), 0);
+            }.bind(this),
+            w: function () {
+                this.window.getActivePane().saveFile(function () {
+                    this.window.deactivateCommandPane();
+                    callback()
+                }.bind(this));
+            }.bind(this)
+        };
+        try {
+            vm.runInNewContext(cmd, context);
+        } catch (e) {
+            e = "" + e;
+            this.doc.setString(e);
+        }
+    }
+
+    process.nextTick(callback);
 };
 
 module.exports = CommandPane;

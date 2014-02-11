@@ -13,6 +13,17 @@ var Doc = function () {
     this.events = new events.EventEmitter();
 };
 
+Doc.prototype.setString = function (s) {
+    this.buffer = new Buffer(s);
+    this.filename = "";
+    this.modified = false;
+    this.events.emit("change");
+};
+
+Doc.prototype.toString = function () {
+    return this.buffer.toString();
+};
+
 Doc.prototype.readFile = function (filename, callback) {
     fs.readFile(filename, function (err, contents) {
         if (err) {

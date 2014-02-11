@@ -123,17 +123,8 @@ ViKeys.prototype.handleNormalKey = function (key, pane, callback) {
             pane.window.nextPane();
             break;
 
-        case 113: // "q"
-            // Need to wait until the rest of our code runs, which would put the cursor right
-            // back where it belongs.
-            setTimeout(function () {
-                pane.window.shutdown();
-            }, 0);
-            break;
-
         case 119: // "w"
-            pane.saveFile(callback);
-            return;
+            break;
 
         case 120: // "x"
             pane.deleteCharacter();
@@ -175,6 +166,8 @@ ViKeys.prototype.handleInsertKey = function (key, pane, callback) {
         this.count = undefined;
     } else if (key == 8 || key == 127) {
         pane.backspaceCharacter();
+    } else if (key < 32 && (key != 10 && key != 13)) {
+        // Ignore control keys.
     } else {
         // Convert \r to \n.
         if (key === 13) {
