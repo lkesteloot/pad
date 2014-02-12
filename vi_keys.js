@@ -124,6 +124,11 @@ ViKeys.prototype.handleNormalKey = function (key, pane, callback) {
             this.count = undefined;
             break;
 
+        case 111: // "o":
+            pane.openNewLine();
+            this.setMode(ViKeys.MODE_INSERT);
+            break;
+
         case 112: // "p":
             pane.window.nextPane();
             break;

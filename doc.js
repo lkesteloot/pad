@@ -76,4 +76,19 @@ Doc.prototype.deleteCharacter = function (index) {
     this.modified = true;
 };
 
+/**
+ * Return the index of the first character on the next line.
+ */
+Doc.prototype.nextLine = function (index) {
+    while (index < this.getLength()) {
+        if (this.buffer[index] === 10) {
+            return index + 1;
+        }
+        index++;
+    }
+
+    // Off the end.
+    return index;
+};
+
 module.exports = Doc;

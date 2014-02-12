@@ -280,6 +280,14 @@ Pane.prototype.insertCharacter = function (ch) {
     this.layoutDirty = true;
 };
 
+Pane.prototype.openNewLine = function () {
+    // Find the beginning of the next line.
+    var nextLineDocIndex = this.doc.nextLine(this.docIndex);
+    this.doc.insertCharacter(nextLineDocIndex, "\n");
+    this.desiredDocIndex = nextLineDocIndex;
+    this.layoutDirty = true;
+};
+
 /**
  * 0 = word, 1 = symbol, 2 = whitespace.
  */
