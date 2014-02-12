@@ -268,32 +268,4 @@ Pane.prototype.generateStatusLine = function () {
     return left + strings.repeat(" ", this.width - left.length - right.length) + right;
 };
 
-Pane.prototype.backspaceCharacter = function () {
-    if (this.docIndex > 0) {
-        this.desiredDocIndex = this.docIndex - 1;
-        this.doc.deleteCharacters(this.docIndex - 1);
-        this.layoutDirty = true;
-    }
-};
-
-Pane.prototype.deleteCharacter = function () {
-    this.desiredDocIndex = this.docIndex;
-    this.doc.deleteCharacters(this.docIndex);
-    this.layoutDirty = true;
-};
-
-Pane.prototype.insertCharacter = function (ch) {
-    this.desiredDocIndex = this.docIndex + 1;
-    this.doc.insertCharacters(this.docIndex, ch);
-    this.layoutDirty = true;
-};
-
-Pane.prototype.openNewLine = function () {
-    // Find the beginning of the next line.
-    var nextLineDocIndex = this.doc.findNextLine(this.docIndex);
-    this.doc.insertCharacters(nextLineDocIndex, "\n");
-    this.desiredDocIndex = nextLineDocIndex;
-    this.layoutDirty = true;
-};
-
 module.exports = Pane;

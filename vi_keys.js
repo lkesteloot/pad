@@ -202,7 +202,10 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
             break;
 
         case 88: // "X"
-            pane.backspaceCharacter();
+            if (pane.docIndex > 0) {
+                pane.desiredDocIndex = pane.docIndex - 1;
+                pane.doc.deleteCharacters(pane.docIndex - 1);
+            }
             break;
 
         case 98: // "b"
@@ -243,7 +246,10 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
             break;
 
         case 111: // "o":
-            pane.openNewLine();
+            // Find the beginning of the next line.
+            var nextLineDocIndex = pane.doc.findNextLine(pane.docIndex);
+            pane.doc.insertCharacters(nextLineDocIndex, "\n");
+            pane.desiredDocIndex = nextLineDocIndex;
             this.setMode(ViKeys.MODE_INSERT);
             break;
 
@@ -257,7 +263,7 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
             break;
 
         case 120: // "x"
-            pane.deleteCharacter();
+            pane.doc.deleteCharacters(pane.docIndex);
             break;
 
         case 123: // "{"
@@ -295,7 +301,10 @@ ViKeys.prototype.handleInsertKey = function (key, pane, callback) {
         // XXX Look at this.count and repeat the insert that many times.
         this.setCount(null);
     } else if (key == 8 || key == 127) {
-        pane.backspaceCharacter();
+        if (pane.docIndex > 0) {
+            pane.desiredDocIndex = pane.docIndex - 1;
+            pane.doc.deleteCharacters(pane.docIndex - 1);
+        }
     } else if (key < 32 && (key != 10 && key != 13)) {
         // Ignore control keys.
     } else {
@@ -304,7 +313,9 @@ ViKeys.prototype.handleInsertKey = function (key, pane, callback) {
             key = 10;
         }
 
-        pane.insertCharacter(String.fromCharCode(key));
+        var ch = String.fromCharCode(key);
+        pane.desiredDocIndex = pane.docIndex + 1;
+        pane.doc.insertCharacters(pane.docIndex, ch);
     }
 
     process.nextTick(callback);
