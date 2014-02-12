@@ -24,12 +24,12 @@ Doc.prototype.setString = function (s) {
     this.events.emit("change");
 };
 
-Doc.prototype.toString = function () {
-    return this.buffer.toString();
+Doc.prototype.toString = function (start, end) {
+    return this.buffer.toString("utf8", start, end);
 };
 
 Doc.prototype.charAt = function (index) {
-    return this.buffer.toString("utf8", index, index + 1);
+    return this.toString(index, index + 1);
 };
 
 Doc.prototype.readFile = function (filename, callback) {
@@ -59,11 +59,11 @@ Doc.prototype.saveFile = function (callback) {
     }.bind(this));
 };
 
-Doc.prototype.insertCharacter = function (index, ch) {
+Doc.prototype.insertCharacters = function (index, s) {
     this.buffer = Buffer.concat([
         this.buffer.slice(0, index),
-        new Buffer(ch),
-        this.buffer.slice(index)], this.buffer.length + 1);
+        new Buffer(s),
+        this.buffer.slice(index)], this.buffer.length + s.length);
     this.events.emit("change");
     this.modified = true;
 };

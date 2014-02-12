@@ -124,6 +124,32 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
             pane.redrawDirty = true;
             break;
 
+        case 10: // ^J
+            // Move line down.
+            var start = pane.doc.findStartOfLine(pane.docIndex);
+            var offset = pane.docIndex - start;
+            var end = pane.doc.findNextLine(start);
+            var text = pane.doc.toString(start, end);
+            pane.doc.deleteCharacters(start, end);
+            var nextLine = pane.doc.findNextLine(start);
+            pane.doc.insertCharacters(nextLine, text);
+            pane.desiredDocIndex = nextLine + offset;
+            break;
+
+        case 11: // ^K
+            // Move line up.
+            var start = pane.doc.findStartOfLine(pane.docIndex);
+            if (start > 0) {
+                var offset = pane.docIndex - start;
+                var end = pane.doc.findNextLine(start);
+                var text = pane.doc.toString(start, end);
+                pane.doc.deleteCharacters(start, end);
+                var previousLine = pane.doc.findStartOfLine(start - 1);
+                pane.doc.insertCharacters(previousLine, text);
+                pane.desiredDocIndex = previousLine + offset;
+            }
+            break;
+
         case 12: // ^L
             pane.redrawDirty = true;
             break;

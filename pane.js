@@ -284,14 +284,14 @@ Pane.prototype.deleteCharacter = function () {
 
 Pane.prototype.insertCharacter = function (ch) {
     this.desiredDocIndex = this.docIndex + 1;
-    this.doc.insertCharacter(this.docIndex, ch);
+    this.doc.insertCharacters(this.docIndex, ch);
     this.layoutDirty = true;
 };
 
 Pane.prototype.openNewLine = function () {
     // Find the beginning of the next line.
     var nextLineDocIndex = this.doc.findNextLine(this.docIndex);
-    this.doc.insertCharacter(nextLineDocIndex, "\n");
+    this.doc.insertCharacters(nextLineDocIndex, "\n");
     this.desiredDocIndex = nextLineDocIndex;
     this.layoutDirty = true;
 };
