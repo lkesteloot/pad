@@ -4,6 +4,7 @@
 
 var util = require("util");
 var vm = require("vm");
+var path = require("path");
 var Pane = require("./pane");
 var CommandKeys = require("./command_keys");
 var CommandFormatter = require("./command_formatter");
@@ -48,8 +49,12 @@ CommandPane.prototype.submitCommand = function (callback) {
                 }.bind(this), 0);
             }.bind(this),
             w: function () {
-                this.window.getActivePane().saveFile(function () {
+                var activePane = this.window.getActivePane();
+
+                activePane.saveFile(function () {
                     this.window.deactivateCommandPane();
+                    this.isMessage = true;
+                    this.doc.setString("\"" + path.basename(activePane.doc.filename) + "\" saved");
                     callback()
                 }.bind(this));
             }.bind(this)

@@ -3,10 +3,6 @@
     - Use it to edit pad.
     - Add verbs:
         - c
-    - After save, write:
-        "NOTES" saved
-        - Need error vs. message.
-        - Maybe get rid of error and just use message for everything, which could be "".
     - Every class should have start() and stop() methods (or whatever) to register and
         unregister listeners.
     - Think about wrapped lines where the wrapping doesn't happen on a space.
