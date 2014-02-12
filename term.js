@@ -14,6 +14,10 @@ exports.moveTo = function (x, y) {
     return exports.ansiSequence("H", [y + 1, x + 1]);
 };
 
+exports.dim = function () {
+    exports.sgr(90);
+};
+
 // The following are iTerm2-only.
 
 exports.blockCursor = function () {
