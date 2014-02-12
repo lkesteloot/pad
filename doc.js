@@ -123,21 +123,31 @@ Doc.prototype.findEndOfLine = function (index) {
 };
 
 /**
- * Return the next of the next (count) words.
+ * Return the next of the next (count) words. If stopAtSpace is true,
+ * will not go past the first space it sees if it wasn't already
+ * on a space. This is for the "change word" command, which behaves
+ * differently than the other word motions.
  */
-Doc.prototype.findNextWord = function (index, count) {
+Doc.prototype.findNextWord = function (index, count, stopAtSpace) {
     var maxIndex = this.getLength() - 1;
 
+    var originalType = null;
     for (var i = 0; i < count && index < maxIndex; i++) {
         // Forward one word.
         var previousType = null;
         while (index < maxIndex) {
             var ch = this.charAt(index);
             var type = getCharacterType(ch);
+            if (originalType === null) {
+                originalType = type;
+            }
             if (previousType === null || type === previousType) {
                 // Same, keep going.
-            } else if (type === 2) {
-                // Space, keep going.
+            } else if (type === CHARACTER_TYPE_SPACE) {
+                // Space, keep going, unless we need to stop at a space.
+                if (stopAtSpace && originalType !== CHARACTER_TYPE_SPACE && i == count - 1) {
+                    break;
+                }
             } else {
                 // Stop.
                 break;
@@ -162,7 +172,7 @@ Doc.prototype.findPreviousWord = function (index, count) {
             var type = getCharacterType(ch);
             if (previousType === null || type === previousType) {
                 // Same, keep going.
-            } else if (previousType === 2) {
+            } else if (previousType === CHARACTER_TYPE_SPACE) {
                 // On space, keep going.
             } else {
                 // Start of word or symbol, stop.
@@ -177,16 +187,19 @@ Doc.prototype.findPreviousWord = function (index, count) {
 };
 
 /**
- * 0 = word, 1 = symbol, 2 = whitespace.
+ * CHARACTER_TYPE_WORD = word, CHARACTER_TYPE_SYMBOL = symbol, CHARACTER_TYPE_SPACE = whitespace.
  */
+var CHARACTER_TYPE_WORD = 0;
+var CHARACTER_TYPE_SYMBOL = 1;
+var CHARACTER_TYPE_SPACE = 2;
 var getCharacterType = function (ch) {
     if (ch === " " || ch === "\n" || ch === "\r" || ch === "\t") {
-        return 2;
+        return CHARACTER_TYPE_SPACE;
     } else if ((ch >= "A" && ch <= "Z") || (ch >= "a" && ch <= "z") || (ch >= "0" && ch <= "9")) {
-        return 0;
+        return CHARACTER_TYPE_WORD;
     } else {
         // Everything else is a symbol.
-        return 1;
+        return CHARACTER_TYPE_SYMBOL;
     }
 };
 

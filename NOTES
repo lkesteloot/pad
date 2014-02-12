@@ -1,6 +1,6 @@
 
 - To do
-    - Use it to edit pad.
+    - Add ^J and ^K to move a line up and down.
     - Add verbs:
         - c
     - Every class should have start() and stop() methods (or whatever) to register and

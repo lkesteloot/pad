@@ -17,9 +17,13 @@ var Window = function () {
     process.stdout.on("resize", this.onResize.bind(this));
     this.updateScreenSize();
 
-    var half = Math.floor(this.height/2);
-    this.panes.push(new Pane(this, 0, 0, this.width, half));
-    this.panes.push(new Pane(this, 0, half, this.width, this.height - 1 - half));
+    if (false) {
+        var half = Math.floor(this.height/2);
+        this.panes.push(new Pane(this, 0, 0, this.width, half));
+        this.panes.push(new Pane(this, 0, half, this.width, this.height - 1 - half));
+    } else {
+        this.panes.push(new Pane(this, 0, 0, this.width, this.height - 1));
+    }
     this.getActivePane().setFocus(true);
 
     this.commandPane = new CommandPane(this, 0, this.height - 1, this.width);

@@ -6,16 +6,23 @@ var events = require("events");
 var trace = require("./trace");
 
 var ViKeys = function () {
-    this.count = null;
     this.events = new events.EventEmitter();
+    this.setCount(null);
     this.setMode(ViKeys.MODE_NORMAL);
-    this.verb = null;
-    this.verbCount = null;
+    this.setVerb(null);
+    this.setVerbCount(null);
 };
 
 ViKeys.MODE_NORMAL = 0;
 ViKeys.MODE_INSERT = 1;
 ViKeys.MODE_REPLACE = 2;
+
+/**
+ * A printable version of our internal state.
+ **/
+ViKeys.prototype.getState = function () {
+    return (this.count || "") + (this.verb || "") + (this.verbCount || "");
+};
 
 ViKeys.prototype.onKey = function (key, pane, callback) {
     switch (this.mode) {
@@ -33,20 +40,27 @@ ViKeys.prototype.onKey = function (key, pane, callback) {
 };
 
 ViKeys.prototype.handleNormalKey = function (key, pane, callback) {
-    if (this.verb === "d") {
-        this.handleDeleteVerb(key, pane, callback);
-    } else {
+    if (this.verb === null) {
         this.handleUnverbedKey(key, pane, callback);
+    } else {
+        this.handleVerbedKey(key, pane, callback);
     }
 };
 
-ViKeys.prototype.handleDeleteVerb = function (key, pane, callback) {
+ViKeys.prototype.handleVerbedKey = function (key, pane, callback) {
     var docIndex;
     var count = (this.count || 1) * (this.verbCount || 1);
 
     switch (key) {
+        case 27: // ESC
+            this.setVerb(null);
+            break;
+
         case 36: // "$"
             pane.doc.deleteCharacters(pane.docIndex, pane.doc.findEndOfLine(pane.docIndex));
+            if (this.verb === "c") {
+                this.setMode(ViKeys.MODE_INSERT);
+            }
             this.setVerb(null);
             break;
 
@@ -55,9 +69,12 @@ ViKeys.prototype.handleDeleteVerb = function (key, pane, callback) {
                 docIndex = pane.doc.findStartOfLine(pane.docIndex);
                 pane.doc.deleteCharacters(docIndex, pane.docIndex);
                 pane.desiredDocIndex = docIndex;
+                if (this.verb === "c") {
+                    this.setMode(ViKeys.MODE_INSERT);
+                }
                 this.setVerb(null);
             } else {
-                this.verbCount *= 10;
+                this.setVerbCount(this.verbCount*10);
             }
             break;
 
@@ -70,21 +87,25 @@ ViKeys.prototype.handleDeleteVerb = function (key, pane, callback) {
         case 55:
         case 56:
         case 57:
-            if (this.verbCount === null) {
-                this.verbCount = 0;
-            }
-            this.verbCount = this.verbCount*10 + (key - 48);
+            this.setVerbCount((this.verbCount || 0)*10 + (key - 48));
             break;
 
         case 98: // "b"
             docIndex = pane.doc.findPreviousWord(pane.docIndex, count);
             pane.doc.deleteCharacters(docIndex, pane.docIndex);
             pane.desiredDocIndex = docIndex;
+            if (this.verb === "c") {
+                this.setMode(ViKeys.MODE_INSERT);
+            }
             this.setVerb(null);
             break;
 
         case 119: // "w"
-            pane.doc.deleteCharacters(pane.docIndex, pane.doc.findNextWord(pane.docIndex, count));
+            docIndex = pane.doc.findNextWord(pane.docIndex, count, this.verb === "c");
+            pane.doc.deleteCharacters(pane.docIndex, docIndex);
+            if (this.verb === "c") {
+                this.setMode(ViKeys.MODE_INSERT);
+            }
             this.setVerb(null);
             break;
     }
@@ -124,7 +145,7 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
             if (this.count === null) {
                 pane.desiredDocIndex = pane.doc.findStartOfLine(pane.docIndex);
             } else {
-                this.count *= 10;
+                this.setCount(this.count*10);
             }
             break;
 
@@ -137,10 +158,7 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
         case 55:
         case 56:
         case 57:
-            if (this.count === null) {
-                this.count = 0;
-            }
-            this.count = this.count*10 + (key - 48);
+            this.setCount((this.count || 0)*10 + (key - 48));
             break;
 
         case 58: ":"
@@ -153,7 +171,7 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
                 pane.cursorY = pane.layout.lines.length - 1;
             } else {
                 pane.cursorY = this.count - 1;
-                this.count = null;
+                this.setCount(null);
             }
             break;
 
@@ -163,7 +181,11 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
 
         case 98: // "b"
             pane.desiredDocIndex = pane.doc.findPreviousWord(pane.docIndex, count);
-            this.count = null;
+            this.setCount(null);
+            break;
+
+        case 99: // "c"
+            this.setVerb("c");
             break;
 
         case 100: // "d":
@@ -172,7 +194,7 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
 
         case 104: // "h"
             pane.cursorX -= count;
-            this.count = null;
+            this.setCount(null);
             break;
 
         case 105: // "i"
@@ -181,17 +203,17 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
 
         case 106: // "j"
             pane.cursorY += count;
-            this.count = null;
+            this.setCount(null);
             break;
 
         case 107: // "k"
             pane.cursorY -= count;
-            this.count = null;
+            this.setCount(null);
             break;
 
         case 108: // "l"
             pane.cursorX += count;
-            this.count = null;
+            this.setCount(null);
             break;
 
         case 111: // "o":
@@ -204,8 +226,8 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
             break;
 
         case 119: // "w"
-            pane.desiredDocIndex = pane.doc.findNextWord(pane.docIndex, count);
-            this.count = null;
+            pane.desiredDocIndex = pane.doc.findNextWord(pane.docIndex, count, false);
+            this.setCount(null);
             break;
 
         case 120: // "x"
@@ -245,7 +267,7 @@ ViKeys.prototype.handleInsertKey = function (key, pane, callback) {
         // Exit insert mode.
         this.setMode(ViKeys.MODE_NORMAL);
         // XXX Look at this.count and repeat the insert that many times.
-        this.count = null;
+        this.setCount(null);
     } else if (key == 8 || key == 127) {
         pane.backspaceCharacter();
     } else if (key < 32 && (key != 10 && key != 13)) {
@@ -269,11 +291,21 @@ ViKeys.prototype.setMode = function (mode) {
 
 ViKeys.prototype.setVerb = function (verb) {
     this.verb = verb;
-    this.verbCount = null;
+    this.setVerbCount(null);
     if (verb === null) {
-        this.count = null;
+        this.setCount(null);
     }
     this.events.emit("verb");
+};
+
+ViKeys.prototype.setCount = function (count) {
+    this.count = count;
+    this.events.emit("count");
+};
+
+ViKeys.prototype.setVerbCount = function (verbCount) {
+    this.verbCount = verbCount;
+    this.events.emit("verbCount");
 };
 
 module.exports = ViKeys;

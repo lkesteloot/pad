@@ -27,6 +27,10 @@ var Pane = function (window, x, y, width, height) {
     this.setDoc(new Doc());
     this.keys = new ViKeys();
     this.keys.events.on("mode", Pane.prototype.onKeysModeChange.bind(this));
+    this.keys.events.on("mode", Pane.prototype.onKeysStateChange.bind(this));
+    this.keys.events.on("verb", Pane.prototype.onKeysStateChange.bind(this));
+    this.keys.events.on("count", Pane.prototype.onKeysStateChange.bind(this));
+    this.keys.events.on("verbCount", Pane.prototype.onKeysStateChange.bind(this));
     this.layoutDirty = true;
     this.redrawDirty = true;
     this.desiredDocIndex = null;
@@ -142,6 +146,10 @@ Pane.prototype.onKeysModeChange = function () {
     }
 };
 
+Pane.prototype.onKeysStateChange = function () {
+    this.redrawDirty = true;
+};
+
 Pane.prototype.loadFile = function (filename, callback) {
     var doc = new Doc();
     var self = this;
@@ -255,7 +263,7 @@ Pane.prototype.generateStatusLine = function () {
         left += " [+]";
     }
 
-    var right = "";
+    var right = this.keys.getState();
 
     return left + strings.repeat(" ", this.width - left.length - right.length) + right;
 };
