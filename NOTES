@@ -3,7 +3,6 @@
     - Use it to edit pad.
     - Add verbs:
         - c
-        - d
     - After save, write:
         "NOTES" saved
         - Need error vs. message.

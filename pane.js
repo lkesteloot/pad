@@ -263,14 +263,14 @@ Pane.prototype.generateStatusLine = function () {
 Pane.prototype.backspaceCharacter = function () {
     if (this.docIndex > 0) {
         this.desiredDocIndex = this.docIndex - 1;
-        this.doc.deleteCharacter(this.docIndex - 1);
+        this.doc.deleteCharacters(this.docIndex - 1);
         this.layoutDirty = true;
     }
 };
 
 Pane.prototype.deleteCharacter = function () {
     this.desiredDocIndex = this.docIndex;
-    this.doc.deleteCharacter(this.docIndex);
+    this.doc.deleteCharacters(this.docIndex);
     this.layoutDirty = true;
 };
 
@@ -282,75 +282,10 @@ Pane.prototype.insertCharacter = function (ch) {
 
 Pane.prototype.openNewLine = function () {
     // Find the beginning of the next line.
-    var nextLineDocIndex = this.doc.nextLine(this.docIndex);
+    var nextLineDocIndex = this.doc.findNextLine(this.docIndex);
     this.doc.insertCharacter(nextLineDocIndex, "\n");
     this.desiredDocIndex = nextLineDocIndex;
     this.layoutDirty = true;
-};
-
-/**
- * 0 = word, 1 = symbol, 2 = whitespace.
- */
-var getCharacterType = function (ch) {
-    if (ch === " " || ch === "\n" || ch === "\r" || ch === "\t") {
-        return 2;
-    } else if ((ch >= "A" && ch <= "Z") || (ch >= "a" && ch <= "z") || (ch >= "0" && ch <= "9")) {
-        return 0;
-    } else {
-        // Everything else is a symbol.
-        return 1;
-    }
-};
-
-Pane.prototype.forwardWord = function (count) {
-    var docIndex = this.docIndex;
-    var maxDocIndex = this.doc.getLength() - 1;
-
-    for (var i = 0; i < count && docIndex < maxDocIndex; i++) {
-        // Forward one word.
-        var previousType = null;
-        while (docIndex < maxDocIndex) {
-            var ch = this.doc.charAt(docIndex);
-            var type = getCharacterType(ch);
-            if (previousType === null || type === previousType) {
-                // Same, keep going.
-            } else if (type === 2) {
-                // Space, keep going.
-            } else {
-                // Stop.
-                break;
-            }
-            previousType = type;
-            docIndex++;
-        }
-    }
-
-    this.desiredDocIndex = docIndex;
-};
-
-Pane.prototype.reverseWord = function (count) {
-    var docIndex = this.docIndex;
-
-    for (var i = 0; i < count && docIndex > 0; i++) {
-        // Reverse one word.
-        var previousType = null;
-        while (docIndex > 0) {
-            var ch = this.doc.charAt(docIndex - 1);
-            var type = getCharacterType(ch);
-            if (previousType === null || type === previousType) {
-                // Same, keep going.
-            } else if (previousType === 2) {
-                // On space, keep going.
-            } else {
-                // Start of word or symbol, stop.
-                break;
-            }
-            previousType = type;
-            docIndex--;
-        }
-    }
-
-    this.desiredDocIndex = docIndex;
 };
 
 module.exports = Pane;
