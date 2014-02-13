@@ -1,7 +1,13 @@
 
 - To do
     - Handle Ctrl-Tab to unindent.
-        That's CSI Z.
+        - That's CSI Z.
+        - Requires onKey() to take several characters.
+        - Should switch over to passing in a string. Would make most of the code more
+            readable anyway.
+        - Handle arrow keys while we're at it.
+            - Make left and right behave like a normal editor (go past end of line).
+    - Implement ^E and ^Y.
     - Every class should have start() and stop() methods (or whatever) to register and
         unregister listeners.
     - Think about wrapped lines where the wrapping doesn't happen on a space.
