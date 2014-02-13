@@ -259,10 +259,11 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
             break;
 
         case 111: // "o":
+            var indent = this.getCurrentIndent(pane);
             // Find the beginning of the next line.
             var nextLineDocIndex = pane.doc.findNextLine(pane.docIndex);
-            pane.doc.insertCharacters(nextLineDocIndex, "\n");
-            pane.desiredDocIndex = nextLineDocIndex;
+            pane.doc.insertCharacters(nextLineDocIndex, indent + "\n");
+            pane.desiredDocIndex = nextLineDocIndex + indent.length;
             this.setMode(ViKeys.MODE_INSERT);
             break;
 
@@ -326,12 +327,38 @@ ViKeys.prototype.handleInsertKey = function (key, pane, callback) {
             key = 10;
         }
 
+        // Add indent.
+        var indent;
+        if (key === 10) {
+            indent = this.getCurrentIndent(pane);
+        } else {
+            indent = "";
+        }
+
         var ch = String.fromCharCode(key);
-        pane.desiredDocIndex = pane.docIndex + 1;
-        pane.doc.insertCharacters(pane.docIndex, ch);
+        pane.desiredDocIndex = pane.docIndex + 1 + indent.length;
+        pane.doc.insertCharacters(pane.docIndex, ch + indent);
     }
 
     process.nextTick(callback);
+};
+
+/**
+ * Return the current line, not including the EOL.
+ */
+ViKeys.prototype.getCurrentLine = function (pane) {
+    var start = pane.doc.findStartOfLine(pane.docIndex);
+    var end = pane.doc.findEndOfLine(start);
+    return pane.doc.toString(start, end);
+};
+
+/**
+ * Return the indent of the current line, as a string. This includes
+ * spaces and tabs.
+ */
+ViKeys.prototype.getCurrentIndent = function (pane) {
+    var text = this.getCurrentLine(pane);
+    return text.match(/^[ \t]*/)[0];
 };
 
 ViKeys.prototype.setMode = function (mode) {
