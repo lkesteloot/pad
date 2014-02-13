@@ -4,6 +4,7 @@
 
 var events = require("events");
 var trace = require("./trace");
+var strings = require("./strings");
 
 var ViKeys = function () {
     this.events = new events.EventEmitter();
@@ -16,6 +17,8 @@ var ViKeys = function () {
 ViKeys.MODE_NORMAL = 0;
 ViKeys.MODE_INSERT = 1;
 ViKeys.MODE_REPLACE = 2;
+
+var INDENT_SIZE = 4;
 
 /**
  * A printable version of our internal state.
@@ -319,25 +322,22 @@ ViKeys.prototype.handleInsertKey = function (key, pane, callback) {
             pane.desiredDocIndex = pane.docIndex - 1;
             pane.doc.deleteCharacters(pane.docIndex - 1);
         }
-    } else if (key < 32 && (key != 10 && key != 13)) {
+    } else if (key < 32 && (key != 10 && key != 13 && key != 9)) {
         // Ignore control keys.
     } else {
-        // Convert \r to \n.
-        if (key === 13) {
-            key = 10;
-        }
-
-        // Add indent.
-        var indent;
-        if (key === 10) {
-            indent = this.getCurrentIndent(pane);
+        var text;
+        if (key === 10 || key === 13) {
+            // Insert new line.
+            text = "\n" + this.getCurrentIndent(pane);
+        } else if (key === 9) {
+            // Fake tab.
+            var offset = pane.docIndex - pane.doc.findStartOfLine(pane.docIndex);
+            text = strings.repeat(" ", INDENT_SIZE - offset % INDENT_SIZE);
         } else {
-            indent = "";
+            text = String.fromCharCode(key);
         }
-
-        var ch = String.fromCharCode(key);
-        pane.desiredDocIndex = pane.docIndex + 1 + indent.length;
-        pane.doc.insertCharacters(pane.docIndex, ch + indent);
+        pane.desiredDocIndex = pane.docIndex + text.length;
+        pane.doc.insertCharacters(pane.docIndex, text);
     }
 
     process.nextTick(callback);
