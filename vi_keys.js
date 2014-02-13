@@ -52,10 +52,6 @@ ViKeys.prototype.handleVerbedKey = function (key, pane, callback) {
     var count = (this.count || 1) * (this.verbCount || 1);
 
     switch (key) {
-        case 27: // ESC
-            this.setVerb(null);
-            break;
-
         case 36: // "$"
             pane.doc.deleteCharacters(pane.docIndex, pane.doc.findEndOfLine(pane.docIndex));
             if (this.verb === "c") {
@@ -100,12 +96,29 @@ ViKeys.prototype.handleVerbedKey = function (key, pane, callback) {
             this.setVerb(null);
             break;
 
+        case 100: // "d"
+            if (this.verb === "d") {
+                docIndex = pane.doc.findStartOfLine(pane.docIndex);
+                var endDocIndex = docIndex;
+                for (var i = 0; i < count; i++) {
+                    endDocIndex = pane.doc.findNextLine(endDocIndex);
+                }
+                pane.doc.deleteCharacters(docIndex, endDocIndex);
+                pane.desiredDocIndex = docIndex;
+            }
+            this.setVerb(null);
+            break;
+
         case 119: // "w"
             docIndex = pane.doc.findNextWord(pane.docIndex, count, this.verb === "c");
             pane.doc.deleteCharacters(pane.docIndex, docIndex);
             if (this.verb === "c") {
                 this.setMode(ViKeys.MODE_INSERT);
             }
+            this.setVerb(null);
+            break;
+
+        default:
             this.setVerb(null);
             break;
     }

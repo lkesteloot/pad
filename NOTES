@@ -161,6 +161,7 @@
 - Differences between pad and vim:
     - Cursor can go one past end of line. This is consistent with empty line.
     - Insert does not back up after ESC.
+    - ^J and ^K move line down and up.
 
 
 Archived
