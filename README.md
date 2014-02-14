@@ -35,3 +35,14 @@ parentheses to call the quit (q) function. To save the file, type:
 
     :w()
 
+## Incompatibilities with vim
+
+Differences between pad and vim:
+
+- The cursor can go one spot past the end of the line. This is consistent with
+  the behavior on an empty line.
+- After escaping out of insert mode, the cursor does not back up. With vim if you
+  insert "123" then immediately insert "abc", you get "12abc3". With pad
+  you get "123abc".
+- ^J and ^K move the current line down and up one line.
+

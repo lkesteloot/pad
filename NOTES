@@ -166,10 +166,8 @@
     - Space to left of code is called "gutter". Line numbers, errors, other info.
     - Line up/down should always be in visual lines, not buffer lines.
     - Ability to do math, like a spreadsheet.
-- Differences between pad and vim:
-    - Cursor can go one past end of line. This is consistent with empty line.
-    - Insert does not back up after ESC.
-    - ^J and ^K move line down and up.
+    - For JS linting:
+        - http://eslint.org/
 
 
 Archived
