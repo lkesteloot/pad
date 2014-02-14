@@ -4,6 +4,7 @@
 
 var ESC = String.fromCharCode(27);
 var CSI = ESC + "[";
+var RUNNING_ITERM2 = process.env["TERM_PROGRAM"] == "iTerm.app";
 
 var write = function (text) {
     return process.stdout.write(text);
@@ -21,15 +22,21 @@ exports.dim = function () {
 // The following are iTerm2-only.
 
 exports.blockCursor = function () {
-    write("\u001B]50;CursorShape=0\u0007");
+    if (RUNNING_ITERM2) {
+        write("\u001B]50;CursorShape=0\u0007");
+    }
 };
 
 exports.barCursor = function () {
-    write("\u001B]50;CursorShape=1\u0007");
+    if (RUNNING_ITERM2) {
+        write("\u001B]50;CursorShape=1\u0007");
+    }
 };
 
 exports.underlineCursor = function () {
-    write("\u001B]50;CursorShape=2\u0007");
+    if (RUNNING_ITERM2) {
+        write("\u001B]50;CursorShape=2\u0007");
+    }
 };
 
 // Remainder is mostly copied from the "jetty" package by Conrad Pankoff. Changes
