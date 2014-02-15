@@ -12,7 +12,7 @@ var CommandKeys = function () {
 util.inherits(CommandKeys, ViKeys);
 
 CommandKeys.prototype.handleInsertKey = function (key, pane, callback) {
-    if (key === 10 || key === 13) {
+    if (key === "\r" || key === "\n") {
         // Submit command.
         pane.submitCommand(callback);
     } else {

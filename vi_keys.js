@@ -55,7 +55,7 @@ ViKeys.prototype.handleVerbedKey = function (key, pane, callback) {
     var count = (this.count || 1) * (this.verbCount || 1);
 
     switch (key) {
-        case 36: // "$"
+        case "$":
             pane.doc.deleteCharacters(pane.docIndex, pane.doc.findEndOfLine(pane.docIndex));
             if (this.verb === "c") {
                 this.setMode(ViKeys.MODE_INSERT);
@@ -63,7 +63,7 @@ ViKeys.prototype.handleVerbedKey = function (key, pane, callback) {
             this.setVerb(null);
             break;
 
-        case 48: // "0"
+        case "0":
             if (this.verbCount === null) {
                 docIndex = pane.doc.findStartOfLine(pane.docIndex);
                 pane.doc.deleteCharacters(docIndex, pane.docIndex);
@@ -77,19 +77,19 @@ ViKeys.prototype.handleVerbedKey = function (key, pane, callback) {
             }
             break;
 
-        case 49: // "1" - "9"
-        case 50:
-        case 51:
-        case 52:
-        case 53:
-        case 54:
-        case 55:
-        case 56:
-        case 57:
+        case "1":
+        case "2":
+        case "3":
+        case "4":
+        case "5":
+        case "6":
+        case "7":
+        case "8":
+        case "9":
             this.setVerbCount((this.verbCount || 0)*10 + (key - 48));
             break;
 
-        case 98: // "b"
+        case "b":
             docIndex = pane.doc.findPreviousWord(pane.docIndex, count);
             pane.doc.deleteCharacters(docIndex, pane.docIndex);
             pane.desiredDocIndex = docIndex;
@@ -99,7 +99,7 @@ ViKeys.prototype.handleVerbedKey = function (key, pane, callback) {
             this.setVerb(null);
             break;
 
-        case 100: // "d"
+        case "d":
             if (this.verb === "d") {
                 docIndex = pane.doc.findStartOfLine(pane.docIndex);
                 var endDocIndex = docIndex;
@@ -112,7 +112,7 @@ ViKeys.prototype.handleVerbedKey = function (key, pane, callback) {
             this.setVerb(null);
             break;
 
-        case 119: // "w"
+        case "w":
             docIndex = pane.doc.findNextWord(pane.docIndex, count, this.verb === "c");
             pane.doc.deleteCharacters(pane.docIndex, docIndex);
             if (this.verb === "c") {
@@ -133,14 +133,14 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
     var count = this.count || 1;
 
     switch (key) {
-        case 4: // ^D
+        case "\x04": // ^D
             var lineCount = Math.ceil(pane.contentHeight/2);
             pane.cursorY += lineCount;
             pane.topY += lineCount;
             pane.redrawDirty = true;
             break;
 
-        case 10: // ^J
+        case "\x0A": // ^J
             // Move line down.
             var start = pane.doc.findStartOfLine(pane.docIndex);
             var offset = pane.docIndex - start;
@@ -152,7 +152,7 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
             pane.desiredDocIndex = nextLine + offset;
             break;
 
-        case 11: // ^K
+        case "\x0B": // ^K
             // Move line up.
             var start = pane.doc.findStartOfLine(pane.docIndex);
             if (start > 0) {
@@ -166,24 +166,24 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
             }
             break;
 
-        case 12: // ^L
+        case "\x0C": // ^L
             pane.redrawDirty = true;
             break;
 
-        case 21: // ^U
+        case "\x15": // ^U
             var lineCount = Math.ceil(pane.contentHeight/2);
             pane.cursorY -= lineCount;
             pane.topY -= lineCount;
             pane.redrawDirty = true;
             break;
 
-        case 36: // "$"
+        case "$":
             // XXX Not vi compatible: Here we should set the ideal X cursor position
             // to infinity.
             pane.desiredDocIndex = pane.doc.findEndOfLine(pane.docIndex);
             break;
 
-        case 48: // "0"
+        case "0":
             if (this.count === null) {
                 pane.desiredDocIndex = pane.doc.findStartOfLine(pane.docIndex);
             } else {
@@ -191,24 +191,24 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
             }
             break;
 
-        case 49: // "1" - "9"
-        case 50:
-        case 51:
-        case 52:
-        case 53:
-        case 54:
-        case 55:
-        case 56:
-        case 57:
+        case "1":
+        case "2":
+        case "3":
+        case "4":
+        case "5":
+        case "6":
+        case "7":
+        case "8":
+        case "9":
             this.setCount((this.count || 0)*10 + (key - 48));
             break;
 
-        case 58: ":"
-        case 59: ";"
+        case ":":
+        case ";":
             pane.window.activateCommandPane();
             break;
 
-        case 71: // "G"
+        case "G":
             if (this.count === null) {
                 pane.cursorY = pane.layout.lines.length - 1;
             } else {
@@ -217,51 +217,51 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
             }
             break;
 
-        case 88: // "X"
+        case "X":
             if (pane.docIndex > 0) {
                 pane.desiredDocIndex = pane.docIndex - 1;
                 pane.doc.deleteCharacters(pane.docIndex - 1);
             }
             break;
 
-        case 98: // "b"
+        case "b":
             pane.desiredDocIndex = pane.doc.findPreviousWord(pane.docIndex, count);
             this.setCount(null);
             break;
 
-        case 99: // "c"
+        case "c":
             this.setVerb("c");
             break;
 
-        case 100: // "d":
+        case "d":
             this.setVerb("d");
             break;
 
-        case 104: // "h"
+        case "h":
             pane.cursorX -= count;
             this.setCount(null);
             break;
 
-        case 105: // "i"
+        case "i":
             this.setMode(ViKeys.MODE_INSERT);
             break;
 
-        case 106: // "j"
+        case "j":
             pane.cursorY += count;
             this.setCount(null);
             break;
 
-        case 107: // "k"
+        case "k":
             pane.cursorY -= count;
             this.setCount(null);
             break;
 
-        case 108: // "l"
+        case "l":
             pane.cursorX += count;
             this.setCount(null);
             break;
 
-        case 111: // "o":
+        case "o":
             var indent = this.getCurrentIndent(pane);
             // Find the beginning of the next line.
             var nextLineDocIndex = pane.doc.findNextLine(pane.docIndex);
@@ -270,20 +270,20 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
             this.setMode(ViKeys.MODE_INSERT);
             break;
 
-        case 112: // "p":
+        case "p":
             pane.window.nextPane();
             break;
 
-        case 119: // "w"
+        case "w":
             pane.desiredDocIndex = pane.doc.findNextWord(pane.docIndex, count, false);
             this.setCount(null);
             break;
 
-        case 120: // "x"
+        case "x":
             pane.doc.deleteCharacters(pane.docIndex);
             break;
 
-        case 123: // "{"
+        case "{":
             while (pane.cursorY > 0) {
                 pane.cursorY--;
                 if (pane.layout.lines[pane.cursorY].text.match(/^ *$/)) {
@@ -293,7 +293,7 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
             pane.cursorX = 0;
             break;
 
-        case 125: // "}"
+        case "}":
             while (pane.cursorY < pane.layout.lines.length - 1) {
                 pane.cursorY++;
                 if (pane.layout.lines[pane.cursorY].text.match(/^ *$/)) {
@@ -312,29 +312,29 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
 };
 
 ViKeys.prototype.handleInsertKey = function (key, pane, callback) {
-    if (key === 27) {
+    if (key === "\x1B") { // ESC
         // Exit insert mode.
         this.setMode(ViKeys.MODE_NORMAL);
         // XXX Look at this.count and repeat the insert that many times.
         this.setCount(null);
-    } else if (key == 8 || key == 127) {
+    } else if (key == "\x08" || key == "\x7F") {
         if (pane.docIndex > 0) {
             pane.desiredDocIndex = pane.docIndex - 1;
             pane.doc.deleteCharacters(pane.docIndex - 1);
         }
-    } else if (key < 32 && (key != 10 && key != 13 && key != 9)) {
+    } else if (key < " " && (key != "\r" && key != "\n" && key != "\t")) {
         // Ignore control keys.
     } else {
         var text;
-        if (key === 10 || key === 13) {
+        if (key === "\r" || key === "\n") {
             // Insert new line.
             text = "\n" + this.getCurrentIndent(pane);
-        } else if (key === 9) {
+        } else if (key === "\t") {
             // Fake tab.
             var offset = pane.docIndex - pane.doc.findStartOfLine(pane.docIndex);
             text = strings.repeat(" ", INDENT_SIZE - offset % INDENT_SIZE);
         } else {
-            text = String.fromCharCode(key);
+            text = key;
         }
         pane.desiredDocIndex = pane.docIndex + text.length;
         pane.doc.insertCharacters(pane.docIndex, text);

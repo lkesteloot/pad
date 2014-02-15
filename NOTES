@@ -3,8 +3,6 @@
     - Handle Ctrl-Tab to unindent.
         - That's CSI Z.
         - Requires onKey() to take several characters.
-        - Should switch over to passing in a string. Would make most of the code more
-            readable anyway.
         - Handle arrow keys while we're at it.
             - Make left and right behave like a normal editor (go past end of line).
     - Implement ^E and ^Y.
@@ -94,6 +92,9 @@
     - Lines and columns are always 0-based.
 - Wacky ideas
     - Serve web page to show more info on what's being edited in real time.
+    - Serve web page of the HTML being edited right now. Update in real time.
+        - Ditto with: Markdown, pixel shader, WebGL, Processing.JS, charts, etc.
+        - Live view follows cursor.
     - Make available as web app. Not sure how node's module system ports over.
         - http://browserify.org/
             - Wouldn't allow run-time plugins. It's all bundled into one file.

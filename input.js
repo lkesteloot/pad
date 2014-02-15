@@ -23,8 +23,5 @@ exports.stop = function () {
 // data is a Node Buffer object.
 var onData = function (data) {
     trace.log("Got input: " + util.inspect(data));
-
-    for (var i = 0; i < data.length; i++) {
-        exports.events.emit("key", data[i]);
-    }
+    exports.events.emit("key", data.toString());
 };
