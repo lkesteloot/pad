@@ -140,6 +140,15 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
             pane.redrawDirty = true;
             break;
 
+        case "\x05": // ^E
+            pane.topY += count;
+            if (pane.cursorY < pane.topY) {
+                pane.cursorY = pane.topY;
+            }
+            pane.redrawDirty = true;
+            this.setCount(null);
+            break;
+
         case "\x0A": // ^J
             // Move line down.
             var start = pane.doc.findStartOfLine(pane.docIndex);
@@ -175,6 +184,18 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
             pane.cursorY -= lineCount;
             pane.topY -= lineCount;
             pane.redrawDirty = true;
+            break;
+
+        case "\x19": // ^Y
+            pane.topY -= count;
+            if (pane.topY < 0) {
+                pane.topY = 0;
+            }
+            if (pane.cursorY > pane.topY + pane.contentHeight - 1) {
+                pane.cursorY = pane.topY + pane.contentHeight - 1;
+            }
+            pane.redrawDirty = true;
+            this.setCount(null);
             break;
 
         case "$":

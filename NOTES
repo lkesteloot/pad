@@ -1,6 +1,5 @@
 
 - To do
-    - Implement ^E and ^Y.
     - Every class should have start() and stop() methods (or whatever) to register and
         unregister listeners.
     - Think about wrapped lines where the wrapping doesn't happen on a space.
