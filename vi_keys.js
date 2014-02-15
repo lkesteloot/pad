@@ -86,7 +86,7 @@ ViKeys.prototype.handleVerbedKey = function (key, pane, callback) {
         case "7":
         case "8":
         case "9":
-            this.setVerbCount((this.verbCount || 0)*10 + (key - 48));
+            this.setVerbCount((this.verbCount || 0)*10 + (key.charCodeAt(0) - 48));
             break;
 
         case "b":
@@ -200,7 +200,7 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
         case "7":
         case "8":
         case "9":
-            this.setCount((this.count || 0)*10 + (key - 48));
+            this.setCount((this.count || 0)*10 + (key.charCodeAt(0) - 48));
             break;
 
         case ":":
@@ -218,10 +218,14 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
             break;
 
         case "X":
-            if (pane.docIndex > 0) {
-                pane.desiredDocIndex = pane.docIndex - 1;
-                pane.doc.deleteCharacters(pane.docIndex - 1);
+            if (count > pane.docIndex) {
+                count = pane.docIndex;
             }
+            if (count > 0) {
+                pane.desiredDocIndex = pane.docIndex - count;
+                pane.doc.deleteCharacters(pane.docIndex - count, pane.docIndex);
+            }
+            this.setCount(null);
             break;
 
         case "b":
@@ -282,7 +286,8 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
             break;
 
         case "x":
-            pane.doc.deleteCharacters(pane.docIndex);
+            pane.doc.deleteCharacters(pane.docIndex, pane.docIndex + count);
+            this.setCount(null);
             break;
 
         case "{":
