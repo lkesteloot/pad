@@ -247,11 +247,13 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
             break;
 
         case "j":
+        case "\x1B[B": // Down arrow.
             pane.cursorY += count;
             this.setCount(null);
             break;
 
         case "k":
+        case "\x1B[A": // Up arrow.
             pane.cursorY -= count;
             this.setCount(null);
             break;
@@ -303,6 +305,14 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
             pane.cursorX = 0;
             break;
 
+        case "\x1B[C": // Right arrow.
+            pane.desiredDocIndex = pane.docIndex + 1;
+            break;
+
+        case "\x1B[D": // Left arrow.
+            pane.desiredDocIndex = pane.docIndex - 1;
+            break;
+
         default:
             // Ignore.
             break;
@@ -321,6 +331,39 @@ ViKeys.prototype.handleInsertKey = function (key, pane, callback) {
         if (pane.docIndex > 0) {
             pane.desiredDocIndex = pane.docIndex - 1;
             pane.doc.deleteCharacters(pane.docIndex - 1);
+        }
+    } else if (key.substring(0, 2) === "\x1B[") {
+        // Control sequences.
+        switch (key) {
+            case "\x1B[Z": // Shift-Tab.
+                // Back up to the previous tab stop.
+                var offset = pane.docIndex - pane.doc.findStartOfLine(pane.docIndex);
+                if (offset > 0) {
+                    var count = (offset - 1) % 4 + 1;
+                    pane.desiredDocIndex = pane.docIndex - count;
+                    pane.doc.deleteCharacters(pane.docIndex - count, pane.docIndex);
+                }
+                break;
+
+            case "\x1B[A": // Up arrow.
+                pane.cursorY--;
+                break;
+
+            case "\x1B[B": // Down arrow.
+                pane.cursorY++;
+                break;
+
+            case "\x1B[C": // Right arrow.
+                pane.desiredDocIndex = pane.docIndex + 1;
+                break;
+
+            case "\x1B[D": // Left arrow.
+                pane.desiredDocIndex = pane.docIndex - 1;
+                break;
+
+            default:
+                // Ignore.
+                break;
         }
     } else if (key < " " && (key != "\r" && key != "\n" && key != "\t")) {
         // Ignore control keys.

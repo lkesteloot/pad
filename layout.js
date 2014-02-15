@@ -31,6 +31,10 @@ Layout.prototype.drawLine = function (lineNumber, width) {
  * Returns null if not found.
  */
 Layout.prototype.docIndexToLayoutPosition = function (docIndex) {
+    if (docIndex < 0) {
+        docIndex = 0;
+    }
+
     for (var lineNumber = 0; lineNumber < this.lines.length; lineNumber++) {
         var layoutLine = this.lines[lineNumber];
 

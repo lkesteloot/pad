@@ -1,10 +1,5 @@
 
 - To do
-    - Handle Ctrl-Tab to unindent.
-        - That's CSI Z.
-        - Requires onKey() to take several characters.
-        - Handle arrow keys while we're at it.
-            - Make left and right behave like a normal editor (go past end of line).
     - Implement ^E and ^Y.
     - Every class should have start() and stop() methods (or whatever) to register and
         unregister listeners.
