@@ -1,5 +1,7 @@
 
 - To do
+    - Should panes be in a (binary) hierarchy, so that it's clear who to merge
+      with when closing a pane?
     - Edit multiple files at once.
         - Not like vim's buffers. Want something more closely tied to the project.
         - Proposal:
