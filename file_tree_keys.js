@@ -18,7 +18,7 @@ FileTreeKeys.prototype.onKey = function (key, pane, callback) {
             var filename = pane.getCurrentLine();
             pane.originalPane.loadFile(filename, function () {
                 // Close this pane.
-                pane.window.setActivePane(pane.originalPane);
+                pane.window.closePane(pane, pane.originalPane);
             }.bind(this));
             break;
 

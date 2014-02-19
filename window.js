@@ -12,7 +12,7 @@ var Window = function () {
     this.width = -1;
     this.height = -1;
     this.panes = [];
-    this.activePane = 0;
+    this.activePaneNumber = 0;
 
     process.stdout.on("resize", this.onResize.bind(this));
     this.updateScreenSize();
@@ -67,40 +67,76 @@ Window.prototype.onKey = function (key) {
 };
 
 /**
+ * Given a pane object, returns its index, or throws if not found.
+ */
+Window.prototype.findPaneNumber = function (pane) {
+    for (var i = 0; i < this.panes.length; i++) {
+        if (this.panes[i] === pane) {
+            return i;
+        }
+    }
+
+    throw new Error("can't find pane by reference");
+};
+
+/**
  * Returns the active Pane object. This still points to an editable pane,
  * even if the command pane has focus.
  */
 Window.prototype.getActivePane = function () {
-    return this.panes[this.activePane];
+    return this.panes[this.activePaneNumber];
 };
 
 Window.prototype.setActivePaneNumber = function (paneNumber) {
     this.getActivePane().setFocus(false);
-    this.activePane = paneNumber;
+    this.activePaneNumber = paneNumber;
     this.getActivePane().setFocus(true);
 };
 
 Window.prototype.setActivePane = function (pane) {
-    var newPaneNumber;
-
-    for (var i = 0; i < this.panes.length; i++) {
-        if (this.panes[i] === pane) {
-            newPaneNumber = i;
-            break;
-        }
-    }
-
-    if (newPaneNumber === undefined) {
-        throw new Error("can't find pane by reference");
-    }
-
-    this.setActivePaneNumber(newPaneNumber);
+    this.setActivePaneNumber(this.findPaneNumber(pane));
 };
 
 Window.prototype.nextPane = function () {
     if (this.panes.length > 0) {
-        this.setActivePaneNumber((this.activePane + 1) % this.panes.length);
+        this.setActivePaneNumber((this.activePaneNumber + 1) % this.panes.length);
     }
+};
+
+Window.prototype.closePane = function (pane, newSelectedPane) {
+    var paneNumber = this.findPaneNumber(pane);
+
+    // Find adjoining pane.
+    var adjoiningPane = this.findAdjoiningPane(pane);
+    newSelectedPane = newSelectedPane || adjoiningPane;
+
+    // Remove focus if we've got the focus. Probably not really necessary.
+    if (paneNumber === this.activePaneNumber) {
+        pane.setFocus(false);
+    }
+
+    // Remove pane.
+    this.panes.splice(paneNumber, 1);
+
+    // Resize adjoining pane.
+    // XXX This assumes adjoiningPane is to the left of the pane.
+    adjoiningPane.setWidth(pane.x + pane.width - adjoiningPane.x);
+
+    // Find new pane.
+    this.activePaneNumber = this.findPaneNumber(adjoiningPane);
+    adjoiningPane.setFocus(true);
+};
+
+Window.prototype.findAdjoiningPane = function (pane) {
+    for (var i = 0; i < this.panes.length; i++) {
+        var otherPane = this.panes[i];
+        if (otherPane !== pane) {
+            // XXX lazy.
+            return otherPane;
+        }
+    }
+
+    throw new Error("can't find adjoining pane");
 };
 
 Window.prototype.activateCommandPane = function () {
