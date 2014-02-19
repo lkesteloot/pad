@@ -2,7 +2,6 @@
 
 // Copyright 2014 Lawrence Kesteloot
 
-var path = require("path");
 var Window = require("./window");
 var input = require("./input");
 
@@ -11,8 +10,7 @@ if (process.argv.length <= 2) {
 } else {
     var window = new Window();
     var filename = process.argv[2];
-    var pathname = path.resolve(filename);
-    window.panes[0].loadFile(pathname, function () {
+    window.panes[0].loadFile(filename, function () {
         // window.panes[1].setDoc(window.panes[0].doc);
     });
     input.start();

@@ -8,6 +8,7 @@ var path = require("path");
 var Pane = require("./pane");
 var CommandKeys = require("./command_keys");
 var CommandFormatter = require("./command_formatter");
+var FileTreePane = require("./file_tree_pane");
 
 // Subclass of Pane.
 var CommandPane = function (window, x, y, width) {
@@ -76,21 +77,10 @@ CommandPane.prototype.submitCommand = function (callback) {
 };
 
 CommandPane.prototype.showTree = function () {
-    this.window.splitVertically(this.window.getActivePane());
-
-    /*
-    var fs = require("fs");
-    var trace = require("./trace");
-    fs.readdir(".", function (err, files) {
-        if (err) {
-            trace.log("Error with readdir: " + err);
-        } else {
-            files.forEach(function (filename) {
-                trace.log(filename);
-            });
-        }
-    });
-    */
+    var originalPane = this.window.getActivePane();
+    var treePane = this.window.splitVertically(originalPane, FileTreePane);
+    treePane.setOriginalPane(originalPane);
+    this.window.setActivePane(treePane);
 };
 
 module.exports = CommandPane;

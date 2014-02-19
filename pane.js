@@ -2,6 +2,7 @@
 
 "use strict";
 
+var path = require("path");
 var Doc = require("./doc");
 var Layout = require("./layout");
 var SimpleFormatter = require("./simple_formatter");
@@ -164,11 +165,12 @@ Pane.prototype.onKeysStateChange = function () {
 Pane.prototype.loadFile = function (filename, callback) {
     var doc = new Doc();
     var self = this;
+    var pathname = path.resolve(filename);
 
-    doc.readFile(filename, function (err) {
+    doc.readFile(pathname, function (err) {
         if (err) {
             if (err.code === "ENOENT") {
-                console.log("File not found: " + filename);
+                console.log("File not found: " + pathname);
             } else {
                 console.log("Error loading file: " + err);
             }
@@ -288,6 +290,16 @@ Pane.prototype.generateStatusLine = function () {
 
     // XXX Check for line overflow.
     return left + strings.repeat(" ", this.width - left.length - right.length) + right;
+};
+
+/**
+ * Return the current line, not including the EOL.
+ */
+Pane.prototype.getCurrentLine = function () {
+    var start = this.doc.findStartOfLine(this.docIndex);
+    var end = this.doc.findEndOfLine(start);
+
+    return this.doc.toString(start, end);
 };
 
 module.exports = Pane;

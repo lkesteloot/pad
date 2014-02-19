@@ -3,16 +3,21 @@
 "use strict";
 
 var events = require("events");
+var util = require("util");
 var trace = require("./trace");
 var strings = require("./strings");
+var AbstractKeys = require("./abstract_keys");
 
 var ViKeys = function () {
+    AbstractKeys.call(this);
+
     this.events = new events.EventEmitter();
     this.setCount(null);
     this.setMode(ViKeys.MODE_NORMAL);
     this.setVerb(null);
     this.setVerbCount(null);
 };
+util.inherits(ViKeys, AbstractKeys);
 
 ViKeys.MODE_NORMAL = 0;
 ViKeys.MODE_INSERT = 1;
@@ -413,20 +418,11 @@ ViKeys.prototype.handleInsertKey = function (key, pane, callback) {
 };
 
 /**
- * Return the current line, not including the EOL.
- */
-ViKeys.prototype.getCurrentLine = function (pane) {
-    var start = pane.doc.findStartOfLine(pane.docIndex);
-    var end = pane.doc.findEndOfLine(start);
-    return pane.doc.toString(start, end);
-};
-
-/**
  * Return the indent of the current line, as a string. This includes
  * spaces and tabs.
  */
 ViKeys.prototype.getCurrentIndent = function (pane) {
-    var text = this.getCurrentLine(pane);
+    var text = pane.getCurrentLine();
     return text.match(/^[ \t]*/)[0];
 };
 

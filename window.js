@@ -74,11 +74,32 @@ Window.prototype.getActivePane = function () {
     return this.panes[this.activePane];
 };
 
+Window.prototype.setActivePaneNumber = function (paneNumber) {
+    this.getActivePane().setFocus(false);
+    this.activePane = paneNumber;
+    this.getActivePane().setFocus(true);
+};
+
+Window.prototype.setActivePane = function (pane) {
+    var newPaneNumber;
+
+    for (var i = 0; i < this.panes.length; i++) {
+        if (this.panes[i] === pane) {
+            newPaneNumber = i;
+            break;
+        }
+    }
+
+    if (newPaneNumber === undefined) {
+        throw new Error("can't find pane by reference");
+    }
+
+    this.setActivePaneNumber(newPaneNumber);
+};
+
 Window.prototype.nextPane = function () {
     if (this.panes.length > 0) {
-        this.getActivePane().setFocus(false);
-        this.activePane = (this.activePane + 1) % this.panes.length;
-        this.getActivePane().setFocus(true);
+        this.setActivePaneNumber((this.activePane + 1) % this.panes.length);
     }
 };
 
@@ -98,9 +119,13 @@ Window.prototype.deactivateCommandPane = function () {
  * Splits the given pane in half vertically, creating a new empty pane on the right
  * and returning it.
  */
-Window.prototype.splitVertically = function (pane) {
+Window.prototype.splitVertically = function (pane, paneConstructor) {
+    if (!paneConstructor) {
+        paneConstructor = Pane;
+    }
+
     var half = Math.floor(pane.width/2);
-    var newPane = new Pane(this, pane.x + half, pane.y, pane.width - half, pane.height);
+    var newPane = new paneConstructor(this, pane.x + half, pane.y, pane.width - half, pane.height);
     pane.setWidth(half);
 
     this.panes.push(newPane);
