@@ -93,4 +93,14 @@ Window.prototype.deactivateCommandPane = function () {
     this.getActivePane().setFocus(true);
 };
 
+Window.prototype.splitVertically = function (pane) {
+    var half = Math.floor(pane.width/2);
+    var newPane = new Pane(this, pane.x + half, pane.y, pane.width - half, pane.height);
+    pane.width = half;
+    pane.layoutDirty = true;
+    pane.queueRedraw();
+
+    this.panes.push(newPane);
+};
+
 module.exports = Window;

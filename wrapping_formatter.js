@@ -103,7 +103,7 @@ WrappingFormatter.prototype.format = function (doc, layout) {
 
         // Wrap at one less than the max so that we never go up against the edge,
         // which causes problems when we try to go to the end of the line.
-        if (i - startOfLine >= this.wrapWidth - 1) {
+        if (i - startOfLine + indent >= this.wrapWidth - 1) {
             addLine(startOfLine, i, indent, false);
             // Don't lose current character.
             i--;

@@ -1,5 +1,20 @@
 
 - To do
+    - Edit multiple files at once.
+        - Not like vim's buffers. Want something more closely tied to the project.
+        - Proposal:
+            - One key to pop up tree navigator.
+                - :e()
+                - Show files in directory of file.
+                    - Can use new pane type.
+                    - Can replace current pane or split to make new one. (Probably replace.)
+                    - Once a file is selected, load it in the previously-active pane.
+                        - Or ability to split new file?
+                    - Can cancel to return to previous pane.
+                - Can type name of file to jump to it.
+                    - How to navigate list? Arrow keys? ^J ^K ^D ^U? ^N ^P?
+            - Also can see recently-edited files.
+            - Also can assign hotkeys to files.
     - Every class should have start() and stop() methods (or whatever) to register and
         unregister listeners.
     - Think about wrapped lines where the wrapping doesn't happen on a space.

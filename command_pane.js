@@ -57,6 +57,9 @@ CommandPane.prototype.submitCommand = function (callback) {
                     this.doc.setString("\"" + path.basename(activePane.doc.filename) + "\" saved");
                     callback()
                 }.bind(this));
+            }.bind(this),
+            e: function () {
+                this.showTree(callback);
             }.bind(this)
         };
         try {
@@ -70,6 +73,24 @@ CommandPane.prototype.submitCommand = function (callback) {
     }
 
     process.nextTick(callback);
+};
+
+CommandPane.prototype.showTree = function () {
+    this.window.splitVertically(this.window.getActivePane());
+
+    /*
+    var fs = require("fs");
+    var trace = require("./trace");
+    fs.readdir(".", function (err, files) {
+        if (err) {
+            trace.log("Error with readdir: " + err);
+        } else {
+            files.forEach(function (filename) {
+                trace.log(filename);
+            });
+        }
+    });
+    */
 };
 
 module.exports = CommandPane;

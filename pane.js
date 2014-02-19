@@ -266,6 +266,9 @@ Pane.prototype.generateStatusLine = function () {
 
     var right = this.keys.getState();
 
+    trace.log("<" + left + ">");
+    trace.log("<" + right + ">");
+    trace.log("<" + this.width + ">");
     return left + strings.repeat(" ", this.width - left.length - right.length) + right;
 };
 
