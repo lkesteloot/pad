@@ -48,7 +48,8 @@ Window.prototype.updateScreenSize = function () {
         trace.log("Window size is now " + width + "x" + height);
 
         this.panes.forEach(function (pane) {
-            pane.resize(width, height);
+            // XXX Must actually lay out all panes:
+            /// pane.resize(width, height);
         });
     }
 };
@@ -93,14 +94,18 @@ Window.prototype.deactivateCommandPane = function () {
     this.getActivePane().setFocus(true);
 };
 
+/**
+ * Splits the given pane in half vertically, creating a new empty pane on the right
+ * and returning it.
+ */
 Window.prototype.splitVertically = function (pane) {
     var half = Math.floor(pane.width/2);
     var newPane = new Pane(this, pane.x + half, pane.y, pane.width - half, pane.height);
-    pane.width = half;
-    pane.layoutDirty = true;
-    pane.queueRedraw();
+    pane.setWidth(half);
 
     this.panes.push(newPane);
+
+    return newPane;
 };
 
 module.exports = Window;

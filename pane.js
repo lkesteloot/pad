@@ -15,7 +15,7 @@ var Pane = function (window, x, y, width, height) {
     this.window = window;
     this.x = x;
     this.y = y;
-    this.width = width;
+    this.setWidth(width, false);
     this.height = height;
     this.hasFocus = false;
     this.contentHeight = this.hasStatusLine() ? height - 1 : height;
@@ -75,7 +75,7 @@ Pane.prototype.reformatIfNecessary = function () {
 };
 
 Pane.prototype.getFormatter = function () {
-    return new WrappingFormatter(this.width);
+    return new WrappingFormatter(this.contentWidth);
 };
 
 Pane.prototype.redrawIfNecessary = function () {
@@ -88,12 +88,22 @@ Pane.prototype.redrawIfNecessary = function () {
             term.savePosition();
         }
 
+        var verticalLine = strings.repeat(" ", this.width - this.contentWidth);
         for (var y = 0; y < this.contentHeight; y++) {
             // Move to first position of line.
             term.moveTo(this.x, this.y + y);
 
             // Draw our line.
             this.layout.drawLine(this.topY + y, this.width);
+
+            // Draw vertical divider if necessary.
+            term.reset();
+            term.reverse();
+            if (verticalLine !== "") {
+                term.moveTo(this.x + this.width - verticalLine.length, this.y + y);
+                term.write(verticalLine);
+            }
+            term.reverseOff();
         }
 
         // Draw status line.
@@ -184,11 +194,21 @@ Pane.prototype.saveFile = function (callback) {
 };
 
 Pane.prototype.resize = function (width, height) {
+    // XXX This function is out of date. Copy behavior in constructor.
     this.width = width;
     this.height = height;
     this.contentHeight = height - 3;
     this.layoutDirty = true;
     this.redrawIfNecessary();
+};
+
+Pane.prototype.setWidth = function (width, redraw) {
+    this.width = width;
+    this.contentWidth = (this.x + width != this.window.width) ? width - 1 : width;
+    if (redraw !== false) {
+        this.layoutDirty = true;
+        this.queueRedraw();
+    }
 };
 
 Pane.prototype.onKey = function (key) {
@@ -266,9 +286,7 @@ Pane.prototype.generateStatusLine = function () {
 
     var right = this.keys.getState();
 
-    trace.log("<" + left + ">");
-    trace.log("<" + right + ">");
-    trace.log("<" + this.width + ">");
+    // XXX Check for line overflow.
     return left + strings.repeat(" ", this.width - left.length - right.length) + right;
 };
 
