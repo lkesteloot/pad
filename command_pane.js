@@ -63,12 +63,18 @@ CommandPane.prototype.submitCommand = function (callback) {
                 this.showTree(callback);
             }.bind(this)
         };
+        var result = null;
         try {
-            vm.runInNewContext(cmd, context);
+            result = vm.runInNewContext(cmd, context);
         } catch (e) {
             e = "" + e;
             this.isMessage = true;
             this.doc.setString(e);
+        }
+        if (typeof result === "function") {
+            // This is so that if they type "q", it'll evaluate to the "q"
+            // function, which we can just call for them.
+            result();
         }
         this.window.deactivateCommandPane();
     }
