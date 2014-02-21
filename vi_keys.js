@@ -216,6 +216,12 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
             pane.desiredDocIndex = pane.doc.findEndOfLine(pane.docIndex);
             break;
 
+        case "/":
+            // Require() this here to avoid circular dependency.
+            var SearchPane = require("./search_pane");
+            var searchPane = pane.openRightPane(SearchPane, true);
+            break;
+
         case "0":
             if (this.count === null) {
                 pane.desiredDocIndex = pane.doc.findStartOfLine(pane.docIndex);

@@ -24,8 +24,11 @@ CommandPane.prototype.hasStatusLine = function () {
     return false;
 };
 
-CommandPane.prototype.getFormatter = function () {
-    return new CommandFormatter(this.width, this.hasFocus, this.isMessage);
+// Override
+CommandPane.prototype.format = function () {
+    // XXX Just inline this class here.
+    var formatter = new CommandFormatter(this.width, this.hasFocus, this.isMessage);
+    formatter.format(this.doc, this.layout);
 };
 
 CommandPane.prototype.setFocus = function (hasFocus) {
@@ -83,8 +86,7 @@ CommandPane.prototype.submitCommand = function (callback) {
 };
 
 CommandPane.prototype.showTree = function () {
-    var treePane = this.window.getActivePane().openRightPane(FileTreePane);
-    this.window.setActivePane(treePane);
+    this.window.getActivePane().openRightPane(FileTreePane, true);
 };
 
 module.exports = CommandPane;

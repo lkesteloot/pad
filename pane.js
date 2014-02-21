@@ -5,7 +5,6 @@
 var path = require("path");
 var Doc = require("./doc");
 var Layout = require("./layout");
-var SimpleFormatter = require("./simple_formatter");
 var WrappingFormatter = require("./wrapping_formatter");
 var ViKeys = require("./vi_keys");
 var term = require("./term");
@@ -71,15 +70,18 @@ Pane.prototype.setFocus = function (hasFocus) {
 
 Pane.prototype.reformatIfNecessary = function () {
     if (this.layoutDirty) {
-        var formatter = this.getFormatter();
-        formatter.format(this.doc, this.layout);
+        this.format();
         this.layoutDirty = false;
         this.redrawDirty = true;
     }
 };
 
-Pane.prototype.getFormatter = function () {
-    return new WrappingFormatter(this.contentWidth);
+/**
+ * Subclass can override this. Must update this.layout.
+ */
+Pane.prototype.format = function () {
+    var formatter = new WrappingFormatter(this.contentWidth);
+    formatter.format(this.doc, this.layout);
 };
 
 Pane.prototype.redrawIfNecessary = function () {
@@ -225,51 +227,54 @@ Pane.prototype.sanitizeAndRefresh = function () {
     this.reformatIfNecessary();
 
     if (this.desiredDocIndex !== null) {
+        if (this.mainPane !== null) {
+            trace.log("desiredDocIndex: " + this.desiredDocIndex);
+        }
         var layoutPosition = this.layout.docIndexToLayoutPosition(this.desiredDocIndex);
         if (layoutPosition === null) {
             trace.log("Can't find layout position for doc index " + this.desiredDocIndex);
         } else {
-            this.cursorX = layoutPosition.layoutLine.getPrefixLength() + layoutPosition.offset;
+            this.cursorX = layoutPosition.line.getPrefixLength() + layoutPosition.offset;
             this.cursorY = layoutPosition.lineNumber;
         }
         this.desiredDocIndex = null;
     }
 
     // Clamp cursor to layout.
-    var layoutLineCount = this.layout.lines.length;
+    var lineCount = this.layout.lines.length;
     if (this.topY < 0) {
         this.topY = 0;
     }
-    if (this.topY > layoutLineCount - 1) {
-        this.topY = layoutLineCount - 1;
+    if (this.topY > lineCount - 1) {
+        this.topY = lineCount - 1;
     }
     if (this.cursorY < 0) {
         this.cursorY = 0;
     }
-    if (this.cursorY > layoutLineCount - 1) {
-        this.cursorY = layoutLineCount - 1;
+    if (this.cursorY > lineCount - 1) {
+        this.cursorY = lineCount - 1;
     }
     if (this.cursorX < 0) {
         this.cursorX = 0;
     }
-    var layoutLine = this.layout.lines[this.cursorY];
-    if (this.cursorX < layoutLine.getPrefixLength()) {
-        this.cursorX = layoutLine.getPrefixLength();
+    var line = this.layout.lines[this.cursorY];
+    if (this.cursorX < line.getPrefixLength()) {
+        this.cursorX = line.getPrefixLength();
     }
-    var lineLength = layoutLine.text.length;
-    if (this.cursorX > layoutLine.getPrefixLength() + lineLength) {
+    var lineLength = line.text.length;
+    if (this.cursorX > line.getPrefixLength() + lineLength) {
         // This is different than vi. Vi clamps to the last character, and we let it go
         // past that. It's consistent with what happens on an empty line.
-        this.cursorX = layoutLine.getPrefixLength() + lineLength;
+        this.cursorX = line.getPrefixLength() + lineLength;
     }
 
     // Find the location in the doc.
-    var layoutX = this.cursorX - layoutLine.getPrefixLength();
+    var layoutX = this.cursorX - line.getPrefixLength();
     if (layoutX < 0) {
         // Shouldn't happen -- we're on an indent.
         throw new Error("Cursor was on indent");
     }
-    this.docIndex = layoutLine.docIndex + layoutX;
+    this.docIndex = line.docIndex + layoutX;
 
     this.scrollToCursor();
     this.redrawIfNecessary();
@@ -305,7 +310,7 @@ Pane.prototype.getCurrentLine = function () {
     return this.doc.toString(start, end);
 };
 
-Pane.prototype.openRightPane = function (paneConstructor) {
+Pane.prototype.openRightPane = function (paneConstructor, activate) {
     this.closeRightPane();
 
     if (!paneConstructor) {
@@ -319,6 +324,10 @@ Pane.prototype.openRightPane = function (paneConstructor) {
     this.rightPane.mainPane = this;
     this.setWidth(split);
     this.window.panes.push(this.rightPane);
+
+    if (activate) {
+        this.window.setActivePane(this.rightPane);
+    }
 
     return this.rightPane;
 };

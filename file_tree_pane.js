@@ -3,8 +3,6 @@
 "use strict";
 
 var util = require("util");
-var vm = require("vm");
-var path = require("path");
 var fs = require("fs");
 var Pane = require("./pane");
 var FileTreeKeys = require("./file_tree_keys");
@@ -30,11 +28,5 @@ var FileTreePane = function (window, x, y, width, height) {
     this.keys = new FileTreeKeys();
 };
 util.inherits(FileTreePane, Pane);
-
-/*
-FileTreePane.prototype.getFormatter = function () {
-    return new FileTreeFormatter(this.width, this.hasFocus, this.isMessage);
-};
-*/
 
 module.exports = FileTreePane;

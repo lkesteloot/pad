@@ -24,7 +24,7 @@ Layout.prototype.drawLine = function (lineNumber, width) {
  * Finds the Line for a given docIndex (offset into a doc buffer). Returns an object with
  * the following fields:
  *
- *     layoutLine: the Line object for the line containing the index.
+ *     line: the Line object for the line containing the index.
  *     lineNumber: the line number of the layout line.
  *     offset: the offset into the layout line, after indentation.
  *
@@ -36,15 +36,19 @@ Layout.prototype.docIndexToLayoutPosition = function (docIndex) {
     }
 
     for (var lineNumber = 0; lineNumber < this.lines.length; lineNumber++) {
-        var layoutLine = this.lines[lineNumber];
+        var line = this.lines[lineNumber];
+        if (line.docIndex === null) {
+            // Not really from document. This is a fake line.
+            continue;
+        }
 
-        var offset = docIndex - layoutLine.docIndex;
-        if ((offset >= 0 && offset < layoutLine.text.length) ||
-            (offset == layoutLine.text.length && (layoutLine.hasEol ||
-                                                  lineNumber == this.lines.length - 1))) {
+        var offset = docIndex - line.docIndex;
+        if ((offset >= 0 && offset < line.text.length) ||
+            (offset == line.text.length && (line.hasEol ||
+                                            lineNumber == this.lines.length - 1))) {
 
             return {
-                layoutLine: layoutLine,
+                line: line,
                 lineNumber: lineNumber,
                 offset: offset
             };

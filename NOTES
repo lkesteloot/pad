@@ -1,5 +1,30 @@
 
 - To do
+    - Search.
+        - Do we need ad-hoc highlighting, not part of format?
+            - Useful for highlighting typed filename in file tree.
+            - Useful for highlighting search hits, both current and others.
+            - Useful for highlighting current entry in ^N and ^P.
+        - To do:
+            - When / is hit:
+                - Open right pane.
+                - Pane type is Search.
+                - In insert mode, can type search text, maybe like command pane.
+                - As characters are typed, show search results below, one per line.
+                - Highlight current one. Default to next after cursor.
+                - ^N and ^P navigate through the list.
+        - Slash to start search.
+            - Don't go to command pane. Just open right pane and search hit is at the top.
+        - Support * to look for current word.
+        - Use a right pane to show results.
+            - Show hit with some context.
+            - Could align hits vertically.
+            - At least highlight hit word.
+        - Current location is next hit after cursor.
+        - Jump to current hit as typing, like incsearch.
+        - Highlight hits in text too.
+        - ^N and ^P in both panes move through the hit list.
+    - Backspace if there's only space before on the line should back up to the previous tab stop.
     - Every class should have start() and stop() methods (or whatever) to register and
         unregister listeners.
     - Think about wrapped lines where the wrapping doesn't happen on a space.
