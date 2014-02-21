@@ -7,23 +7,27 @@ var events = require("events");
 var trace = require("./trace");
 
 var Doc = function () {
-    this.buffer = new Buffer(0);
-    this.filename = "";
-    this.modified = false;
     this.events = new events.EventEmitter();
-    this.undoStack = [];
-    this.redoStack = [];
+    this.setString("", false);
 };
 
 Doc.prototype.getLength = function () {
     return this.buffer.length;
 };
 
-Doc.prototype.setString = function (s) {
+Doc.prototype.isModified = function () {
+    return this.savedAt !== this.undoStack.length;
+};
+
+Doc.prototype.setString = function (s, emitEvent) {
     this.buffer = new Buffer(s);
     this.filename = "";
-    this.modified = false;
-    this.events.emit("change");
+    this.undoStack = [];
+    this.redoStack = [];
+    this.savedAt = 0;
+    if (emitEvent !== false) {
+        this.events.emit("change");
+    }
 };
 
 Doc.prototype.toString = function (start, end) {
@@ -39,9 +43,8 @@ Doc.prototype.readFile = function (filename, callback) {
         if (err) {
             callback(err);
         } else {
-            this.buffer = contents;
+            this.setString(contents.toString(), false);
             this.filename = filename;
-            this.modified = false;
             callback();
         }
     }.bind(this));
@@ -54,7 +57,7 @@ Doc.prototype.saveFile = function (callback) {
         if (err) {
             callback(err);
         } else {
-            this.modified = false;
+            this.savedAt = this.undoStack.length;
             this.events.emit("modified");
             callback();
         }
@@ -82,7 +85,6 @@ Doc.prototype.insertCharacters = function (index, s) {
     this.redoStack = [];
     change.forward();
     this.events.emit("change");
-    this.modified = true;
 };
 
 /**
@@ -115,7 +117,6 @@ Doc.prototype.deleteCharacters = function (fromIndex, toIndex) {
     this.redoStack = [];
     change.forward();
     this.events.emit("change");
-    this.modified = true;
 };
 
 Doc.prototype.undo = function () {

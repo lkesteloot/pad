@@ -94,6 +94,10 @@
     - Only support small files (source code, documents).
     - Lines and columns are always 0-based.
 - Wacky ideas
+    - Don't edit file, edit project.
+        - Can just run "pad" and it restores last project session (files edited, locations,
+            searches, etc.)
+        - When first on project, open file tree pane.
     - Serve web page to show more info on what's being edited in real time.
     - Serve web page of the HTML being edited right now. Update in real time.
         - Ditto with: Markdown, pixel shader, WebGL, Processing.JS, charts, etc.

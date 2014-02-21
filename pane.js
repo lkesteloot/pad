@@ -285,7 +285,7 @@ Pane.prototype.generateStatusLine = function () {
     } else {
         left = strings.unexpandHome(this.doc.filename);
     }
-    if (this.doc.modified) {
+    if (this.doc.isModified()) {
         left += " [+]";
     }
 
