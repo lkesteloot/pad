@@ -30,26 +30,46 @@ SearchPane.prototype.format = function () {
 
     var doc = this.mainPane.doc;
     var text = doc.toString();
-    var re = new RegExp(searchText, "mg");
+    var re;
+    try {
+        re = new RegExp(searchText, "mg");
+    } catch (e) {
+        // Syntax error.
+        re = null;
+    }
 
     var match;
     var lastStart = -1;
-    while ((match = re.exec(text)) !== null) {
+    while (re !== null && (match = re.exec(text)) !== null) {
         var word = match[0];
-        trace.log("Matched: <" + word + ">");
+        if (word === "") {
+            // Not matching anything. This isn't good, we won't make
+            // any forward progress and it's not useful to the user.
+            break;
+        }
+
+        // Find doc index of match.
         var start = match.index;
         if (start === lastStart) {
-            // Not making forward progress.
+            // Not making forward progress. This can happen when the search
+            // string is empty or allows empty matches, such as "a*". I don't
+            // think this can happen since we check for word === "" above,
+            // but I'm leaving this in just in case, since it would result in
+            // an infinite loop.
             break;
         }
         var end = start + word.length;
-        var before = Math.max(start - 5, doc.findStartOfLine(start));
-        var after = Math.min(end + 5, doc.findEndOfLine(start));
-        after = Math.min(after, this.contentWidth + before);
+
+        // Find doc index of context around match. We want to align the matches
+        // vertically, but also have them more or less centered. Assume that the
+        // length of the search string is about the length of the matched word.
+        var context = Math.floor((this.contentWidth - searchText.length)/2);
+        var before = Math.max(start - context, doc.findStartOfLine(start));
+        var after = Math.min(doc.findEndOfLine(start), before + this.contentWidth);
+
+        // Get what we want to show and highlight it.
         var extract = doc.toString(before, after);
-        trace.log("Extract: <" + extract + ">");
         var line = new Line(extract, 0, true, null);
-        trace.log(before + " " + start + " " + end + " " + after);
         if (start > before) {
             line.addFragment(new Fragment(0, start - before, term.dim));
         }
