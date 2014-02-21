@@ -18,12 +18,11 @@ var Pane = function (window, x, y, width, height) {
     this.y = y;
     this.setWidth(width, false);
     this.height = height;
+    this.leftPane = null;
+    this.rightPane = null;
+    this.mainPane = null;
     this.hasFocus = false;
     this.contentHeight = this.hasStatusLine() ? height - 1 : height;
-    this.cursorX = 0; // In layout space.
-    this.cursorY = 0;
-    this.docIndex = 0;
-    this.topY = 0; // Top of pane, in layout space.
     this.layout = new Layout();
     this.setDoc(new Doc());
     this.keys = new ViKeys();
@@ -50,6 +49,10 @@ Pane.prototype.setDoc = function (doc) {
     this.doc = doc;
     this.doc.events.on("change", this.onDocModified.bind(this));
     this.doc.events.on("modified", this.onDocModified.bind(this));
+    this.cursorX = 0; // In layout space.
+    this.cursorY = 0;
+    this.docIndex = 0;
+    this.topY = 0; // Top of pane, in layout space.
     this.layoutDirty = true;
     this.queueRedraw();
 };
@@ -300,6 +303,31 @@ Pane.prototype.getCurrentLine = function () {
     var end = this.doc.findEndOfLine(start);
 
     return this.doc.toString(start, end);
+};
+
+Pane.prototype.openRightPane = function (paneConstructor) {
+    this.closeRightPane();
+
+    if (!paneConstructor) {
+        paneConstructor = Pane;
+    }
+
+    var split = Math.floor(this.width*2/3);
+    this.rightPane = new paneConstructor(this.window,
+                                         this.x + split, this.y,
+                                         this.width - split, this.height);
+    this.rightPane.mainPane = this;
+    this.setWidth(split);
+    this.window.panes.push(this.rightPane);
+
+    return this.rightPane;
+};
+
+Pane.prototype.closeRightPane = function () {
+    if (this.rightPane !== null) {
+        this.window.closePane(this.rightPane);
+        this.rightPane = null;
+    }
 };
 
 module.exports = Pane;

@@ -83,9 +83,7 @@ CommandPane.prototype.submitCommand = function (callback) {
 };
 
 CommandPane.prototype.showTree = function () {
-    var originalPane = this.window.getActivePane();
-    var treePane = this.window.splitVertically(originalPane, FileTreePane);
-    treePane.setOriginalPane(originalPane);
+    var treePane = this.window.getActivePane().openRightPane(FileTreePane);
     this.window.setActivePane(treePane);
 };
 

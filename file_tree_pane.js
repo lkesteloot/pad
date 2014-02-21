@@ -27,14 +27,9 @@ var FileTreePane = function (window, x, y, width, height) {
         }
     }.bind(this));
 
-    this.originalPane = null;
     this.keys = new FileTreeKeys();
 };
 util.inherits(FileTreePane, Pane);
-
-FileTreePane.prototype.setOriginalPane = function (originalPane) {
-    this.originalPane = originalPane;
-};
 
 /*
 FileTreePane.prototype.getFormatter = function () {

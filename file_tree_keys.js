@@ -22,9 +22,9 @@ FileTreeKeys.prototype.onKey = function (key, pane, callback) {
         case "\r":
             // Open file.
             var filename = pane.getCurrentLine();
-            pane.originalPane.loadFile(filename, function () {
+            pane.mainPane.loadFile(filename, function () {
                 // Close this pane.
-                pane.window.closePane(pane, pane.originalPane);
+                pane.mainPane.closeRightPane();
             }.bind(this));
             break;
 

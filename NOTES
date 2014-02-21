@@ -1,22 +1,15 @@
 
 - To do
-    - Should panes be in a (binary) hierarchy, so that it's clear who to merge
-      with when closing a pane?
-    - Edit multiple files at once.
-        - Not like vim's buffers. Want something more closely tied to the project.
-        - Proposal:
-            - One key to pop up tree navigator.
-                - :e()
-                - Show files in directory of file.
-                    - Can use new pane type.
-                    - Can replace current pane or split to make new one. (Probably replace.)
-                    - Once a file is selected, load it in the previously-active pane.
-                        - Or ability to split new file?
-                    - Can cancel to return to previous pane.
-                - Can type name of file to jump to it.
-                    - How to navigate list? Arrow keys? ^J ^K ^D ^U? ^N ^P?
-            - Also can see recently-edited files.
-            - Also can assign hotkeys to files.
+    - Have concept of main pane with side panes.
+        - Left pane always scrolls with main pane. For errors, breakpoints, etc.
+        - Right pane can scroll, or not. For file tree, errors, hints, documentation, etc.
+        - Main pane has pointers to sub-panes and vice-versa.
+        - Easy to close side pane.
+        - Pane itself resizes and moves, to make it easy. But window knows what's what
+            and can calculate original size based on which side panes are open.
+        - Side panes cannot have side panes.
+        - Assume only horizontal splits across main panes. Vertical splits are always
+            secondary panes.
     - Every class should have start() and stop() methods (or whatever) to register and
         unregister listeners.
     - Think about wrapped lines where the wrapping doesn't happen on a space.

@@ -103,40 +103,29 @@ Window.prototype.nextPane = function () {
     }
 };
 
-Window.prototype.closePane = function (pane, newSelectedPane) {
+Window.prototype.closePane = function (pane) {
     var paneNumber = this.findPaneNumber(pane);
 
-    // Find adjoining pane.
-    var adjoiningPane = this.findAdjoiningPane(pane);
-    newSelectedPane = newSelectedPane || adjoiningPane;
+    if (pane.mainPane !== null) {
+        var mainPane = pane.mainPane;
 
-    // Remove focus if we've got the focus. Probably not really necessary.
-    if (paneNumber === this.activePaneNumber) {
-        pane.setFocus(false);
-    }
-
-    // Remove pane.
-    this.panes.splice(paneNumber, 1);
-
-    // Resize adjoining pane.
-    // XXX This assumes adjoiningPane is to the left of the pane.
-    adjoiningPane.setWidth(pane.x + pane.width - adjoiningPane.x);
-
-    // Find new pane.
-    this.activePaneNumber = this.findPaneNumber(adjoiningPane);
-    adjoiningPane.setFocus(true);
-};
-
-Window.prototype.findAdjoiningPane = function (pane) {
-    for (var i = 0; i < this.panes.length; i++) {
-        var otherPane = this.panes[i];
-        if (otherPane !== pane) {
-            // XXX lazy.
-            return otherPane;
+        // Remove focus if we've got the focus. Probably not really necessary.
+        if (paneNumber === this.activePaneNumber) {
+            pane.setFocus(false);
         }
-    }
 
-    throw new Error("can't find adjoining pane");
+        // Remove pane.
+        this.panes.splice(paneNumber, 1);
+
+        // Resize main pane.
+        mainPane.setWidth(mainPane.width + pane.width);
+
+        // Find new pane.
+        this.activePaneNumber = this.findPaneNumber(mainPane);
+        mainPane.setFocus(true);
+    } else {
+        throw new Error("not supported");
+    }
 };
 
 Window.prototype.activateCommandPane = function () {
@@ -149,24 +138,6 @@ Window.prototype.deactivateCommandPane = function () {
     this.commandPane.setFocus(false);
     this.commandPaneActive = false;
     this.getActivePane().setFocus(true);
-};
-
-/**
- * Splits the given pane in half vertically, creating a new empty pane on the right
- * and returning it.
- */
-Window.prototype.splitVertically = function (pane, paneConstructor) {
-    if (!paneConstructor) {
-        paneConstructor = Pane;
-    }
-
-    var half = Math.floor(pane.width/2);
-    var newPane = new paneConstructor(this, pane.x + half, pane.y, pane.width - half, pane.height);
-    pane.setWidth(half);
-
-    this.panes.push(newPane);
-
-    return newPane;
 };
 
 module.exports = Window;
