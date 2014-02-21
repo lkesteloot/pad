@@ -184,6 +184,13 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
             pane.redrawDirty = true;
             break;
 
+        case "\x12": // ^R
+            var docIndex = pane.doc.redo();
+            if (docIndex !== null) {
+                pane.desiredDocIndex = docIndex;
+            }
+            break;
+
         case "\x15": // ^U
             var lineCount = Math.ceil(pane.contentHeight/2);
             pane.cursorY -= lineCount;
@@ -304,6 +311,13 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
 
         case "p":
             pane.window.nextPane();
+            break;
+
+        case "u":
+            var docIndex = pane.doc.undo();
+            if (docIndex !== null) {
+                pane.desiredDocIndex = docIndex;
+            }
             break;
 
         case "w":

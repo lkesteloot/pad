@@ -11,6 +11,8 @@ var Doc = function () {
     this.filename = "";
     this.modified = false;
     this.events = new events.EventEmitter();
+    this.undoStack = [];
+    this.redoStack = [];
 };
 
 Doc.prototype.getLength = function () {
@@ -60,10 +62,25 @@ Doc.prototype.saveFile = function (callback) {
 };
 
 Doc.prototype.insertCharacters = function (index, s) {
-    this.buffer = Buffer.concat([
-        this.buffer.slice(0, index),
-        new Buffer(s),
-        this.buffer.slice(index)], this.buffer.length + s.length);
+    var change = {
+        forward: function () {
+            this.buffer = Buffer.concat([
+                this.buffer.slice(0, index),
+                new Buffer(s),
+                this.buffer.slice(index)]);
+            return index + s.length;
+        }.bind(this),
+        reverse: function () {
+            this.buffer = Buffer.concat([
+                this.buffer.slice(0, index),
+                this.buffer.slice(index + s.length)]);
+            return index;
+        }.bind(this)
+    };
+
+    this.undoStack.push(change);
+    this.redoStack = [];
+    change.forward();
     this.events.emit("change");
     this.modified = true;
 };
@@ -76,12 +93,55 @@ Doc.prototype.deleteCharacters = function (fromIndex, toIndex) {
     if (toIndex === undefined) {
         toIndex = fromIndex + 1;
     }
+    var removedText = this.toString(fromIndex, toIndex);
 
-    this.buffer = Buffer.concat([
-        this.buffer.slice(0, fromIndex),
-        this.buffer.slice(toIndex)]);
+    var change = {
+        forward: function () {
+            this.buffer = Buffer.concat([
+                this.buffer.slice(0, fromIndex),
+                this.buffer.slice(toIndex)]);
+            return fromIndex;
+        }.bind(this),
+        reverse: function () {
+            this.buffer = Buffer.concat([
+                this.buffer.slice(0, fromIndex),
+                new Buffer(removedText),
+                this.buffer.slice(fromIndex)]);
+            return fromIndex;
+        }.bind(this)
+    };
+
+    this.undoStack.push(change);
+    this.redoStack = [];
+    change.forward();
     this.events.emit("change");
     this.modified = true;
+};
+
+Doc.prototype.undo = function () {
+    var docIndex = null;
+
+    if (this.undoStack.length > 0) {
+        var change = this.undoStack.pop();
+        docIndex = change.reverse();
+        this.redoStack.push(change);
+        this.events.emit("change");
+    }
+
+    return docIndex;
+};
+
+Doc.prototype.redo = function () {
+    var docIndex = null;
+
+    if (this.redoStack.length > 0) {
+        var change = this.redoStack.pop();
+        docIndex = change.forward();
+        this.undoStack.push(change);
+        this.events.emit("change");
+    }
+
+    return docIndex;
 };
 
 /**

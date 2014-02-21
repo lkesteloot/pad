@@ -1,15 +1,5 @@
 
 - To do
-    - Have concept of main pane with side panes.
-        - Left pane always scrolls with main pane. For errors, breakpoints, etc.
-        - Right pane can scroll, or not. For file tree, errors, hints, documentation, etc.
-        - Main pane has pointers to sub-panes and vice-versa.
-        - Easy to close side pane.
-        - Pane itself resizes and moves, to make it easy. But window knows what's what
-            and can calculate original size based on which side panes are open.
-        - Side panes cannot have side panes.
-        - Assume only horizontal splits across main panes. Vertical splits are always
-            secondary panes.
     - Every class should have start() and stop() methods (or whatever) to register and
         unregister listeners.
     - Think about wrapped lines where the wrapping doesn't happen on a space.
@@ -36,6 +26,15 @@
           move to the right, then write another plugin to bind it to "l" key.
     - Use Command pattern to execute commands.
         - Supports undo/redo, logging, queuing, and simulation.
+    - Have concept of main pane with side panes.
+        - Documents can only be split horizontally. They're always full-width of the window.
+        - Left pane always scrolls with main pane. For errors, breakpoints, etc.
+        - Right pane can scroll, or not. For file tree, errors, hints, documentation, etc.
+        - Main pane has pointers to sub-panes and vice-versa.
+        - Easy to close side pane.
+        - Pane itself resizes and moves, to make it easy. But window knows what's what
+            and can calculate original size based on which side panes are open.
+        - Side panes cannot have side panes.
     - Objects:
         - Window
             - Responsible for managing panes.
