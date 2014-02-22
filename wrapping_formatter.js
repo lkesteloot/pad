@@ -7,6 +7,7 @@ var Fragment = require("./fragment");
 var trace = require("./trace");
 var term = require("./term");
 var strings = require("./strings");
+var Attr = require("./attr");
 
 var JAVASCRIPT_KEYWORDS = {
     "break": 0,
@@ -59,11 +60,11 @@ WrappingFormatter.prototype.format = function (doc, layout) {
             var end = start + word.length;
 
             // Figure out the color of the word.
-            var termFunction;
+            var attr;
             if (JAVASCRIPT_KEYWORDS.hasOwnProperty(word)) {
-                termFunction = term.dim;
+                attr = Attr.DIM;
             } else if (commentIndex >= 0 && start >= commentIndex) {
-                termFunction = term.dim;
+                attr = Attr.DIM
             } else {
                 // This is a ghetto highlighter that tries to highlight each word a
                 // different color by its hash. I thought it might be a good way to
@@ -72,23 +73,19 @@ WrappingFormatter.prototype.format = function (doc, layout) {
                 // not useful.
                 if (false) {
                     var color = Math.abs(strings.hash(word)) % 256;
-                    termFunction = function (color) {
-                        return function () {
-                            term.color(color);
-                        };
-                    }(color);
+                    attr = new Attr(color, null, null, null);
                 } else {
-                    termFunction = term.defaultColor;
+                    attr = Attr.NORMAL
                 }
             }
             if (lastStart !== start) {
-                line.addFragment(new Fragment(lastStart, start, term.dim));
+                line.addFragment("10-Syntax", new Fragment(lastStart, start, Attr.DIM));
             }
-            line.addFragment(new Fragment(start, end, termFunction));
+            line.addFragment("10-Syntax", new Fragment(start, end, attr));
             lastStart = end;
         }
         if (lastStart != text.length) {
-            line.addFragment(new Fragment(lastStart, text.length, term.dim));
+            line.addFragment("10-Syntax", new Fragment(lastStart, text.length, Attr.DIM));
         }
 
         lines.push(line);

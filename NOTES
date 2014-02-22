@@ -8,6 +8,44 @@
                 - Based on doc probably.
             - Useful for highlighting current entry in ^N and ^P.
                 - Based on layout.
+            - Options:
+                - Array of highlights in pane.
+                    - If docIndex-based, then can't highlight ad-hoc layout lines.
+                    - If layout-based, then hard to figure out layout from doc.
+                - Callback for each line, asking for fragments.
+                    - Could pass both docIndex and frame.
+                    - Needs extra logic on callee to know what to do.
+                - Update layout.
+                    - Super wasteful.
+                    - Interferes with other layout algorithms.
+                - Post-process to layout.
+                    - Each line has separate overlay fragments.
+                    - Easy to wipe out all overlays.
+                    - For search pane selection, find layout line and update it.
+                    - For main pane highlight for search, loop over all layouts and
+                        add highlights for sections overlapping search results.
+                        Careful with n^2 problems. This is similar to callback.
+=================>  - Could generalize by having hash of array of fragments.
+                        - Key is kind of highlight (syntax, search).
+                        - Easy to blow away just your own.
+                        - Must define order of precedence somewhere globally.
+                            - Or name them "50-Search" and sort keys.
+                        - Might have to combine too, like underscore just some words.
+                        - Maybe don't use term and revert to high-level structure:
+                            - Foreground color.
+                            - Background color.
+                            - Underscore.
+                            - Bold.
+                        - ... then can understand start/stop for each and combine them
+                            with overrides.
+                    - To do:
+                        * Add attr.js that defines attribute (including null for transparent).
+                        - Add hash of array of fragments for each line.
+                        - When drawing, get keys, sort, fetch, and sort/render.
+                        - When highlighting, blow away and reconstruct.
+                        - Try with search pane first.
+                        - Then try with search results in main pane.
+                        - Then prefix in file tree.
         - To do:
             - When / is hit:
                 - Open right pane.
@@ -178,6 +216,8 @@
     - sam
         - http://plan9.bell-labs.com/sys/doc/sam/sam.html
     - Bracket.
+    - Ace
+        - http://ace.c9.io/#nav=about
 - Community
     - Website for plugins.
     - Could we just use "npm install" like grunt does?

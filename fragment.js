@@ -2,14 +2,10 @@
 
 "use strict";
 
-var Fragment = function (start, end, termFunction) {
+var Fragment = function (start, end, attr) {
     this.start = start;
     this.end = end;
-    this.termFunction = termFunction;
-};
-
-Fragment.prototype.startSection = function () {
-    this.termFunction();
+    this.attr = attr;
 };
 
 module.exports = Fragment;

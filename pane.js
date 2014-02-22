@@ -87,49 +87,52 @@ Pane.prototype.format = function () {
 Pane.prototype.redrawIfNecessary = function () {
     this.reformatIfNecessary();
     if (this.redrawDirty) {
-        trace.log("Redrawing");
-
-        term.hideCursor();
-        if (!this.hasFocus) {
-            term.savePosition();
-        }
-
-        var verticalLine = strings.repeat(" ", this.width - this.contentWidth);
-        for (var y = 0; y < this.contentHeight; y++) {
-            // Move to first position of line.
-            term.moveTo(this.x, this.y + y);
-
-            // Draw our line.
-            this.layout.drawLine(this.topY + y, this.width);
-            term.reset();
-
-            // Draw vertical divider if necessary.
-            if (verticalLine !== "") {
-                term.moveTo(this.x + this.width - verticalLine.length, this.y + y);
-                term.reverse();
-                term.write(verticalLine);
-                term.reverseOff();
-            }
-        }
-
-        // Draw status line.
-        if (this.hasStatusLine()) {
-            term.moveTo(this.x, this.y + this.contentHeight);
-            term.reset();
-            term.reverse();
-            term.write(this.generateStatusLine());
-            term.reverseOff();
-        }
-
-        if (this.hasFocus) {
-            this.positionCursor();
-        } else {
-            term.restorePosition();
-        }
-        term.showCursor();
-
+        this.redraw();
         this.redrawDirty = false;
     }
+};
+
+Pane.prototype.redraw = function () {
+    trace.log("redraw()");
+
+    term.hideCursor();
+    if (!this.hasFocus) {
+        term.savePosition();
+    }
+
+    var verticalLine = strings.repeat(" ", this.width - this.contentWidth);
+    for (var y = 0; y < this.contentHeight; y++) {
+        // Move to first position of line.
+        term.moveTo(this.x, this.y + y);
+
+        // Draw our line.
+        this.layout.drawLine(this.topY + y, this.width);
+        term.reset();
+
+        // Draw vertical divider if necessary.
+        if (verticalLine !== "") {
+            term.moveTo(this.x + this.width - verticalLine.length, this.y + y);
+            term.reverse();
+            term.write(verticalLine);
+            term.reverseOff();
+        }
+    }
+
+    // Draw status line.
+    if (this.hasStatusLine()) {
+        term.moveTo(this.x, this.y + this.contentHeight);
+        term.reset();
+        term.reverse();
+        term.write(this.generateStatusLine());
+        term.reverseOff();
+    }
+
+    if (this.hasFocus) {
+        this.positionCursor();
+    } else {
+        term.restorePosition();
+    }
+    term.showCursor();
 };
 
 Pane.prototype.scrollToCursor = function () {

@@ -9,6 +9,7 @@ var trace = require("./trace");
 var Line = require("./line");
 var Fragment = require("./fragment");
 var term = require("./term");
+var Attr = require("./attr");
 
 // Subclass of Pane.
 var SearchPane = function (window, x, y, width, height) {
@@ -64,22 +65,23 @@ SearchPane.prototype.format = function () {
         var extract = hit.doc.toString(before, after);
         var line = new Line(extract, 0, true, null);
 
-        var normalColor;
-        var highlightColor;
+        var category = "10-Syntax";
+        var normalAttr;
+        var highlightAttr;
         if (i === this.selected) {
-            normalColor = function () { term.reset(); term.backgroundColor(28); };
-            highlightColor = function () { term.bold(); term.backgroundColor(28); term.color(11); };
+            normalAttr = new Attr(7, 28, null, null);
+            highlightAttr = new Attr(11, 28, true, null);
         } else {
-            normalColor = term.dim;
-            highlightColor = term.defaultColor;
+            normalAttr = Attr.DIM;
+            highlightAttr = Attr.NORMAL;
         }
 
         if (hit.start > before) {
-            line.addFragment(new Fragment(0, hit.start - before, normalColor));
+            line.addFragment(category, new Fragment(0, hit.start - before, normalAttr));
         }
-        line.addFragment(new Fragment(hit.start - before, hit.end - before, highlightColor));
+        line.addFragment(category, new Fragment(hit.start - before, hit.end - before, highlightAttr));
         if (after > hit.end) {
-            line.addFragment(new Fragment(hit.end - before, after - before, normalColor));
+            line.addFragment(category, new Fragment(hit.end - before, after - before, normalAttr));
         }
         lines.push(line);
     }

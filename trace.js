@@ -2,6 +2,7 @@
 
 "use strict";
 
+var util = require("util");
 var net = require("net");
 
 var gTracing = true;
@@ -49,4 +50,8 @@ exports.log = function (line) {
             gConnection.write(line);
         }
     }
+};
+
+exports.dir = function (obj) {
+    exports.log(util.inspect(obj, { depth: null }));
 };
