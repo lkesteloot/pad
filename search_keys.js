@@ -14,16 +14,20 @@ util.inherits(SearchKeys, ViKeys);
 
 SearchKeys.prototype.handleInsertKey = function (key, pane, callback) {
     switch (key) {
+        case "\r":
+        case "\n":
+            // Go back to main pane.
+            pane.window.setActivePane(pane.mainPane);
+            break;
+
         case "\x0E": // ^N
         case "\x1B[B": // Down arrow.
-            pane.selected++;
-            pane.layoutDirty = true;
+            pane.setSelected(pane.selected + 1);
             break;
 
         case "\x10": // ^P
         case "\x1B[A": // Up arrow.
-            pane.selected--;
-            pane.layoutDirty = true;
+            pane.setSelected(pane.selected - 1);
             break;
 
         default:

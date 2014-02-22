@@ -20,6 +20,18 @@ var SearchPane = function (window, x, y, width, height) {
 };
 util.inherits(SearchPane, Pane);
 
+SearchPane.prototype.setSelected = function (selected) {
+    this.selected = selected;
+
+    if (this.selected >= 0 && this.selected < this.hits.length) {
+        var hit = this.hits[this.selected];
+        this.mainPane.desiredDocIndex = hit.start;
+        this.mainPane.queueRedraw();
+    }
+
+    this.layoutDirty = true;
+};
+
 // Override.
 SearchPane.prototype.format = function () {
     var lines = [];
@@ -27,9 +39,9 @@ SearchPane.prototype.format = function () {
     var endOfLine = this.doc.findEndOfLine(0);
     var searchText = this.doc.toString(0, endOfLine);
 
-    var hits = performSearch(this.mainPane.doc, searchText);
-    if (this.selected > hits.length - 1) {
-        this.selected = hits.length - 1;
+    this.hits = performSearch(this.mainPane.doc, searchText);
+    if (this.selected > this.hits.length - 1) {
+        this.selected = this.hits.length - 1;
     }
     if (this.selected < 0) {
         this.selected = 0;
@@ -38,8 +50,8 @@ SearchPane.prototype.format = function () {
     lines.push(new Line(searchText, 0, true, 0));
     lines.push(new Line("", 0, true, null));
 
-    for (var i = 0; i < hits.length; i++) {
-        var hit = hits[i];
+    for (var i = 0; i < this.hits.length; i++) {
+        var hit = this.hits[i];
 
         // Find doc index of context around match. We want to align the matches
         // vertically, but also have them more or less centered. Assume that the

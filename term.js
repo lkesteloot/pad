@@ -2,6 +2,8 @@
 
 "use strict";
 
+// 256-color chart: http://misc.flogisoft.com/_media/bash/colors_format/256-colors.sh.png
+
 var ESC = String.fromCharCode(27);
 var CSI = ESC + "[";
 var RUNNING_ITERM2 = process.env["TERM_PROGRAM"] == "iTerm.app";
