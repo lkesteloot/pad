@@ -13,12 +13,25 @@ var SearchKeys = function () {
 util.inherits(SearchKeys, ViKeys);
 
 SearchKeys.prototype.handleInsertKey = function (key, pane, callback) {
-    if (key === "\r" || key === "\n") {
-        // Submit command.
-        // pane.submitCommand(callback);
-    } else {
-        ViKeys.prototype.handleInsertKey.call(this, key, pane, callback);
+    switch (key) {
+        case "\x0E": // ^N
+        case "\x1B[B": // Down arrow.
+            pane.selected++;
+            pane.layoutDirty = true;
+            break;
+
+        case "\x10": // ^P
+        case "\x1B[A": // Up arrow.
+            pane.selected--;
+            pane.layoutDirty = true;
+            break;
+
+        default:
+            ViKeys.prototype.handleInsertKey.call(this, key, pane, callback);
+            return;
     }
+
+    process.nextTick(callback);
 };
 
 module.exports = SearchKeys;

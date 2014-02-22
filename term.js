@@ -153,7 +153,7 @@ sgrCodes.map(function (code) {
 exports.rgb = function (channels, isBackground) {
     exports[isBackground ? 'backgroundColor' : 'color'](
         util.isArray(channels)        // color value
-        ? exports.rgb2dec(channels)     // [r,g,b] => dec
+        ? exports.rgb2dec(channels)   // [r,g,b] => dec
         : channels                    // dec
     );
 };

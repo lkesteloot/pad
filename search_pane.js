@@ -16,6 +16,7 @@ var SearchPane = function (window, x, y, width, height) {
 
     this.keys = new SearchKeys();
     this.hits = [];
+    this.selected = 0;
 };
 util.inherits(SearchPane, Pane);
 
@@ -27,6 +28,12 @@ SearchPane.prototype.format = function () {
     var searchText = this.doc.toString(0, endOfLine);
 
     var hits = performSearch(this.mainPane.doc, searchText);
+    if (this.selected > hits.length - 1) {
+        this.selected = hits.length - 1;
+    }
+    if (this.selected < 0) {
+        this.selected = 0;
+    }
 
     lines.push(new Line(searchText, 0, true, 0));
     lines.push(new Line("", 0, true, null));
@@ -44,12 +51,23 @@ SearchPane.prototype.format = function () {
         // Get what we want to show and highlight it.
         var extract = hit.doc.toString(before, after);
         var line = new Line(extract, 0, true, null);
-        if (hit.start > before) {
-            line.addFragment(new Fragment(0, hit.start - before, term.dim));
+
+        var normalColor;
+        var highlightColor;
+        if (i === this.selected) {
+            normalColor = function () { term.reset(); term.backgroundColor(28); };
+            highlightColor = function () { term.bold(); term.backgroundColor(28); term.color(11); };
+        } else {
+            normalColor = term.dim;
+            highlightColor = term.defaultColor;
         }
-        line.addFragment(new Fragment(hit.start - before, hit.end - before, term.defaultColor));
+
+        if (hit.start > before) {
+            line.addFragment(new Fragment(0, hit.start - before, normalColor));
+        }
+        line.addFragment(new Fragment(hit.start - before, hit.end - before, highlightColor));
         if (after > hit.end) {
-            line.addFragment(new Fragment(hit.end - before, after - before, term.dim));
+            line.addFragment(new Fragment(hit.end - before, after - before, normalColor));
         }
         lines.push(line);
     }
