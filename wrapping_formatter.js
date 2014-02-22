@@ -79,13 +79,13 @@ WrappingFormatter.prototype.format = function (doc, layout) {
                 }
             }
             if (lastStart !== start) {
-                line.addFragment("10-Syntax", new Fragment(lastStart, start, Attr.DIM));
+                line.addFragment(Line.SYNTAX_CATEGORY, new Fragment(lastStart, start, Attr.DIM));
             }
-            line.addFragment("10-Syntax", new Fragment(start, end, attr));
+            line.addFragment(Line.SYNTAX_CATEGORY, new Fragment(start, end, attr));
             lastStart = end;
         }
         if (lastStart != text.length) {
-            line.addFragment("10-Syntax", new Fragment(lastStart, text.length, Attr.DIM));
+            line.addFragment(Line.SYNTAX_CATEGORY, new Fragment(lastStart, text.length, Attr.DIM));
         }
 
         lines.push(line);

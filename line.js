@@ -17,6 +17,9 @@ var Line = function (text, indent, hasEol, docIndex) {
     this.categories = {};
 };
 
+Line.SYNTAX_CATEGORY = "10-Syntax";
+Line.SEARCH_CATEGORY = "50-Search";
+
 Line.prototype.addFragment = function (category, fragment) {
     if (!this.categories.hasOwnProperty(category)) {
         this.categories[category] = [];
@@ -25,6 +28,10 @@ Line.prototype.addFragment = function (category, fragment) {
 
     // Invalidate cache.
     this.fragments = null;
+};
+
+Line.prototype.clearFragments = function (category) {
+    delete this.categories[category];
 };
 
 Line.prototype.drawLine = function (width) {

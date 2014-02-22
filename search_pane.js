@@ -65,12 +65,12 @@ SearchPane.prototype.format = function () {
         var extract = hit.doc.toString(before, after);
         var line = new Line(extract, 0, true, null);
 
-        var category = "10-Syntax";
+        var category = Line.SYNTAX_CATEGORY;
         var normalAttr;
         var highlightAttr;
         if (i === this.selected) {
-            normalAttr = new Attr(7, 28, null, null);
-            highlightAttr = new Attr(11, 28, true, null);
+            normalAttr = Attr.DIM_HIGHLIGHT;
+            highlightAttr = Attr.HIGHLIGHT;
         } else {
             normalAttr = Attr.DIM;
             highlightAttr = Attr.NORMAL;
@@ -85,6 +85,38 @@ SearchPane.prototype.format = function () {
         }
         lines.push(line);
     }
+
+    // Highlight main pane.
+    var hitIndex = 0;
+    this.mainPane.layout.lines.forEach(function (line) {
+        line.clearFragments(Line.SEARCH_CATEGORY);
+        if (line.docIndex === null) {
+            // Not from a doc.
+            return;
+        }
+
+        var lineStart = line.docIndex;
+        var lineEnd = lineStart + line.text.length;
+
+        // Find the hit for this line.
+        while (hitIndex < this.hits.length && this.hits[hitIndex].end < lineStart) {
+            hitIndex++;
+        }
+
+        // Go through all hits, highlighting this line.
+        for (var i = hitIndex; i < this.hits.length; i++) {
+            var hit = this.hits[i];
+            if (hit.start >= lineEnd) {
+                // No more hits apply to this line.
+                break;
+            }
+
+            var start = Math.max(hit.start - lineStart, 0);
+            var end = Math.min(hit.end - lineStart, line.text.length);
+
+            line.addFragment(Line.SEARCH_CATEGORY, new Fragment(start, end, Attr.HIGHLIGHT));
+        }
+    }.bind(this));
 
     this.layout.lines = lines;
 };

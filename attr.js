@@ -18,6 +18,8 @@ var Attr = function (fg, bg, bold, underline) {
 
 Attr.NORMAL = new Attr(7, null, null, null);
 Attr.DIM = new Attr(239, null, null, null);
+Attr.HIGHLIGHT = new Attr(11, 28, null, null);
+Attr.DIM_HIGHLIGHT = new Attr(7, 28, null, null);
 
 Attr.prototype.apply = function () {
     term.reset();
