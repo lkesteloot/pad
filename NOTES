@@ -2,9 +2,12 @@
 - To do
     - Search.
         - Do we need ad-hoc highlighting, not part of format?
-            - Useful for highlighting typed filename in file tree.
+            - Useful for highlighting typed filename prefix in file tree.
+                - Currently based on doc, but shouldn't be using doc anyway.
             - Useful for highlighting search hits, both current and others.
+                - Based on doc probably.
             - Useful for highlighting current entry in ^N and ^P.
+                - Based on layout.
         - To do:
             - When / is hit:
                 - Open right pane.
@@ -138,6 +141,7 @@
         - Check $TERM_PROGRAM.
         - https://code.google.com/p/iterm2/wiki/ProprietaryEscapeCodes
     - Easy way to see commit message of blame of line you're on, and maybe history before that.
+    - Real-time TeX visualization: https://github.com/sharelatex/sharelatex
 - Nice things
     - When typing pathname of file to load, correct errors.
     - When typing pathname of file to create, create directories (with permission).

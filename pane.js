@@ -101,15 +101,15 @@ Pane.prototype.redrawIfNecessary = function () {
 
             // Draw our line.
             this.layout.drawLine(this.topY + y, this.width);
+            term.reset();
 
             // Draw vertical divider if necessary.
-            term.reset();
-            term.reverse();
             if (verticalLine !== "") {
                 term.moveTo(this.x + this.width - verticalLine.length, this.y + y);
+                term.reverse();
                 term.write(verticalLine);
+                term.reverseOff();
             }
-            term.reverseOff();
         }
 
         // Draw status line.
