@@ -53,6 +53,7 @@ Line.prototype.drawLine = function (width) {
         fragment.attr.apply();
         term.write(this.text.substring(fragment.start, fragment.end));
     }
+    term.reset();
     term.clearChars(width - this.text.length - this.indent);
 };
 
