@@ -10,8 +10,8 @@ var FileTreeKeys = require("./file_tree_keys");
 var trace = require("./trace");
 
 // Subclass of Pane.
-var FileTreePane = function (window, x, y, width, height) {
-    Pane.call(this, window, x, y, width, height);
+var FileTreePane = function (window, x, y, width, height, mainPane) {
+    Pane.call(this, window, x, y, width, height, mainPane);
 
     fs.readdir(".", function (err, files) {
         if (err) {

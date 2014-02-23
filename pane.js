@@ -11,15 +11,15 @@ var term = require("./term");
 var trace = require("./trace");
 var strings = require("./strings");
 
-var Pane = function (window, x, y, width, height) {
+var Pane = function (window, x, y, width, height, mainPane) {
     this.window = window;
     this.x = x;
     this.y = y;
     this.setWidth(width, false);
     this.height = height;
+    this.mainPane = mainPane || null;
     this.leftPane = null;
     this.rightPane = null;
-    this.mainPane = null;
     this.hasFocus = false;
     this.contentHeight = this.hasStatusLine() ? height - 1 : height;
     this.layout = new Layout();
@@ -329,11 +329,12 @@ Pane.prototype.openRightPane = function (paneConstructor, activate) {
         paneConstructor = Pane;
     }
 
+    this.desiredDocIndex = this.docIndex;
+
     var split = Math.floor(this.width*2/3);
     this.rightPane = new paneConstructor(this.window,
                                          this.x + split, this.y,
-                                         this.width - split, this.height);
-    this.rightPane.mainPane = this;
+                                         this.width - split, this.height, this);
     this.setWidth(split);
     this.window.panes.push(this.rightPane);
 

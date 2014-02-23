@@ -32,6 +32,9 @@ Line.prototype.addFragment = function (category, fragment) {
 
 Line.prototype.clearFragments = function (category) {
     delete this.categories[category];
+
+    // Invalidate cache.
+    this.fragments = null;
 };
 
 Line.prototype.drawLine = function (width) {

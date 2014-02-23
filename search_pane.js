@@ -12,12 +12,13 @@ var term = require("./term");
 var Attr = require("./attr");
 
 // Subclass of Pane.
-var SearchPane = function (window, x, y, width, height) {
-    Pane.call(this, window, x, y, width, height);
+var SearchPane = function (window, x, y, width, height, mainPane) {
+    Pane.call(this, window, x, y, width, height, mainPane);
 
     this.keys = new SearchKeys();
     this.hits = [];
     this.selected = 0;
+    this.origDocIndex = mainPane.docIndex;
 };
 util.inherits(SearchPane, Pane);
 
@@ -28,7 +29,6 @@ SearchPane.prototype.setSelected = function (selected) {
         var hit = this.hits[this.selected];
         this.mainPane.desiredDocIndex = hit.start;
         this.highlightMainPane();
-        this.mainPane.queueRedraw();
     }
 
     this.layoutDirty = true;
@@ -87,6 +87,23 @@ SearchPane.prototype.format = function () {
         lines.push(line);
     }
 
+    // If main pane's cursor isn't at a search hit, move it to the next search hit.
+    var preferredHit = null;
+    var docIndex = this.origDocIndex;
+    for (var i = 0; i < this.hits.length; i++) {
+        var hit = this.hits[i];
+        if (hit.start === docIndex) {
+            // Already at hit. Leave it.
+            this.selected = i;
+            break;
+        } else if (preferredHit === null && hit.start > docIndex) {
+            // First hit after cursor. Jump to it.
+            this.selected = i;
+            this.mainPane.desiredDocIndex = hit.start;
+            break;
+        }
+    }
+
     // Highlight main pane.
     this.highlightMainPane();
 
@@ -127,6 +144,7 @@ SearchPane.prototype.highlightMainPane = function () {
     }.bind(this));
 
     this.mainPane.redrawDirty = true;
+    this.mainPane.queueRedraw();
 };
 
 /**
