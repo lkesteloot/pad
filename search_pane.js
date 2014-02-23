@@ -23,6 +23,10 @@ var SearchPane = function (window, x, y, width, height, mainPane) {
 };
 util.inherits(SearchPane, Pane);
 
+SearchPane.prototype.setSearchText = function (searchText) {
+    this.doc.setString(searchText);
+};
+
 SearchPane.prototype.setSelected = function (selected) {
     this.selected = selected;
 

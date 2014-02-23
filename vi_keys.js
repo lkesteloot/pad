@@ -216,6 +216,18 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
             pane.desiredDocIndex = pane.doc.findEndOfLine(pane.docIndex);
             break;
 
+        case "*":
+            // Search for word under cursor.
+            var wordInfo = pane.doc.findWordAt(pane.docIndex);
+            if (wordInfo === null) {
+                // XXX Error message.
+            } else {
+                var SearchPane = require("./search_pane");
+                var searchPane = pane.openRightPane(SearchPane, true);
+                searchPane.setSearchText("\\b" + wordInfo.text + "\\b");
+            }
+            break;
+
         case "/":
             // Require() this here to avoid circular dependency.
             var SearchPane = require("./search_pane");

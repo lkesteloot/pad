@@ -38,6 +38,10 @@ Doc.prototype.charAt = function (index) {
     return this.toString(index, index + 1);
 };
 
+Doc.prototype.getCharacterTypeAt = function (index) {
+    return getCharacterType(this.charAt(index));
+};
+
 Doc.prototype.readFile = function (filename, callback) {
     fs.readFile(filename, function (err, contents) {
         if (err) {
@@ -184,6 +188,41 @@ Doc.prototype.findEndOfLine = function (index) {
 };
 
 /**
+ * Return the word at the specified location, or null if the location is
+ * not on a word. The object returned has:
+ *
+ *     text: word under cursor.
+ *     start: start index.
+ *     end: end index (exclusive).
+ */
+Doc.prototype.findWordAt = function (index) {
+    var type = this.getCharacterTypeAt(index);
+    if (type !== CHARACTER_TYPE_WORD) {
+        // Not on a word.
+        return null;
+    }
+
+    var start = index;
+    var end = index;
+
+    // Find start.
+    while (start > 0 && this.getCharacterTypeAt(start - 1) == CHARACTER_TYPE_WORD) {
+        start--;
+    }
+
+    // Find end.
+    while (end < this.getLength() && this.getCharacterTypeAt(end) == CHARACTER_TYPE_WORD) {
+        end++;
+    }
+
+    return {
+        text: this.toString(start, end),
+        start: start,
+        end: end
+    };
+};
+
+/**
  * Return the next of the next (count) words. If stopAtSpace is true,
  * will not go past the first space it sees if it wasn't already
  * on a space. This is for the "change word" command, which behaves
@@ -197,8 +236,7 @@ Doc.prototype.findNextWord = function (index, count, stopAtSpace) {
         // Forward one word.
         var previousType = null;
         while (index < maxIndex) {
-            var ch = this.charAt(index);
-            var type = getCharacterType(ch);
+            var type = this.getCharacterTypeAt(index);
             if (originalType === null) {
                 originalType = type;
             }
@@ -229,8 +267,7 @@ Doc.prototype.findPreviousWord = function (index, count) {
         // Reverse one word.
         var previousType = null;
         while (index > 0) {
-            var ch = this.charAt(index - 1);
-            var type = getCharacterType(ch);
+            var type = this.getCharacterTypeAt(index - 1);
             if (previousType === null || type === previousType) {
                 // Same, keep going.
             } else if (previousType === CHARACTER_TYPE_SPACE) {
