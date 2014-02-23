@@ -400,8 +400,19 @@ ViKeys.prototype.handleInsertKey = function (key, pane, callback) {
         this.setCount(null);
     } else if (key == "\x08" || key == "\x7F") {
         if (pane.docIndex > 0) {
-            pane.desiredDocIndex = pane.docIndex - 1;
-            pane.doc.deleteCharacters(pane.docIndex - 1);
+            var amount;
+            // If there's only spaces before us on this line, then backspace
+            // to the previous tabstop.
+            var startOfLine = pane.doc.findStartOfLine(pane.docIndex);
+            var text = pane.doc.toString(startOfLine, pane.docIndex);
+            if (text.match(/^ +$/)) {
+                amount = (text.length - 1) % INDENT_SIZE + 1;
+            } else {
+                amount = 1;
+            }
+
+            pane.desiredDocIndex = pane.docIndex - amount;
+            pane.doc.deleteCharacters(pane.docIndex - amount, pane.docIndex);
         }
     } else if (key.substring(0, 2) === "\x1B[") {
         // Control sequences.

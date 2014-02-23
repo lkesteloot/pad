@@ -1,6 +1,5 @@
 
 - To do
-    - Backspace if there's only space before on the line should back up to the previous tab stop.
     - Every class should have start() and stop() methods (or whatever) to register and
         unregister listeners.
     - Think about wrapped lines where the wrapping doesn't happen on a space.
