@@ -184,6 +184,14 @@ ViKeys.prototype.handleUnverbedKey = function (key, pane, callback) {
             pane.redrawDirty = true;
             break;
 
+        case "\x0E": // ^N
+        case "\x10": // ^P
+            if (pane.rightPane !== null) {
+                pane.rightPane.keys.onKey(key, pane.rightPane, callback);
+                pane.rightPane.queueRedraw();
+            }
+            break;
+
         case "\x12": // ^R
             var docIndex = pane.doc.redo();
             if (docIndex !== null) {

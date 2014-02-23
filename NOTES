@@ -1,6 +1,5 @@
 
 - To do
-    - ^N and ^P in main panes move through the search list.
     - Backspace if there's only space before on the line should back up to the previous tab stop.
     - Every class should have start() and stop() methods (or whatever) to register and
         unregister listeners.

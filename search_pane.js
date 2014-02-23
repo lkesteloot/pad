@@ -30,6 +30,12 @@ SearchPane.prototype.setSearchText = function (searchText) {
 
 SearchPane.prototype.setSelected = function (selected) {
     this.selected = selected;
+    if (this.selected > this.hits.length - 1) {
+        this.selected = this.hits.length - 1;
+    }
+    if (this.selected < 0) {
+        this.selected = 0;
+    }
 
     if (this.selected >= 0 && this.selected < this.hits.length) {
         var hit = this.hits[this.selected];
