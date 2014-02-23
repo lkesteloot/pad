@@ -6,7 +6,8 @@ var term = require("./term");
 var trace = require("./trace");
 
 /**
- * fg and bg are 256-colors. Bold and underline are booleans. Any of these
+ * Represents an attribute (color and style) of text. fg and bg
+ * are 256-colors. Bold and underline are booleans. Any of these
  * can be null to mean "transparent".
  */
 var Attr = function (fg, bg, bold, underline) {
@@ -16,11 +17,13 @@ var Attr = function (fg, bg, bold, underline) {
     this.underline = underline;
 };
 
+// Some built-in attributes.
 Attr.NORMAL = new Attr(7, null, null, null);
 Attr.DIM = new Attr(239, null, null, null);
 Attr.HIGHLIGHT = new Attr(11, 28, null, null);
 Attr.DIM_HIGHLIGHT = new Attr(7, 28, null, null);
 
+// Set the terminal to this attribute.
 Attr.prototype.apply = function () {
     term.reset();
     if (this.fg !== null) {
@@ -37,6 +40,11 @@ Attr.prototype.apply = function () {
     }
 };
 
+/**
+ * Given a map from category name to an object which has an "attr" attribute
+ * (yes this is terrible), collapses all the attributes. Does so in lexical
+ * order of the category, with the highest order winning.
+ */
 Attr.collapse = function (attrs) {
     var categories = Object.keys(attrs);
     categories.sort();

@@ -19,8 +19,9 @@ var SearchPane = function (window, x, y, width, height, mainPane) {
     this.hits = [];
     this.selected = 0;
     this.origDocIndex = mainPane.docIndex;
-    this.previousSearchText = null;
+    this.searchText = "";
     mainPane.events.on("format", this.onMainPaneFormat.bind(this));
+    mainPane.doc.events.on("change", this.onMainPaneChange.bind(this));
 };
 util.inherits(SearchPane, Pane);
 
@@ -46,16 +47,13 @@ SearchPane.prototype.setSelected = function (selected) {
     this.layoutDirty = true;
 };
 
-// Override.
-SearchPane.prototype.format = function () {
-    var lines = [];
-
+SearchPane.prototype.performSearch = function () {
     var endOfLine = this.doc.findEndOfLine(0);
     var searchText = this.doc.toString(0, endOfLine);
-    var searchTextChanged = searchText != this.previousSearchText;
-    this.previousSearchText = searchText;
+    var searchTextChanged = searchText != this.searchText;
+    this.searchText = searchText;
 
-    this.hits = performSearch(this.mainPane.doc, searchText);
+    this.hits = getSearchHits(this.mainPane.doc, searchText);
     if (this.selected > this.hits.length - 1) {
         this.selected = this.hits.length - 1;
     }
@@ -63,8 +61,8 @@ SearchPane.prototype.format = function () {
         this.selected = 0;
     }
 
-    // If main pane's cursor isn't at a search hit, move it to the next search hit.
     if (searchTextChanged) {
+        // If main pane's cursor isn't at a search hit, move it to the next search hit.
         var preferredHit = null;
         var docIndex = this.origDocIndex;
         for (var i = 0; i < this.hits.length; i++) {
@@ -80,9 +78,19 @@ SearchPane.prototype.format = function () {
                 break;
             }
         }
-    }
 
-    lines.push(new Line(searchText, 0, true, 0));
+        // Highlight main pane.
+        this.highlightMainPane();
+
+        this.layoutDirty = true;
+    }
+};
+
+// Override.
+SearchPane.prototype.format = function () {
+    var lines = [];
+
+    lines.push(new Line(this.searchText, 0, true, 0));
     lines.push(new Line("", 0, true, null));
 
     for (var i = 0; i < this.hits.length; i++) {
@@ -91,7 +99,7 @@ SearchPane.prototype.format = function () {
         // Find doc index of context around match. We want to align the matches
         // vertically, but also have them more or less centered. Assume that the
         // length of the search string is about the length of the matched word.
-        var context = Math.floor((this.contentWidth - searchText.length)/2);
+        var context = Math.floor((this.contentWidth - this.searchText.length)/2);
         var before = Math.max(hit.start - context, hit.doc.findStartOfLine(hit.start));
         var after = Math.min(hit.doc.findEndOfLine(hit.start), before + this.contentWidth);
 
@@ -120,14 +128,21 @@ SearchPane.prototype.format = function () {
         lines.push(line);
     }
 
-    // Highlight main pane.
-    this.highlightMainPane();
-
     this.layout.lines = lines;
 };
 
 SearchPane.prototype.onMainPaneFormat = function () {
     this.highlightMainPane();
+};
+
+SearchPane.prototype.onMainPaneChange = function () {
+    this.performSearch();
+};
+
+// Override
+SearchPane.prototype.onDocModified = function () {
+    this.performSearch();
+    Pane.prototype.onDocModified.call(this);
 };
 
 SearchPane.prototype.highlightMainPane = function () {
@@ -165,7 +180,6 @@ SearchPane.prototype.highlightMainPane = function () {
 
     this.mainPane.redrawDirty = true;
     this.mainPane.queueRedraw();
-    trace.log("highlightMainPane");
 };
 
 /**
@@ -175,7 +189,7 @@ SearchPane.prototype.highlightMainPane = function () {
  *     start: Doc index where hit starts.
  *     end: Doc index where hit ends.
  */
-var performSearch = function (doc, searchText) {
+var getSearchHits = function (doc, searchText) {
     var text = doc.toString();
 
     var re;
