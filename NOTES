@@ -1,7 +1,6 @@
 
 - To do
     - Consider implementing ".".
-    - In file tree, show / after directory.
     - Every class should have start() and stop() methods (or whatever) to register and
         unregister listeners.
     - Think about wrapped lines where the wrapping doesn't happen on a space.

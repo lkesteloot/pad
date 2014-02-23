@@ -72,9 +72,6 @@ Pane.prototype.setFocus = function (hasFocus) {
 
 Pane.prototype.reformatIfNecessary = function () {
     if (this.layoutDirty) {
-        if (this.mainPane === null) {
-            trace.log("formatting main pane");
-        }
         this.format();
         this.layoutDirty = false;
         this.redrawDirty = true;

@@ -17,38 +17,69 @@ var Fragment = require("./fragment");
 var FileTreePane = function (window, x, y, width, height, mainPane) {
     Pane.call(this, window, x, y, width, height, mainPane);
 
-    this.filenames = [".."];
+    this.keys = new FileTreeKeys();
+    this.updateFileList();
+};
+util.inherits(FileTreePane, Pane);
+
+FileTreePane.prototype.updateFileList = function () {
+    this.files = [];
+
+    this.addFilename("..");
 
     fs.readdir(".", function (err, files) {
         if (err) {
             trace.log("Error with readdir: " + err);
         } else {
             files.forEach(function (filename) {
-                this.filenames.push(filename);
+                this.addFilename(filename);
             }.bind(this));
         }
         this.layoutDirty = true;
         this.queueRedraw();
     }.bind(this));
-
-    this.keys = new FileTreeKeys();
 };
-util.inherits(FileTreePane, Pane);
+
+FileTreePane.prototype.addFilename = function (filename) {
+    var file = {
+        filename: filename,
+        stats: null
+    };
+
+    fs.stat(filename, function (err, stats) {
+        if (err) {
+            trace.log("Error with stat (" + filename + "): " + err);
+        } else {
+            file.stats = stats;
+            this.layoutDirty = true;
+            this.queueRedraw();
+        }
+    }.bind(this));
+
+    this.files.push(file);
+};
 
 // Override.
 FileTreePane.prototype.format = function () {
     var lines = [];
 
-    this.filenames.forEach(function (filename) {
-        lines.push(new Line(filename, 0, true, null));
+    this.files.forEach(function (file) {
+        var text = file.filename;
+        if (file.stats !== null) {
+            if (file.stats.isDirectory()) {
+                text += "/";
+            }
+        }
+
+        lines.push(new Line(text, 0, true, null));
     });
 
     this.layout.lines = lines;
 };
 
 FileTreePane.prototype.openFile = function () {
-    var filename = this.filenames[this.cursorY];
-    this.mainPane.loadFile(filename, function () {
+    var file = this.files[this.cursorY];
+    this.mainPane.loadFile(file.filename, function () {
         // Close this pane.
         this.mainPane.closeRightPane();
     }.bind(this));
