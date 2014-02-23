@@ -27,6 +27,7 @@ SearchPane.prototype.setSelected = function (selected) {
     if (this.selected >= 0 && this.selected < this.hits.length) {
         var hit = this.hits[this.selected];
         this.mainPane.desiredDocIndex = hit.start;
+        this.highlightMainPane();
         this.mainPane.queueRedraw();
     }
 
@@ -87,6 +88,12 @@ SearchPane.prototype.format = function () {
     }
 
     // Highlight main pane.
+    this.highlightMainPane();
+
+    this.layout.lines = lines;
+};
+
+SearchPane.prototype.highlightMainPane = function () {
     var hitIndex = 0;
     this.mainPane.layout.lines.forEach(function (line) {
         line.clearFragments(Line.SEARCH_CATEGORY);
@@ -113,12 +120,13 @@ SearchPane.prototype.format = function () {
 
             var start = Math.max(hit.start - lineStart, 0);
             var end = Math.min(hit.end - lineStart, line.text.length);
+            var attr = i === this.selected ? Attr.HIGHLIGHT : Attr.DIM_HIGHLIGHT;
 
-            line.addFragment(Line.SEARCH_CATEGORY, new Fragment(start, end, Attr.HIGHLIGHT));
+            line.addFragment(Line.SEARCH_CATEGORY, new Fragment(start, end, attr));
         }
     }.bind(this));
 
-    this.layout.lines = lines;
+    this.mainPane.redrawDirty = true;
 };
 
 /**

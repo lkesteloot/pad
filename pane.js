@@ -136,12 +136,24 @@ Pane.prototype.redraw = function () {
 };
 
 Pane.prototype.scrollToCursor = function () {
-    if (this.topY > this.cursorY) {
+    var halfPage = Math.floor(this.contentHeight / 2);
+
+    if (this.topY > this.cursorY + halfPage) {
+        // If too far away, center cursor.
+        this.topY = Math.max(this.cursorY - halfPage, 0);
+        this.redrawDirty = true;
+    } else if (this.topY > this.cursorY) {
         this.topY = this.cursorY;
         this.redrawDirty = true;
-    } else if (this.topY < this.cursorY - (this.contentHeight - 1)) {
-        this.topY = this.cursorY - (this.contentHeight - 1);
-        this.redrawDirty = true;
+    } else {
+        var minTop = this.cursorY - (this.contentHeight - 1);
+        if (this.topY < minTop - halfPage) {
+            this.topY = minTop + halfPage;
+            this.redrawDirty = true;
+        } else if (this.topY < minTop) {
+            this.topY = minTop;
+            this.redrawDirty = true;
+        }
     }
 };
 
@@ -230,9 +242,6 @@ Pane.prototype.sanitizeAndRefresh = function () {
     this.reformatIfNecessary();
 
     if (this.desiredDocIndex !== null) {
-        if (this.mainPane !== null) {
-            trace.log("desiredDocIndex: " + this.desiredDocIndex);
-        }
         var layoutPosition = this.layout.docIndexToLayoutPosition(this.desiredDocIndex);
         if (layoutPosition === null) {
             trace.log("Can't find layout position for doc index " + this.desiredDocIndex);
