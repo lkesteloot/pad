@@ -53,14 +53,13 @@ Line.prototype.drawLine = function (width) {
         fragment.attr.apply();
         term.write(this.text.substring(fragment.start, fragment.end));
     }
+
     term.reset();
     term.clearChars(width - this.text.length - this.indent);
 };
 
 Line.prototype.computeFragments = function () {
-    // Put all the fragments into an array of starts and ends. Sort those
-    // (first by location, then end-before-start), and walk through them
-    // all, applying the changes in order of priority.
+    // Put all the fragments into an array of starts and ends.
     var points = [];
     var addFragmentPoints = function (category, fragment) {
         points.push({
@@ -82,6 +81,8 @@ Line.prototype.computeFragments = function () {
             addFragmentPoints(category, fragment);
         });
     }
+
+    // Sort those (first by location, then end-before-start).
     points.sort(function (a, b) {
         // Primary sort by location.
         var cmp = a.location - b.location;

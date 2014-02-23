@@ -123,7 +123,7 @@ SearchPane.prototype.highlightMainPane = function () {
         var lineEnd = lineStart + line.text.length;
 
         // Find the hit for this line.
-        while (hitIndex < this.hits.length && this.hits[hitIndex].end < lineStart) {
+        while (hitIndex < this.hits.length && this.hits[hitIndex].end <= lineStart) {
             hitIndex++;
         }
 
