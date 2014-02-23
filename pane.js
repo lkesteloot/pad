@@ -2,6 +2,7 @@
 
 "use strict";
 
+var events = require("events");
 var path = require("path");
 var Doc = require("./doc");
 var Layout = require("./layout");
@@ -12,6 +13,7 @@ var trace = require("./trace");
 var strings = require("./strings");
 
 var Pane = function (window, x, y, width, height, mainPane) {
+    this.events = new events.EventEmitter();
     this.window = window;
     this.x = x;
     this.y = y;
@@ -70,9 +72,13 @@ Pane.prototype.setFocus = function (hasFocus) {
 
 Pane.prototype.reformatIfNecessary = function () {
     if (this.layoutDirty) {
+        if (this.mainPane === null) {
+            trace.log("formatting main pane");
+        }
         this.format();
         this.layoutDirty = false;
         this.redrawDirty = true;
+        this.events.emit("format");
     }
 };
 

@@ -20,6 +20,7 @@ var SearchPane = function (window, x, y, width, height, mainPane) {
     this.selected = 0;
     this.origDocIndex = mainPane.docIndex;
     this.previousSearchText = null;
+    mainPane.events.on("format", this.onMainPaneFormat.bind(this));
 };
 util.inherits(SearchPane, Pane);
 
@@ -119,6 +120,10 @@ SearchPane.prototype.format = function () {
     this.layout.lines = lines;
 };
 
+SearchPane.prototype.onMainPaneFormat = function () {
+    this.highlightMainPane();
+};
+
 SearchPane.prototype.highlightMainPane = function () {
     var hitIndex = 0;
     this.mainPane.layout.lines.forEach(function (line) {
@@ -154,6 +159,7 @@ SearchPane.prototype.highlightMainPane = function () {
 
     this.mainPane.redrawDirty = true;
     this.mainPane.queueRedraw();
+    trace.log("highlightMainPane");
 };
 
 /**
