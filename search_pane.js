@@ -19,6 +19,7 @@ var SearchPane = function (window, x, y, width, height, mainPane) {
     this.hits = [];
     this.selected = 0;
     this.origDocIndex = mainPane.docIndex;
+    this.previousSearchText = null;
 };
 util.inherits(SearchPane, Pane);
 
@@ -40,6 +41,8 @@ SearchPane.prototype.format = function () {
 
     var endOfLine = this.doc.findEndOfLine(0);
     var searchText = this.doc.toString(0, endOfLine);
+    var searchTextChanged = searchText != this.previousSearchText;
+    this.previousSearchText = searchText;
 
     this.hits = performSearch(this.mainPane.doc, searchText);
     if (this.selected > this.hits.length - 1) {
@@ -47,6 +50,25 @@ SearchPane.prototype.format = function () {
     }
     if (this.selected < 0) {
         this.selected = 0;
+    }
+
+    // If main pane's cursor isn't at a search hit, move it to the next search hit.
+    if (searchTextChanged) {
+        var preferredHit = null;
+        var docIndex = this.origDocIndex;
+        for (var i = 0; i < this.hits.length; i++) {
+            var hit = this.hits[i];
+            if (hit.start === docIndex) {
+                // Already at hit. Leave it.
+                this.selected = i;
+                break;
+            } else if (preferredHit === null && hit.start > docIndex) {
+                // First hit after cursor. Jump to it.
+                this.selected = i;
+                this.mainPane.desiredDocIndex = hit.start;
+                break;
+            }
+        }
     }
 
     lines.push(new Line(searchText, 0, true, 0));
@@ -85,23 +107,6 @@ SearchPane.prototype.format = function () {
             line.addFragment(category, new Fragment(hit.end - before, after - before, normalAttr));
         }
         lines.push(line);
-    }
-
-    // If main pane's cursor isn't at a search hit, move it to the next search hit.
-    var preferredHit = null;
-    var docIndex = this.origDocIndex;
-    for (var i = 0; i < this.hits.length; i++) {
-        var hit = this.hits[i];
-        if (hit.start === docIndex) {
-            // Already at hit. Leave it.
-            this.selected = i;
-            break;
-        } else if (preferredHit === null && hit.start > docIndex) {
-            // First hit after cursor. Jump to it.
-            this.selected = i;
-            this.mainPane.desiredDocIndex = hit.start;
-            break;
-        }
     }
 
     // Highlight main pane.
