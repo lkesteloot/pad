@@ -5,6 +5,8 @@
 var util = require("util");
 var net = require("net");
 
+var PORT = 8124;
+
 var gTracing = true;
 var gServer = null;
 var gConnection = null;
@@ -22,7 +24,7 @@ var startServer = function () {
             });
             gLines = [];
         });
-        gServer.listen(8124);
+        gServer.listen(PORT);
     }
 };
 
@@ -54,4 +56,23 @@ exports.log = function (line) {
 
 exports.dir = function (obj) {
     exports.log(util.inspect(obj, { depth: null }));
+};
+
+exports.monitor = function () {
+    var tryConnection = function () {
+        var client = net.connect(PORT, function () {
+            process.stdout.write("------------------------------------------------------------\n");
+        });
+        client.on("data", function (data) {
+            process.stdout.write(data.toString());
+        });
+        client.on("end", function (data) {
+            process.stdout.write("--- Disconnected ---\r");
+            setTimeout(tryConnection, 1000);
+        });
+        client.on("error", function (data) {
+            setTimeout(tryConnection, 1000);
+        });
+    };
+    tryConnection();
 };

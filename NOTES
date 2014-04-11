@@ -1,6 +1,14 @@
 
 - To do
-    - Consider implementing ".".
+    - Window resize no longer seems to work.
+    - After reading new file, should clear search, or recompute it.
+    - Support ".".
+        - Each action stores itself in a field.
+        - Could be a function to call.
+        - Insert would have to be created on ESC.
+        - Might be easier to have object with command and content.
+        - Insert would create one with empty string, which is extended with
+          every character and null'ed out when the arrow keys are pressed.
     - Every class should have start() and stop() methods (or whatever) to register and
         unregister listeners.
     - Think about wrapped lines where the wrapping doesn't happen on a space.
@@ -10,6 +18,8 @@
         - How do they implement the editor?
         - How do they do syntax highlighting?
     - Warn when quitting without saving.
+- Research
+    - go-oracle: https://docs.google.com/document/d/1SLk36YRjjMgKqe490mSRzOPYEDe0Y_WQNRv-EiFYUyw/view
 - Architecture
     - JavaScript in Node.js.
     - When loading file:
@@ -115,6 +125,9 @@
         - https://code.google.com/p/iterm2/wiki/ProprietaryEscapeCodes
     - Easy way to see commit message of blame of line you're on, and maybe history before that.
     - Real-time TeX visualization: https://github.com/sharelatex/sharelatex
+    - When entering a single-line comment and Enter is pressed, continue comment if
+        line didn't finish with a period. Or just never press Enter and wrap the text
+        automatically, with a virtual // at the front.
 - Nice things
     - When typing pathname of file to load, correct errors.
     - When typing pathname of file to create, create directories (with permission).
@@ -125,6 +138,10 @@
 - Reference
     - crowley98data.pdf in Downloads (compares buffer implementations).
     - Command line parsing: https://www.npmjs.org/package/commander
+    - ANSI:
+        - http://invisible-island.net/xterm/ctlseqs/ctlseqs.html
+        - http://www.xfree86.org/current/ctlseqs.html
+        - https://en.wikipedia.org/wiki/ANSI_escape_code
 - Competition
     - TextMate 2
         - Mac GUI.

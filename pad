@@ -4,9 +4,13 @@
 
 var Window = require("./window");
 var input = require("./input");
+var trace = require("./trace");
 
 if (process.argv.length <= 2) {
     console.log("usage: pad filename");
+} else if (process.argv[2] === "--trace") {
+    // Monitor the tracing port.
+    trace.monitor();
 } else {
     var window = new Window();
     var filename = process.argv[2];
