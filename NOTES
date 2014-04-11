@@ -1,6 +1,5 @@
 
 - To do
-    - Window resize no longer seems to work.
     - After reading new file, should clear search, or recompute it.
     - Support ".".
         - Each action stores itself in a field.

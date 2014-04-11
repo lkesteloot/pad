@@ -49,8 +49,14 @@ Window.prototype.updateScreenSize = function () {
 
         this.panes.forEach(function (pane) {
             // XXX Must actually lay out all panes:
-            /// pane.resize(width, height);
+            pane.resize(width, height - 1);
+            pane.queueRedraw();
         });
+
+        if (this.commandPane) {
+            this.commandPane.resize(this.width);
+            this.commandPane.queueRedraw();
+        }
     }
 };
 

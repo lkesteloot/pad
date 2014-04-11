@@ -24,6 +24,11 @@ CommandPane.prototype.hasStatusLine = function () {
     return false;
 };
 
+CommandPane.prototype.resize = function (width) {
+    Pane.prototype.resize.call(this, width, 1);
+    this.contentHeight = 1;
+};
+
 // Override
 CommandPane.prototype.format = function () {
     // XXX Just inline this class here.

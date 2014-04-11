@@ -17,13 +17,11 @@ var Pane = function (window, x, y, width, height, mainPane) {
     this.window = window;
     this.x = x;
     this.y = y;
-    this.setWidth(width, false);
-    this.height = height;
+    this.resize(width, height);
     this.mainPane = mainPane || null;
     this.leftPane = null;
     this.rightPane = null;
     this.hasFocus = false;
-    this.contentHeight = this.hasStatusLine() ? height - 1 : height;
     this.layout = new Layout();
     this.setDoc(new Doc());
     this.keys = new ViKeys();
@@ -38,6 +36,7 @@ var Pane = function (window, x, y, width, height, mainPane) {
     this.queueRedraw();
 };
 
+// Sub-class can override.
 Pane.prototype.hasStatusLine = function () {
     return true;
 };
@@ -83,6 +82,7 @@ Pane.prototype.reformatIfNecessary = function () {
  * Subclass can override this. Must update this.layout.
  */
 Pane.prototype.format = function () {
+    trace.log("format()");
     var formatter = new WrappingFormatter(this.contentWidth);
     formatter.format(this.doc, this.layout);
 };
@@ -219,21 +219,16 @@ Pane.prototype.saveFile = function (callback) {
 };
 
 Pane.prototype.resize = function (width, height) {
-    // XXX This function is out of date. Copy behavior in constructor.
-    this.width = width;
+    this.setWidth(width);
     this.height = height;
-    this.contentHeight = height - 3;
+    this.contentHeight = this.hasStatusLine() ? height - 1 : height;
     this.layoutDirty = true;
-    this.redrawIfNecessary();
 };
 
-Pane.prototype.setWidth = function (width, redraw) {
+Pane.prototype.setWidth = function (width) {
     this.width = width;
     this.contentWidth = (this.x + width != this.window.width) ? width - 1 : width;
-    if (redraw !== false) {
-        this.layoutDirty = true;
-        this.queueRedraw();
-    }
+    this.layoutDirty = true;
 };
 
 Pane.prototype.onKey = function (key) {
