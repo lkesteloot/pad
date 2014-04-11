@@ -1,6 +1,5 @@
 
 - To do
-    - After reading new file, should clear search, or recompute it.
     - Support ".".
         - Each action stores itself in a field.
         - Could be a function to call.
@@ -112,24 +111,21 @@
     - Serve web page of the HTML being edited right now. Update in real time.
         - Ditto with: Markdown, pixel shader, WebGL, Processing.JS, charts, etc.
         - Live view follows cursor.
-    - Make available as web app. Not sure how node's module system ports over.
-        - http://browserify.org/
-            - Wouldn't allow run-time plugins. It's all bundled into one file.
-    - Periodically save state of all tiles and buffers. If process is killed, offer
-        a way to restore it all, like Chrome does with tabs.
     - As you're editing HTML/CSS, the changes are pushed to the browser without requiring
         reload. See brackets.io.
+    - Periodically save state of all tiles and buffers. If process is killed, offer
+        a way to restore it all, like Chrome does with tabs.
     - Use iTerm2-specific escape codes.
         - Check $TERM_PROGRAM.
         - https://code.google.com/p/iterm2/wiki/ProprietaryEscapeCodes
     - Easy way to see commit message of blame of line you're on, and maybe history before that.
-    - Real-time TeX visualization: https://github.com/sharelatex/sharelatex
     - When entering a single-line comment and Enter is pressed, continue comment if
         line didn't finish with a period. Or just never press Enter and wrap the text
         automatically, with a virtual // at the front.
 - Nice things
     - When typing pathname of file to load, correct errors.
     - When typing pathname of file to create, create directories (with permission).
+        - Highlight new sections as the user is typing.
     - If loaded file has no LF on last line, save it that way.
     - When pasting, detect that characters are coming in too quickly and disable auto-indent.
     - Automatic visual line wrap with syntax-aware indent.
@@ -192,7 +188,6 @@
         have permuted index.
     - Help written in markdown.
     - Space to left of code is called "gutter". Line numbers, errors, other info.
-    - Line up/down should always be in visual lines, not buffer lines.
     - Ability to do math, like a spreadsheet.
     - For JS linting:
         - http://eslint.org/

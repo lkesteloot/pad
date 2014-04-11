@@ -55,11 +55,13 @@ Pane.prototype.setDoc = function (doc) {
     this.topY = 0; // Top of pane, in layout space.
     this.layoutDirty = true;
     this.queueRedraw();
+    this.events.emit("change");
 };
 
 Pane.prototype.onDocModified = function () {
     this.layoutDirty = true;
     process.nextTick(this.sanitizeAndRefresh.bind(this));
+    this.events.emit("change");
 };
 
 Pane.prototype.setFocus = function (hasFocus) {
@@ -334,6 +336,7 @@ Pane.prototype.openRightPane = function (paneConstructor, activate) {
                                          this.x + split, this.y,
                                          this.width - split, this.height, this);
     this.setWidth(split);
+    this.queueRedraw();
     this.window.panes.push(this.rightPane);
 
     if (activate) {

@@ -21,7 +21,7 @@ var SearchPane = function (window, x, y, width, height, mainPane) {
     this.origDocIndex = mainPane.docIndex;
     this.searchText = "";
     mainPane.events.on("format", this.onMainPaneFormat.bind(this));
-    mainPane.doc.events.on("change", this.onMainPaneChange.bind(this));
+    mainPane.events.on("change", this.onMainPaneChange.bind(this));
 };
 util.inherits(SearchPane, Pane);
 
