@@ -19,3 +19,9 @@ if (process.argv.length <= 2) {
     });
     input.start();
 }
+
+var Directory = require("./directory");
+var x = new Directory(".");
+x.populate(function () {
+    x.print();
+});

@@ -1,5 +1,55 @@
 
 - To do
+    - Think about supporting the entire project at once.
+        - Pad is always editing exactly one project.
+        - Project is defined by .git or whatever (Makefile, build.xml, pom.xml, etc.).
+            - Or explicit.
+            - Ignore known sub-trees (.git, dist, target) and files (binary files, backups).
+        - Everything done to entire project (search, etc.).
+        - Can keep several files open and unsaved at once.
+        - Can see which files are unsaved in file browser.
+        - Can save one or all files.
+        - Each pane assigned to one file.
+        - Bookmarks (mx and 'x) go to specific file and location.
+        - Questions:
+            - Does this imply that the file browser should always be full-height?
+            - Do I really want split window? I never really use it. IDEs don't have it.
+        - Simplification proposal:
+            - No split screen with multiple source files.
+            - Four panes ever:
+                - Source pane in middle.
+                - Command pane on bottom.
+                - File/search/error browser on right.
+                - Gutter pane on left.
+        - UI:
+            - Load pad without specifying filename.
+            - Show empty pane and file browser on right.
+            - Browser has full tree.
+            - Ctrl-O opens file browser.
+                - Ctrl-O again shows opened files (highlighting unsaved ones).
+                - Ctrl-O again closes it.
+            - Ctrl-S switches to previous file.
+                - Is it possible to get Ctrl-S?
+        - Data model:
+            - Doc:
+                - Represents a file on disk.
+                - Has scroll from top.
+                - Has cursor X/Y.
+                - Has file type.
+                - Has undo/redo history.
+                - Modified status.
+            - Pane:
+                - Represents rectangular area of screen.
+                - Concrete implementation has:
+                    - Key bindings.
+                    - Way to get layout.
+            - Directory:
+                - Hash from filename to either Directory or Doc.
+                - Read on load, and updated immediately because of watch.
+        - To do:
+            - Implement Directory.
+            - Use it in file browser.
+            - Make sure file browser has no doc, only layout.
     - Support ".".
         - Each action stores itself in a field.
         - Could be a function to call.
@@ -12,12 +62,13 @@
     - Think about wrapped lines where the wrapping doesn't happen on a space.
         - What does it mean to go to the end of the line ($)?
         - Same as the end of the file when there's no eol there.
+    - Warn when quitting without saving.
+        - Add quit override (:q!).
+- Research
+    - go-oracle: https://docs.google.com/document/d/1SLk36YRjjMgKqe490mSRzOPYEDe0Y_WQNRv-EiFYUyw/view
     - Play with Brackets to get ideas and look through code.
         - How do they implement the editor?
         - How do they do syntax highlighting?
-    - Warn when quitting without saving.
-- Research
-    - go-oracle: https://docs.google.com/document/d/1SLk36YRjjMgKqe490mSRzOPYEDe0Y_WQNRv-EiFYUyw/view
 - Architecture
     - JavaScript in Node.js.
     - When loading file:
@@ -103,6 +154,8 @@
     - Only support small files (source code, documents).
     - Lines and columns are always 0-based.
 - Wacky ideas
+    - A .pad file at top of project explicitly specifies project root and
+        project parameters, like file types, etc.
     - Don't edit file, edit project.
         - Can just run "pad" and it restores last project session (files edited, locations,
             searches, etc.)
@@ -113,7 +166,7 @@
         - Live view follows cursor.
     - As you're editing HTML/CSS, the changes are pushed to the browser without requiring
         reload. See brackets.io.
-    - Periodically save state of all tiles and buffers. If process is killed, offer
+    - Periodically save state of all panes and buffers. If process is killed, offer
         a way to restore it all, like Chrome does with tabs.
     - Use iTerm2-specific escape codes.
         - Check $TERM_PROGRAM.
