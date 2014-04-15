@@ -44,6 +44,10 @@ FileTreeKeys.prototype.onKey = function (key, pane, callback) {
             }
             break;
 
+        case "/":
+            pane.completeDirectory();
+            break;
+
         default:
             if (isFilenameKey(key)) {
                 pane.setSearchText(pane.searchText + key);

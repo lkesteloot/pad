@@ -42,7 +42,12 @@ FileTreePane.prototype.format = function () {
                 text += "/";
             }
 
-            var line = new Line(text, indent*4, true, null);
+            if (indent + text.length > this.contentWidth) {
+                // Might be clipped completely.
+                text = text.substring(0, this.contentWidth - indent);
+            }
+
+            var line = new Line(text, indent, true, null);
             line.misc = {
                 directory: directory,
                 filename: filename,
@@ -50,10 +55,10 @@ FileTreePane.prototype.format = function () {
             lines.push(line);
 
             if (value instanceof Directory && value.isOpen) {
-                addDirectory(value, indent + 1);
+                addDirectory(value, indent + 4);
             }
-        });
-    };
+        }.bind(this));
+    }.bind(this);
 
     addDirectory(this.window.directory, 0);
     this.layout.lines = lines;
@@ -105,6 +110,27 @@ FileTreePane.prototype.updateSearchHighlight = function () {
                 first = false;
             }
         }
+    }
+};
+
+// If the cursor is sitting on a line that's a directory, then
+// open the directory (if not already open) and reset the search
+// string. This doesn't work so well because the next search
+// isn't scoped to this directory. We could show only this directory
+// (at the top level) or dim the other directories. In either case not
+// sure how to get back up one directory.
+FileTreePane.prototype.completeDirectory = function () {
+    var line = this.layout.lines[this.cursorY];
+    var directory = line.misc.directory;
+    var filename = line.misc.filename;
+    var pathname = path.join(directory.pathname, filename);
+    var value = directory.entries[filename];
+
+    if (value instanceof Directory) {
+        value.isOpen = true;
+        this.setSearchText("");
+        this.layoutDirty = true;
+        this.queueRedraw();
     }
 };
 
