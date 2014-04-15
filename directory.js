@@ -17,6 +17,9 @@ var Directory = function (pathname) {
     this.pathname = path.resolve(pathname);
     this.entries = {};
     this.err = null;
+
+    // Whether the directory contents are visible in the UI.
+    this.isOpen = false;
 };
 
 Directory.prototype.populate = function (callback) {

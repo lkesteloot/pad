@@ -7,6 +7,7 @@ var CommandPane = require("./command_pane");
 var input = require("./input");
 var trace = require("./trace");
 var term = require("./term");
+var Directory = require("./directory");
 
 var Window = function () {
     this.width = -1;
@@ -30,6 +31,12 @@ var Window = function () {
     this.commandPaneActive = false;
 
     input.events.on("key", this.onKey.bind(this));
+
+    // Get directory tree of project.
+    this.directory = new Directory(".");
+    this.directory.populate(function () {
+        // Nothing to do here.
+    }.bind(this));
 };
 
 Window.prototype.shutdown = function () {

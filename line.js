@@ -15,6 +15,9 @@ var Line = function (text, indent, hasEol, docIndex) {
     this.docIndex = docIndex;
     this.fragments = null;
     this.categories = {};
+
+    // Owned by the pane, for any extra data it wants.
+    this.misc = null;
 };
 
 Line.SYNTAX_CATEGORY = "10-Syntax";

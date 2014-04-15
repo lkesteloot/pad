@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 // Copyright 2014 Lawrence Kesteloot
+// vim:ft=javascript
 
 var Window = require("./window");
 var input = require("./input");
@@ -15,13 +16,8 @@ if (process.argv.length <= 2) {
     var window = new Window();
     var filename = process.argv[2];
     window.panes[0].loadFile(filename, function () {
+        // XXX
         // window.panes[1].setDoc(window.panes[0].doc);
     });
     input.start();
 }
-
-var Directory = require("./directory");
-var x = new Directory(".");
-x.populate(function () {
-    x.print();
-});

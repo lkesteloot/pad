@@ -4,6 +4,7 @@
 
 var util = require("util");
 var fs = require("fs");
+var path = require("path");
 var Pane = require("./pane");
 var FileTreeKeys = require("./file_tree_keys");
 // var FileTreeFormatter = require("./command_formatter");
@@ -12,77 +13,68 @@ var strings = require("./strings");
 var Line = require("./line");
 var Attr = require("./attr");
 var Fragment = require("./fragment");
+var Directory = require("./directory");
 
 // Subclass of Pane.
 var FileTreePane = function (window, x, y, width, height, mainPane) {
     Pane.call(this, window, x, y, width, height, mainPane);
 
     this.keys = new FileTreeKeys();
-    this.updateFileList();
+    this.layoutDirty = true;
+    this.queueRedraw();
 };
 util.inherits(FileTreePane, Pane);
-
-FileTreePane.prototype.updateFileList = function () {
-    this.files = [];
-
-    this.addFilename("..");
-
-    fs.readdir(".", function (err, files) {
-        if (err) {
-            trace.log("Error with readdir: " + err);
-        } else {
-            files.forEach(function (filename) {
-                this.addFilename(filename);
-            }.bind(this));
-        }
-        this.layoutDirty = true;
-        this.queueRedraw();
-    }.bind(this));
-};
-
-FileTreePane.prototype.addFilename = function (filename) {
-    var file = {
-        filename: filename,
-        stats: null
-    };
-
-    fs.stat(filename, function (err, stats) {
-        if (err) {
-            trace.log("Error with stat (" + filename + "): " + err);
-        } else {
-            file.stats = stats;
-            this.layoutDirty = true;
-            this.queueRedraw();
-        }
-    }.bind(this));
-
-    this.files.push(file);
-};
 
 // Override.
 FileTreePane.prototype.format = function () {
     var lines = [];
 
-    this.files.forEach(function (file) {
-        var text = file.filename;
-        if (file.stats !== null) {
-            if (file.stats.isDirectory()) {
+    var addDirectory = function (directory, indent) {
+        var filenames = Object.keys(directory.entries);
+        filenames.sort();
+
+        filenames.forEach(function (filename) {
+            var value = directory.entries[filename];
+
+            var text = strings.repeat("    ", indent) + filename;
+            if (value instanceof Directory) {
                 text += "/";
             }
-        }
 
-        lines.push(new Line(text, 0, true, null));
-    });
+            var line = new Line(text, 0, true, null);
+            line.misc = {
+                directory: directory,
+                filename: filename
+            };
+            lines.push(line);
 
+            if (value instanceof Directory && value.isOpen) {
+                addDirectory(value, indent + 1);
+            }
+        });
+    };
+
+    addDirectory(this.window.directory, 0);
     this.layout.lines = lines;
 };
 
 FileTreePane.prototype.openFile = function () {
-    var file = this.files[this.cursorY];
-    this.mainPane.loadFile(file.filename, function () {
-        // Close this pane.
-        this.mainPane.closeRightPane();
-    }.bind(this));
+    var line = this.layout.lines[this.cursorY];
+    var directory = line.misc.directory;
+    var filename = line.misc.filename;
+    var pathname = path.join(directory.pathname, filename);
+    var value = directory.entries[filename];
+
+    if (value instanceof Directory) {
+        value.isOpen = !value.isOpen;
+        this.layoutDirty = true;
+        this.queueRedraw();
+    } else {
+        this.mainPane.loadFile(pathname, function () {
+            // Close this pane.
+            this.mainPane.closeRightPane();
+        }.bind(this));
+    }
 };
 
 FileTreePane.prototype.setSearchText = function (searchText) {

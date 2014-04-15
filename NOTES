@@ -47,8 +47,6 @@
                 - Hash from filename to either Directory or Doc.
                 - Read on load, and updated immediately because of watch.
         - To do:
-            - Implement Directory.
-            - Use it in file browser.
             - Make sure file browser has no doc, only layout.
     - Support ".".
         - Each action stores itself in a field.
