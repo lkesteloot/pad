@@ -28,7 +28,7 @@ var INDENT_SIZE = 4;
 /**
  * A printable version of our internal state.
  **/
-ViKeys.prototype.getState = function () {
+ViKeys.prototype.getState = function (pane) {
     return (this.count || "") + (this.verb || "") + (this.verbCount || "");
 };
 

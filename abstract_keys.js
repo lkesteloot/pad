@@ -12,7 +12,7 @@ var AbstractKeys = function () {
 /**
  * A printable version of our internal state.
  **/
-AbstractKeys.prototype.getState = function () {
+AbstractKeys.prototype.getState = function (pane) {
     return "";
 };
 

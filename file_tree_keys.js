@@ -7,12 +7,11 @@ var AbstractKeys = require("./abstract_keys");
 
 var FileTreeKeys = function () {
     AbstractKeys.call(this);
-    this.searchText = "";
 };
 util.inherits(FileTreeKeys, AbstractKeys);
 
-FileTreeKeys.prototype.getState = function () {
-    return this.searchText;
+FileTreeKeys.prototype.getState = function (pane) {
+    return pane.searchText;
 };
 
 FileTreeKeys.prototype.onKey = function (key, pane, callback) {
@@ -40,16 +39,14 @@ FileTreeKeys.prototype.onKey = function (key, pane, callback) {
 
         case "\x08": // Backspace
         case "\x7F": // Delete
-            if (this.searchText.length > 0) {
-                this.searchText = this.searchText.substring(0, this.searchText.length - 1);
-                pane.setSearchText(this.searchText);
+            if (pane.searchText.length > 0) {
+                pane.setSearchText(pane.searchText.substring(0, pane.searchText.length - 1));
             }
             break;
 
         default:
-            if (this.isFilenameKey(key)) {
-                this.searchText += key;
-                pane.setSearchText(this.searchText);
+            if (isFilenameKey(key)) {
+                pane.setSearchText(pane.searchText + key);
             }
             break;
     }
@@ -57,7 +54,7 @@ FileTreeKeys.prototype.onKey = function (key, pane, callback) {
     process.nextTick(callback);
 };
 
-FileTreeKeys.prototype.isFilenameKey = function (key) {
+var isFilenameKey = function (key) {
     return key >= " " && key < "\x7F" && key != "/" && key != "\\" &&
         key != ":" && key != ";" && key != "*" && key != "?";
 };

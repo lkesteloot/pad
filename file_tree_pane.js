@@ -20,6 +20,7 @@ var FileTreePane = function (window, x, y, width, height, mainPane) {
     Pane.call(this, window, x, y, width, height, mainPane);
 
     this.keys = new FileTreeKeys();
+    this.searchText = "";
     this.layoutDirty = true;
     this.queueRedraw();
 };
@@ -36,15 +37,15 @@ FileTreePane.prototype.format = function () {
         filenames.forEach(function (filename) {
             var value = directory.entries[filename];
 
-            var text = strings.repeat("    ", indent) + filename;
+            var text = filename;
             if (value instanceof Directory) {
                 text += "/";
             }
 
-            var line = new Line(text, 0, true, null);
+            var line = new Line(text, indent*4, true, null);
             line.misc = {
                 directory: directory,
-                filename: filename
+                filename: filename,
             };
             lines.push(line);
 
@@ -67,6 +68,7 @@ FileTreePane.prototype.openFile = function () {
 
     if (value instanceof Directory) {
         value.isOpen = !value.isOpen;
+        this.setSearchText("");
         this.layoutDirty = true;
         this.queueRedraw();
     } else {
@@ -78,18 +80,25 @@ FileTreePane.prototype.openFile = function () {
 };
 
 FileTreePane.prototype.setSearchText = function (searchText) {
+    this.searchText = searchText;
+
     // Update status line.
     this.redrawDirty = true;
 
+    this.updateSearchHighlight();
+};
+
+FileTreePane.prototype.updateSearchHighlight = function () {
     // Find the line that starts with the search prefix.
     var first = true;
     for (var i = 0; i < this.layout.lines.length; i++) {
         var line = this.layout.lines[i];
+        var filename = line.misc.filename;
         line.clearFragments(Line.SEARCH_CATEGORY);
 
-        if (searchText !== "" && strings.startsWith(line.text, searchText)) {
+        if (this.searchText !== "" && strings.startsWith(filename, this.searchText)) {
             line.addFragment(Line.SEARCH_CATEGORY,
-                             new Fragment(0, searchText.length, Attr.HIGHLIGHT));
+                             new Fragment(0, this.searchText.length, Attr.HIGHLIGHT));
 
             if (first) {
                 this.cursorY = i;

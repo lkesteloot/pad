@@ -306,7 +306,7 @@ Pane.prototype.generateStatusLine = function () {
         left += " [+]";
     }
 
-    var right = this.keys.getState();
+    var right = this.keys.getState(this);
 
     // XXX Check for line overflow.
     return left + strings.repeat(" ", this.width - left.length - right.length) + right;

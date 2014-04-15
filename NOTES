@@ -46,8 +46,7 @@
             - Directory:
                 - Hash from filename to either Directory or Doc.
                 - Read on load, and updated immediately because of watch.
-        - To do:
-            - Make sure file browser has no doc, only layout.
+    - Split "pane" into abstract pane (with no doc) and editor pane (with doc).
     - Support ".".
         - Each action stores itself in a field.
         - Could be a function to call.
