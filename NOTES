@@ -1,5 +1,6 @@
 
 - To do
+    - Split "pane" into abstract pane (with no doc) and editor pane (with doc).
     - Think about supporting the entire project at once.
         - Pad is always editing exactly one project.
         - Project is defined by .git or whatever (Makefile, build.xml, pom.xml, etc.).
@@ -46,7 +47,6 @@
             - Directory:
                 - Hash from filename to either Directory or Doc.
                 - Read on load, and updated immediately because of watch.
-    - Split "pane" into abstract pane (with no doc) and editor pane (with doc).
     - Support ".".
         - Each action stores itself in a field.
         - Could be a function to call.

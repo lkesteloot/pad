@@ -295,7 +295,9 @@ Pane.prototype.sanitizeAndRefresh = function () {
     }
 };
 
+// This is responsible for the whole width, not just the contentWidth.
 Pane.prototype.generateStatusLine = function () {
+    // Left half of the status line (filename, modified).
     var left;
     if (this.doc.filename === "") {
         left = "[No Name]";
@@ -306,10 +308,21 @@ Pane.prototype.generateStatusLine = function () {
         left += " [+]";
     }
 
+    // Right half (key-specific state).
     var right = this.keys.getState(this);
 
-    // XXX Check for line overflow.
-    return left + strings.repeat(" ", this.width - left.length - right.length) + right;
+    // Padding in the middle. Clip to make room.
+    var paddingSize = this.contentWidth - left.length - right.length;
+    if (paddingSize < 0) {
+        left = "..." + left.substring(-paddingSize + 3);
+        paddingSize = this.contentWidth - left.length - right.length;
+    }
+    var padding = strings.repeat(" ", paddingSize);
+
+    // The spot under the vertical divider.
+    var divider = strings.repeat(" ", this.width - this.contentWidth);
+
+    return left + padding + right + divider;
 };
 
 /**
