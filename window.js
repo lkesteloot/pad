@@ -2,7 +2,7 @@
 
 "use strict";
 
-var Pane = require("./pane");
+var EditorPane = require("./editor_pane");
 var CommandPane = require("./command_pane");
 var input = require("./input");
 var trace = require("./trace");
@@ -20,10 +20,10 @@ var Window = function () {
 
     if (false) {
         var half = Math.floor(this.height/2);
-        this.panes.push(new Pane(this, 0, 0, this.width, half));
-        this.panes.push(new Pane(this, 0, half, this.width, this.height - 1 - half));
+        this.panes.push(new EditorPane(this, 0, 0, this.width, half));
+        this.panes.push(new EditorPane(this, 0, half, this.width, this.height - 1 - half));
     } else {
-        this.panes.push(new Pane(this, 0, 0, this.width, this.height - 1));
+        this.panes.push(new EditorPane(this, 0, 0, this.width, this.height - 1));
     }
     this.getActivePane().setFocus(true);
 
