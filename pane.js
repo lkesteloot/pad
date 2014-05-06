@@ -3,10 +3,7 @@
 "use strict";
 
 var events = require("events");
-var path = require("path");
-var Doc = require("./doc");
 var Layout = require("./layout");
-var WrappingFormatter = require("./wrapping_formatter");
 var ViKeys = require("./vi_keys");
 var term = require("./term");
 var trace = require("./trace");
@@ -17,13 +14,16 @@ var Pane = function (window, x, y, width, height, mainPane) {
     this.window = window;
     this.x = x;
     this.y = y;
+    this.cursorX = 0; // In layout space.
+    this.cursorY = 0;
+    this.docIndex = 0;
+    this.topY = 0; // Top of pane, in layout space.
     this.resize(width, height);
     this.mainPane = mainPane || null;
     this.leftPane = null;
     this.rightPane = null;
     this.hasFocus = false;
     this.layout = new Layout();
-    this.setDoc(new Doc());
     this.keys = new ViKeys();
     this.keys.events.on("mode", Pane.prototype.onKeysModeChange.bind(this));
     this.keys.events.on("mode", Pane.prototype.onKeysStateChange.bind(this));
@@ -43,25 +43,6 @@ Pane.prototype.hasStatusLine = function () {
 
 Pane.prototype.queueRedraw = function () {
     setTimeout(this.sanitizeAndRefresh.bind(this), 0);
-};
-
-Pane.prototype.setDoc = function (doc) {
-    this.doc = doc;
-    this.doc.events.on("change", this.onDocModified.bind(this));
-    this.doc.events.on("modified", this.onDocModified.bind(this));
-    this.cursorX = 0; // In layout space.
-    this.cursorY = 0;
-    this.docIndex = 0;
-    this.topY = 0; // Top of pane, in layout space.
-    this.layoutDirty = true;
-    this.queueRedraw();
-    this.events.emit("change");
-};
-
-Pane.prototype.onDocModified = function () {
-    this.layoutDirty = true;
-    process.nextTick(this.sanitizeAndRefresh.bind(this));
-    this.events.emit("change");
 };
 
 Pane.prototype.setFocus = function (hasFocus) {
@@ -85,8 +66,6 @@ Pane.prototype.reformatIfNecessary = function () {
  */
 Pane.prototype.format = function () {
     trace.log("format()");
-    var formatter = new WrappingFormatter(this.contentWidth);
-    formatter.format(this.doc, this.layout);
 };
 
 Pane.prototype.redrawIfNecessary = function () {
@@ -187,39 +166,6 @@ Pane.prototype.onKeysStateChange = function () {
     this.redrawDirty = true;
 };
 
-Pane.prototype.loadFile = function (filename, callback) {
-    var doc = new Doc();
-    var self = this;
-    var pathname = path.resolve(filename);
-
-    doc.readFile(pathname, function (err) {
-        if (err) {
-            if (err.code === "ENOENT") {
-                console.log("File not found: " + pathname);
-            } else {
-                console.log("Error loading file: " + err);
-            }
-        } else {
-            self.setDoc(doc);
-            self.redrawIfNecessary();
-            if (callback) {
-                callback();
-            }
-        }
-    });
-};
-
-Pane.prototype.saveFile = function (callback) {
-    var self = this;
-
-    this.doc.saveFile(function (err) {
-        // XXX check err.
-        // Update the status line:
-        self.redrawDirty = true;
-        callback();
-    });
-};
-
 Pane.prototype.resize = function (width, height) {
     this.setWidth(width);
     this.height = height;
@@ -297,42 +243,8 @@ Pane.prototype.sanitizeAndRefresh = function () {
 
 // This is responsible for the whole width, not just the contentWidth.
 Pane.prototype.generateStatusLine = function () {
-    // Left half of the status line (filename, modified).
-    var left;
-    if (this.doc.filename === "") {
-        left = "[No Name]";
-    } else {
-        left = strings.unexpandHome(this.doc.filename);
-    }
-    if (this.doc.isModified()) {
-        left += " [+]";
-    }
-
-    // Right half (key-specific state).
-    var right = this.keys.getState(this);
-
-    // Padding in the middle. Clip to make room.
-    var paddingSize = this.contentWidth - left.length - right.length;
-    if (paddingSize < 0) {
-        left = "..." + left.substring(-paddingSize + 3);
-        paddingSize = this.contentWidth - left.length - right.length;
-    }
-    var padding = strings.repeat(" ", paddingSize);
-
-    // The spot under the vertical divider.
-    var divider = strings.repeat(" ", this.width - this.contentWidth);
-
-    return left + padding + right + divider;
-};
-
-/**
- * Return the current line, not including the EOL.
- */
-Pane.prototype.getCurrentLine = function () {
-    var start = this.doc.findStartOfLine(this.docIndex);
-    var end = this.doc.findEndOfLine(start);
-
-    return this.doc.toString(start, end);
+    // Override in subclass.
+    return "";
 };
 
 Pane.prototype.openRightPane = function (paneConstructor, activate) {

@@ -7,7 +7,6 @@ var fs = require("fs");
 var path = require("path");
 var Pane = require("./pane");
 var FileTreeKeys = require("./file_tree_keys");
-// var FileTreeFormatter = require("./command_formatter");
 var trace = require("./trace");
 var strings = require("./strings");
 var Line = require("./line");

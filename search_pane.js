@@ -3,7 +3,7 @@
 "use strict";
 
 var util = require("util");
-var Pane = require("./pane");
+var EditorPane = require("./editor_pane");
 var SearchKeys = require("./search_keys");
 var trace = require("./trace");
 var Line = require("./line");
@@ -11,9 +11,9 @@ var Fragment = require("./fragment");
 var term = require("./term");
 var Attr = require("./attr");
 
-// Subclass of Pane.
+// Subclass of EditorPane.
 var SearchPane = function (window, x, y, width, height, mainPane) {
-    Pane.call(this, window, x, y, width, height, mainPane);
+    EditorPane.call(this, window, x, y, width, height, mainPane);
 
     this.keys = new SearchKeys();
     this.hits = [];
@@ -23,7 +23,7 @@ var SearchPane = function (window, x, y, width, height, mainPane) {
     mainPane.events.on("format", this.onMainPaneFormat.bind(this));
     mainPane.events.on("change", this.onMainPaneChange.bind(this));
 };
-util.inherits(SearchPane, Pane);
+util.inherits(SearchPane, EditorPane);
 
 SearchPane.prototype.setSearchText = function (searchText) {
     this.doc.setString(searchText);
@@ -142,7 +142,7 @@ SearchPane.prototype.onMainPaneChange = function () {
 // Override
 SearchPane.prototype.onDocModified = function () {
     this.performSearch();
-    Pane.prototype.onDocModified.call(this);
+    EditorPane.prototype.onDocModified.call(this);
 };
 
 SearchPane.prototype.highlightMainPane = function () {

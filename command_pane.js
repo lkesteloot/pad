@@ -5,27 +5,28 @@
 var util = require("util");
 var vm = require("vm");
 var path = require("path");
-var Pane = require("./pane");
+var EditorPane = require("./editor_pane");
 var CommandKeys = require("./command_keys");
 var CommandFormatter = require("./command_formatter");
 var FileTreePane = require("./file_tree_pane");
+var trace = require("./trace");
 
-// Subclass of Pane.
+// Subclass of EditorPane.
 var CommandPane = function (window, x, y, width) {
-    Pane.call(this, window, x, y, width, 1);
+    EditorPane.call(this, window, x, y, width, 1);
 
     this.isMessage = false;
     this.contentHeight = 1;
     this.keys = new CommandKeys();
 };
-util.inherits(CommandPane, Pane);
+util.inherits(CommandPane, EditorPane);
 
 CommandPane.prototype.hasStatusLine = function () {
     return false;
 };
 
 CommandPane.prototype.resize = function (width) {
-    Pane.prototype.resize.call(this, width, 1);
+    EditorPane.prototype.resize.call(this, width, 1);
     this.contentHeight = 1;
 };
 
@@ -37,7 +38,7 @@ CommandPane.prototype.format = function () {
 };
 
 CommandPane.prototype.setFocus = function (hasFocus) {
-    Pane.prototype.setFocus.call(this, hasFocus);
+    EditorPane.prototype.setFocus.call(this, hasFocus);
     if (hasFocus) {
         this.isMessage = false;
         this.doc.setString("");
