@@ -37,6 +37,7 @@ var JAVASCRIPT_KEYWORDS = {
     "while": 0,
     "with": 0,
 };
+var VISIBLE_TAB = "\u2192";
 
 var WrappingFormatter = function (wrapWidth) {
     this.wrapWidth = wrapWidth;
@@ -46,10 +47,25 @@ WrappingFormatter.prototype.format = function (doc, layout) {
     var lines = [];
     var buffer = doc.buffer;
 
+    // Add a display line.
     var addLine = function (start, end, indent, hasEol) {
         var text = buffer.toString("utf8", start, end);
+
+        // Replace tabs with arrow.
+        var index;
+        var fragments = [];
+        while ((index = text.indexOf("\x09")) >= 0) {
+            text = text.substring(0, index) + VISIBLE_TAB + text.substring(index + 1);
+            fragments.push(new Fragment(index, index + 1, Attr.SPECIAL));
+        }
+
+        // Create visible line.
         var line = new Line(text, indent, hasEol, start);
 
+        // Apply special fragments.
+        line.addFragments(Line.SPECIAL_CATEGORY, fragments);
+
+        // Syntax highlighting.
         var commentIndex = text.indexOf("//");
         var re = /[a-zA-Z0-9_]+/g;
         var match;
@@ -64,7 +80,7 @@ WrappingFormatter.prototype.format = function (doc, layout) {
             if (JAVASCRIPT_KEYWORDS.hasOwnProperty(word)) {
                 attr = Attr.DIM;
             } else if (commentIndex >= 0 && start >= commentIndex) {
-                attr = Attr.DIM
+                attr = Attr.DIM;
             } else {
                 // This is a ghetto highlighter that tries to highlight each word a
                 // different color by its hash. I thought it might be a good way to
@@ -75,7 +91,7 @@ WrappingFormatter.prototype.format = function (doc, layout) {
                     var color = Math.abs(strings.hash(word)) % 256;
                     attr = new Attr(color, null, null, null);
                 } else {
-                    attr = Attr.NORMAL
+                    attr = Attr.NORMAL;
                 }
             }
             if (lastStart !== start) {
@@ -113,6 +129,7 @@ WrappingFormatter.prototype.format = function (doc, layout) {
         }
     }
 
+    // No newline on last line.
     if (startOfLine !== null) {
         addLine(startOfLine, buffer.length, indent, false);
     }

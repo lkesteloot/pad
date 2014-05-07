@@ -21,6 +21,7 @@ var Line = function (text, indent, hasEol, docIndex) {
 };
 
 Line.SYNTAX_CATEGORY = "10-Syntax";
+Line.SPECIAL_CATEGORY = "20-Special";
 Line.SEARCH_CATEGORY = "50-Search";
 
 Line.prototype.addFragment = function (category, fragment) {
@@ -31,6 +32,12 @@ Line.prototype.addFragment = function (category, fragment) {
 
     // Invalidate cache.
     this.fragments = null;
+};
+
+Line.prototype.addFragments = function (category, fragments) {
+    fragments.forEach(function (fragment) {
+        this.addFragment(category, fragment);
+    }.bind(this));
 };
 
 Line.prototype.clearFragments = function (category) {

@@ -160,6 +160,7 @@ exports.rgb = function (channels, isBackground) {
     );
 };
 
+// Each channel is 0 to 5 inclusive.
 exports.rgb2dec = function (channels) {
     return channels.reverse().reduce(function (dec, value, bit) {
         return dec + value * Math.pow(6, bit);

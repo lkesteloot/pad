@@ -1,7 +1,5 @@
 
 - To do
-    - Can we make CommandPane and SearchPane not inherit from EditorPane?
-    - Display tabs as spaces. Currently actually drawing a tab.
     - Think about supporting the entire project at once.
         - Pad is always editing exactly one project.
         - Project is defined by .git or whatever (Makefile, build.xml, pom.xml, etc.).
