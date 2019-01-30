@@ -12,11 +12,13 @@ var strings = require("./strings");
 var Pane = function (window, x, y, width, height, mainPane) {
     this.events = new events.EventEmitter();
     this.window = window;
+
+    // Location of pane on screen:
     this.x = x;
     this.y = y;
     this.cursorX = 0; // In layout space.
     this.cursorY = 0;
-    this.docIndex = 0;
+    this.docIndex = 0; // Index into doc file.
     this.topY = 0; // Top of pane, in layout space.
     this.resize(width, height);
     this.mainPane = mainPane || null;

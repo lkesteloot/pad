@@ -1,5 +1,42 @@
 
 - To do
+    - Re-implement in TypeScript?
+    - Research: https://github.com/richrd/suplemon/
+    - Research: https://github.com/square/maximum-awesome
+    - Research: https://github.com/slap-editor/slap
+    - Research: http://www.lighttable.com/
+    - Research: https://github.com/limetext/lime
+    - Thinking:
+        - The model below is based on current setup.
+        - We'll want something more flexible later (such as region-based keys or indent).
+        - Perhaps the plugin should take care of everything. The only common thing is
+            a pane, and a top-level plugin for it. The plugin defines the doc, keys, formatter, sub-plugins, etc.
+        - We don't reuse docs much, so don't bother factoring them out.
+        - We reuse keys, but treat vikeys as a library so that we can modify it (e.g., Enter submits command).
+        - Instead of Pane and Doc sub-classes, just have Plugin subclasses.
+            - A Plugin is responsible for:
+                - Generating a layout on demand.
+                - Handling keys.
+        - Questions:
+            - How can a Plugin handle a region only? How can it generate a layout?
+                - A plugin should be able to delegate to another.
+                - Like HTML delegates to CSS. Gives it a text fragment and gets a layout, which is incorporated.
+                - Also delegates keys?
+            - The word "Plugin" is too generic.
+    - Model:
+        - Pane (screen position, doc, keys, dirty layout/redraw, layout).
+            - FilePane (FileDoc, FileLayout, ViKeys).
+            - SearchPane (SearchDoc, SearchLayout, ?).
+            - CommandPane (CommandDoc, CommandLayout, ?).
+            - TreePane (TreeDoc, TreeLayout, TreeKeys).
+        - Doc (offset from top, cursor x and y, doc offset?).
+            - BufferDoc (buffer, undo/redo stack).
+                - FileDoc (filename, saved-at).
+                - SearchDoc (search results).
+                - CommandDoc (message, command history).
+            - TreeDoc (directory). Maybe should be below BufferDoc.
+    - Implement Ctrl-O from below.
+    - Implement Ctrl-S from below.
     - Think about supporting the entire project at once.
         - Pad is always editing exactly one project.
         - Project is defined by .git or whatever (Makefile, build.xml, pom.xml, etc.).
@@ -10,7 +47,7 @@
         - Can see which files are unsaved in file browser.
         - Can save one or all files.
         - Each pane assigned to one file.
-        - Bookmarks (mx and 'x) go to specific file and location.
+        - Bookmarks (mx and 'x) go to specific file and location (they're global).
         - Questions:
             - Does this imply that the file browser should always be full-height?
             - Do I really want split window? I never really use it. IDEs don't have it.
@@ -30,6 +67,7 @@
                 - Ctrl-O again closes it.
             - Ctrl-S switches to previous file.
                 - Is it possible to get Ctrl-S?
+                    - Yes.
         - Data model:
             - Doc:
                 - Represents a file on disk.
@@ -65,6 +103,7 @@
     - Play with Brackets to get ideas and look through code.
         - How do they implement the editor?
         - How do they do syntax highlighting?
+    - jsfmt: https://github.com/rdio/jsfmt
 - Architecture
     - JavaScript in Node.js.
     - When loading file:
@@ -157,11 +196,9 @@
             searches, etc.)
         - When first on project, open file tree pane.
     - Serve web page to show more info on what's being edited in real time.
-    - Serve web page of the HTML being edited right now. Update in real time.
+    - Serve web page of the HTML being edited right now. Update in real time (see brackets.io).
         - Ditto with: Markdown, pixel shader, WebGL, Processing.JS, charts, etc.
         - Live view follows cursor.
-    - As you're editing HTML/CSS, the changes are pushed to the browser without requiring
-        reload. See brackets.io.
     - Periodically save state of all panes and buffers. If process is killed, offer
         a way to restore it all, like Chrome does with tabs.
     - Use iTerm2-specific escape codes.
@@ -179,6 +216,7 @@
     - When pasting, detect that characters are coming in too quickly and disable auto-indent.
     - Automatic visual line wrap with syntax-aware indent.
     - Auto-indent on paste (mouse paste or regular paste).
+    - Easy way to rename the file you're editing. (Include git rename.)
 - Reference
     - crowley98data.pdf in Downloads (compares buffer implementations).
     - Command line parsing: https://www.npmjs.org/package/commander
@@ -218,11 +256,6 @@
     - Website for plugins.
     - Could we just use "npm install" like grunt does?
 - Random
-    - Keep a parallel array of attributes for highlighting and other things. Otherwise
-        we have to run algorithms to figure out the color constantly, and this will
-        restrict what we can do.
-        - Could implement this by using a wide char and using high bits for attributes.
-        - Instead of parallel array, keep a list of indexes where the attributes change.
     - Can we follow MVC for once? What would that mean?
         - In Emacs the Controller is mostly Lisp, taking keystrokes and modifying
             the model. The View displays the Model, but I guess this isn't Lispable?
@@ -240,7 +273,16 @@
     - Ability to do math, like a spreadsheet.
     - For JS linting:
         - http://eslint.org/
-
+- Kinds of things I'd want to do:
+    - Edit a (disk) file.
+    - Browse project directory tree.
+    - Search project.
+    - Set breakpoints, view runtime info.
+    - View compile errors.
+    - Get real-time (static) hints about code.
+    - Navigate through git history (see file change in buffer).
+    - View/edit file is highly stylized format (wrapped JSON/XML).
+    - Edit files made up of multiple languages (JS/CSS in HTML, my language with DSLs).
 
 Archived
 --------
